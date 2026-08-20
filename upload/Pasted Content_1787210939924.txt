@@ -1,0 +1,2345 @@
+Build a Full-Stack Amaravati Land Allotment & Development Management Portal
+1. PROJECT OBJECTIVE
+
+Build a production-ready, enterprise-grade web application for the Amaravati Land Allotment & Development Approval Process under APCRDA.
+
+The portal must digitally manage the complete lifecycle of land allotment:
+
+Land Inventory → Investor Registration → Application → Eligibility → DPR → Technical Review → Economic Development Review → LASC → GoM → Cabinet Sub-Committee → APCRDA Authority → Cabinet Approval where applicable → Government Order → LOI → Payment → Revised DPR → Agreement → Registration → Possession → Building Permission → Construction Monitoring → Utilisation Compliance → Completion
+
+The application must support:
+
+Application submission
+Multi-level review
+Workflow routing
+Decision gates
+Document management
+GIS/land parcel information
+Financial/payment tracking
+Committee proceedings
+Government approvals
+Building permissions
+Construction progress monitoring
+Grievances and appeals
+Cancellation/resumption
+Notifications
+SLA monitoring
+Reports
+Dashboards
+Audit trails
+Role-based access
+Configurable workflow
+User and department management
+
+The application should look and feel like a modern government enterprise portal, with a clean, professional, secure and data-heavy interface.
+
+Do NOT build a simple CRUD application.
+
+Build a complete workflow-driven case management system.
+
+2. IMPORTANT SOURCE WORKFLOW
+
+Use the following workflow as the primary business-process reference.
+
+PHASE A — ORIGINATION & ELIGIBILITY
+Stage 0 — Land Inventory & Invitation
+
+APCRDA Planning/Lands creates and publishes available land.
+
+Capture:
+
+Plot ID
+Survey number
+GIS reference
+Extent
+Zone
+Theme-city / zone code
+Land-use classification
+FSI/FAR
+Reserve price
+Objective category
+Allotment mode
+Availability status
+Restrictions
+Encumbrance status
+LPS dispute status
+Litigation status
+Road alignment status
+GIS polygon/location
+Supporting documents
+Marketing booklet / invitation document
+
+Statuses:
+
+Draft
+Under Review
+Approved
+Published
+Reserved
+Under Application
+Allotted
+On Hold
+Withdrawn
+3. ALLOTMENT MODES
+
+Support these modes:
+
+Nomination / Suo Moto Application
+Quality-Based Selection
+Quality-cum-Price Selection
+Public Tender / e-Tender
+Public Auction / e-Auction
+Randomized Selection / Draw of Lots
+
+The mode must affect the workflow and required information.
+
+Make the allotment-mode engine configurable from Admin Settings.
+
+4. PHASE A — APPLICATION
+Stage 1 — Investor / Applicant Registration
+
+Create an external Investor Portal.
+
+Applicant types:
+
+Individual
+Proprietorship
+Partnership
+LLP
+Trust
+Society
+Private Limited Company
+Public Limited Company
+PSU
+Government Department
+Semi-Government Organization
+Consortium
+
+Capture:
+
+Applicant Profile
+Applicant ID
+Organization name
+Entity type
+Registration number
+PAN
+GST
+Registered address
+Contact details
+Authorized representative
+Promoter details
+Directors
+Partners
+Beneficial ownership where applicable
+Financial profile
+Net worth
+Previous projects
+Experience
+Sector
+Project Information
+Project name
+Sector
+Project category
+Proposed investment
+Employment commitment
+Development timeline
+Project description
+Intended land use
+Preferred plot
+Alternative plots
+Development requirements
+Financial Information
+Application fee
+EMD
+Payment status
+Transaction reference
+Payment receipt
+5. STAGE 1A — ELIGIBILITY & MODE CHECK
+
+Create a dedicated decision gate.
+
+Checklist:
+
+Applicant eligible?
+Documents valid?
+Entity type valid?
+Proposed use compatible?
+Plot available?
+Land-use compatible?
+Required approvals available?
+Allotment mode applicable?
+
+Outcomes:
+
+Eligible → Proceed
+Ineligible → Reject
+Clarification Required
+Hold
+
+Every rejection must require:
+
+Reason
+Remarks
+Supporting document
+Officer
+Date/time
+
+Allow grievance/appeal after rejection.
+
+6. PHASE B — EVALUATION
+Stage 2 — DPR Submission & Review
+
+Support DPR versions:
+
+R0
+R1
+R2 if required
+Final Revised DPR
+
+DPR contents:
+
+Executive summary
+Project scope
+Project phasing
+Cost estimate
+Financial model
+Means of finance
+Land-use justification
+Concept plan
+Investment schedule
+Employment generation
+Environmental commitments
+Statutory compliance
+Development timeline
+
+Features:
+
+Upload DPR
+Version control
+Document comparison
+Reviewer assignment
+Review checklist
+Query generation
+Applicant response
+Resubmission
+Approval
+Rejection
+Comments
+Review history
+SLA tracking
+
+Create a complete DPR Query & Response module.
+
+7. STAGE 3 — ECONOMIC DEVELOPMENT REVIEW
+
+Create configurable scoring.
+
+Criteria:
+
+Investment quantum
+Financial credibility
+Employment generation
+Sector priority
+Theme-city compatibility
+Development potential
+Socio-economic impact
+Surrounding land value impact
+Strategic importance
+
+Each criterion should have:
+
+Weight
+Maximum score
+Actual score
+Reviewer comments
+Evidence
+Recommendation
+
+Automatically calculate:
+
+Total score
+Percentage
+Rating
+Recommendation
+
+Possible outcomes:
+
+Recommended
+Recommended with Conditions
+Clarification Required
+Not Recommended
+8. STAGE 4 — LASC
+
+Create a dedicated Land Allotment Scrutiny Committee module.
+
+Support:
+
+R0
+R1
+R2
+
+Committee features:
+
+Committee configuration
+Member management
+Agenda creation
+Agenda items
+Meeting scheduling
+Meeting notice
+Documents
+Committee members
+Attendance
+Quorum
+Discussion points
+Individual observations
+Recommendation
+Minutes
+Approval
+Digital document upload
+Resolution number
+Resolution date
+LASC Verification
+
+Mandatory checklist:
+
+Physical site inspection
+Plot availability
+Survey verification
+Title verification
+Encumbrance check
+LPS dispute check
+Litigation check
+Road alignment check
+Zoning verification
+Land-use verification
+
+Recommendation:
+
+Proceed
+Proceed with Conditions
+Clarification
+Return to Applicant
+Reject
+9. STAGE 5 — GROUP OF MINISTERS
+
+Create GoM workflow.
+
+Support:
+
+R0
+R1
+Auto progression
+
+Capture:
+
+Agenda
+Proposal
+Background note
+Committee recommendation
+Financial implications
+Land details
+Conditions
+Decision
+Remarks
+Meeting reference
+Decision date
+Supporting documents
+
+Decisions:
+
+Approved
+Approved with Conditions
+Deferred
+Returned
+Rejected
+
+Create configurable Auto Qualification Rules.
+
+10. STAGE 5A — CABINET SUB-COMMITTEE
+
+Create separate Cabinet Sub-Committee workflow.
+
+Features:
+
+Proposal submission
+Agenda
+Meeting
+Members
+Notes
+Recommendations
+Decision
+Conditions
+Minutes
+Resolution
+
+This stage should be configurable because it only applies to applicable proposals.
+
+11. STAGE 6 — APCRDA AUTHORITY APPROVAL
+
+Create Authority Approval module.
+
+Capture:
+
+Authority meeting
+Agenda number
+Proposal
+Recommendation
+Resolution number
+Resolution date
+Conditions
+Approved land
+Approved extent
+Approved terms
+Officer remarks
+
+Decision:
+
+Approved
+Approved with Conditions
+Deferred
+Returned
+Rejected
+12. STAGE 6A — CABINET APPROVAL TEST
+
+Create an automated decision engine.
+
+Evaluate configurable conditions such as:
+
+Acreage threshold
+Land value threshold
+Concessional pricing
+Sensitive land category
+Special policy category
+
+Display:
+
+CABINET APPROVAL REQUIRED: YES / NO
+
+Admin must be able to configure thresholds without modifying source code.
+
+13. STAGE 7 — CABINET APPROVAL
+
+Where applicable:
+
+Cabinet proposal
+Cabinet note
+Agenda
+Decision
+Conditions
+Approval date
+Reference number
+Supporting documents
+
+Decision:
+
+Approved
+Approved with Conditions
+Deferred
+Rejected
+14. STAGE 8 — GOVERNMENT ORDER
+
+Create GO module.
+
+Capture:
+
+GO number
+GO date
+Government department
+Applicant
+Plot
+Survey numbers
+Extent
+GIS coordinates
+Land-use
+FSI/FAR
+Holding type
+Leasehold/freehold
+Payment terms
+Conditions
+Approved investment
+Development commitments
+GO document
+
+Support:
+
+GO upload
+Versioning
+Digital signature metadata
+Search
+Download
+Verification
+15. STAGE 9 — LETTER OF INTENT
+
+Create LOI generation and management.
+
+Capture:
+
+LOI number
+Date
+Applicant
+Land details
+Approved terms
+Investment commitment
+Development commitment
+Payment obligations
+Conditions
+Validity period
+Expiry date
+Acceptance date
+Acceptance document
+
+Automatically calculate:
+
+LOI expiry countdown
+Days remaining
+Overdue status
+
+Notifications must trigger before expiry.
+
+16. STAGE 10 — PAYMENT & FINANCE
+
+Create complete Financial Management module.
+
+Features:
+
+Payment schedule
+Down payment
+Installments
+EMD
+Taxes
+Stamp duty
+Registration charges
+Other charges
+Penalties
+Interest
+Outstanding amount
+Paid amount
+Balance
+Due date
+Payment receipt
+Transaction reference
+Refund
+Forfeiture
+
+Dashboard:
+
+Total payable
+Total received
+Outstanding
+Overdue
+Penalty
+Refund
+Forfeiture
+
+Payment statuses:
+
+Pending
+Partially Paid
+Paid
+Overdue
+Under Verification
+Failed
+Refunded
+Forfeited
+17. STAGE 11 — REVISED DPR
+
+Create final DPR workflow.
+
+Features:
+
+Upload
+Versioning
+Review
+Comments
+Queries
+Approval
+Rejection
+Final acceptance
+
+The system must clearly identify:
+
+Initial DPR vs Final Revised DPR
+
+18. STAGE 12 — AGREEMENT & REGISTRATION
+
+Create agreement management.
+
+Capture:
+
+Agreement type
+Agreement number
+Draft date
+Execution date
+Registration date
+Sub-Registrar
+Registration office
+Registration number
+Stamp duty
+Registration fee
+Lease/freehold
+Tenure
+Conditions
+Agreement document
+
+Track:
+
+Draft → Legal Review → Approved → Executed → Registered
+
+19. STAGE 12A — POSSESSION
+
+Create possession management.
+
+Capture:
+
+Possession certificate
+Possession date
+Plot
+Survey number
+Boundaries
+GIS coordinates
+Survey sketch
+Demarcation document
+Handover officer
+Investor representative
+Photos
+Remarks
+
+Support:
+
+GIS map
+Boundary visualization
+Possession checklist
+Digital acknowledgement
+20. STAGE 13 — BUILDING PERMISSION / DEVELOPMENT APPROVAL
+
+Create Building Approval module.
+
+Track:
+
+Building plans
+Site plan
+Layout
+FSI/FAR
+Building height
+Ground coverage
+Setbacks
+Parking
+Development parameters
+Fire NOC
+Environmental NOC
+Airport/railway NOC
+Irrigation NOC
+Other statutory NOCs
+
+Workflow:
+
+Application → Technical Scrutiny → Query → Resubmission → Approval → Permission Issued
+
+Generate:
+
+Permission number
+Approval date
+Approved plan
+Conditions
+21. STAGE 14 — CONSTRUCTION MONITORING
+
+Create a powerful Construction Monitoring module.
+
+Track:
+
+Construction commencement
+Planned start date
+Actual start date
+Project milestones
+Planned progress
+Actual progress
+Physical progress %
+Financial progress %
+Milestone completion
+Delays
+Deviations
+Site inspections
+Photos
+Videos
+Drone imagery
+GIS location
+Remarks
+Corrective actions
+
+Allow monthly/quarterly progress updates.
+
+Create:
+
+Progress Dashboard
+Planned vs Actual
+Progress %
+Schedule variance
+Delayed projects
+On-track projects
+At-risk projects
+Completed projects
+
+Use charts and progress bars.
+
+22. STAGE 15 — UTILISATION & COMPLETION
+
+Track:
+
+Commencement deadline
+Completion deadline
+Annual utilisation certificate
+Periodic compliance
+Project completion
+Completion certificate
+Final inspection
+Conditions compliance
+
+Status:
+
+Compliant
+At Risk
+Delayed
+Non-Compliant
+Notice Issued
+Cure Period
+Cancellation Recommended
+Resumption Recommended
+Completed
+
+Automatically identify dormant/non-utilised allotments.
+
+23. GRIEVANCE & APPEAL MODULE
+
+Grievance must run parallel to every workflow stage.
+
+Applicant can raise grievance against:
+
+Eligibility rejection
+DPR rejection
+LASC decision
+GoM decision
+Payment issue
+LOI issue
+Agreement issue
+Building approval
+Cancellation
+Other decisions
+
+Features:
+
+Grievance ID
+Application ID
+Stage
+Category
+Description
+Attachments
+Submitted date
+Assigned officer
+SLA
+Response
+Decision
+Appeal
+Closure
+24. CANCELLATION / RESUMPTION MODULE
+
+Support both:
+
+Investor Initiated
+Withdrawal request
+Reason
+Financial settlement
+Refund
+Forfeiture
+Approval
+APCRDA Initiated
+
+Reasons:
+
+Non-payment
+Non-commencement
+Non-utilisation
+Breach of conditions
+False information
+Other violation
+
+Workflow:
+
+Notice → Response → Hearing/Review → Decision → Cancellation/Resumption → Financial Settlement → Land Status Update
+
+25. MASTER DASHBOARD
+
+Create a highly visual executive dashboard.
+
+Top KPI cards:
+
+Total Applications
+Applications Under Process
+Approved
+Rejected
+Pending
+Total Land Allotted
+Total Investment
+Employment Commitment
+Payments Received
+Outstanding Payments
+Projects Under Construction
+Completed Projects
+Delayed Projects
+Non-Compliant Allotments
+
+Charts:
+
+Applications by Stage
+Applications by Status
+Applications by Sector
+Applications by Allotment Mode
+Land Allotted by Zone
+Investment by Sector
+Application Trend
+Approval Trend
+Payment Collection Trend
+Construction Progress
+Delayed Projects
+Utilisation Compliance
+Grievance Status
+Cancellation/Resumption
+SLA Performance
+26. WORKFLOW DASHBOARD
+
+Create a Kanban/workflow visualization.
+
+Columns:
+
+Application
+Eligibility
+DPR
+Economic Review
+LASC
+GoM
+Cabinet Sub-Committee
+Authority
+Cabinet
+GO
+LOI
+Payment
+Revised DPR
+Agreement
+Possession
+Building Permission
+Construction
+Compliance
+Completed
+
+Each application should appear as a card.
+
+Card should display:
+
+Application ID
+Investor
+Project
+Plot
+Current Stage
+Officer
+SLA
+Days pending
+Priority
+Status
+27. APPLICATION DETAIL PAGE
+
+Create a comprehensive single-page case view.
+
+Header:
+
+Application ID
+Investor
+Project
+Current Stage
+Status
+Priority
+Assigned Officer
+SLA countdown
+
+Tabs:
+
+Overview
+Applicant
+Land
+Project
+DPR
+Reviews
+LASC
+GoM
+Authority
+Cabinet
+GO
+LOI
+Payments
+Revised DPR
+Agreement
+Possession
+Building Approval
+Construction
+Compliance
+Grievances
+Documents
+Timeline
+Audit Log
+28. TIMELINE
+
+Create a complete chronological timeline.
+
+Example:
+
+Application Submitted
+↓
+Eligibility Approved
+↓
+DPR R0 Submitted
+↓
+DPR Query Raised
+↓
+DPR R1 Submitted
+↓
+Economic Review Completed
+↓
+LASC Meeting
+↓
+GoM Decision
+↓
+Authority Approval
+↓
+GO Issued
+↓
+LOI Issued
+↓
+Payment
+↓
+Agreement
+↓
+Possession
+↓
+Building Permission
+↓
+Construction Started
+↓
+Progress Updates
+↓
+Completion
+
+Every event must show:
+
+Date
+Time
+User
+Department
+Action
+Previous status
+New status
+Remarks
+Document
+29. DOCUMENT MANAGEMENT
+
+Create centralized document repository.
+
+Categories:
+
+Applicant documents
+Company documents
+DPR
+Financial documents
+Land documents
+GIS documents
+Committee documents
+LASC minutes
+GoM documents
+Cabinet documents
+Authority resolutions
+GO
+LOI
+Payment receipts
+Agreements
+Registration
+Possession
+Building plans
+NOCs
+Construction documents
+Completion documents
+Grievance documents
+
+Features:
+
+Upload
+Preview
+Download
+Version control
+Document type
+Mandatory/optional
+Expiry date
+Verification status
+Verified by
+Verified date
+Digital signature metadata
+Document history
+30. GIS / LAND MODULE
+
+Create an interactive GIS interface.
+
+Map features:
+
+Amaravati boundary
+Zones
+Plots
+Survey numbers
+Land-use
+Allotted land
+Available land
+Reserved land
+Under-process land
+Disputed land
+LPS information where applicable
+Roads
+Infrastructure
+Project locations
+
+Clicking a parcel should open:
+
+Plot ID
+Survey number
+Extent
+Land use
+FSI/FAR
+Status
+Applicant
+Project
+Allotment date
+Current stage
+GIS coordinates
+
+Provide:
+
+Map search
+Plot search
+Layer controls
+Filters
+Satellite/map toggle
+Polygon information
+GIS export
+
+If a real GIS backend is unavailable, create a realistic mock GIS layer and architect the frontend so a real GIS service can be integrated later.
+
+31. REPORTING MODULE
+
+Create a dedicated Reports module.
+
+Reports:
+
+Application Reports
+Application register
+Stage-wise applications
+Pending applications
+Approved applications
+Rejected applications
+Application ageing
+Land Reports
+Available land
+Allotted land
+Land by zone
+Land by land-use
+Land by sector
+Land by allotment mode
+Financial Reports
+Payment collection
+Outstanding dues
+Overdue payments
+Penalties
+Refunds
+Forfeitures
+Approval Reports
+LASC decisions
+GoM decisions
+Authority approvals
+Cabinet approvals
+GO issued
+Construction Reports
+Construction progress
+Delayed projects
+Milestone status
+Planned vs actual
+Completion
+Compliance Reports
+Non-utilised land
+Delayed commencement
+Expired LOIs
+Payment defaults
+Conditions breached
+Cancellation candidates
+Grievance Reports
+Open grievances
+SLA breached
+Category-wise
+Stage-wise
+Resolution time
+Audit Reports
+User activity
+Login history
+Status changes
+Document activity
+Approval activity
+
+Every report must support:
+
+Date filters
+Stage
+Department
+District/zone
+Sector
+Applicant
+Status
+Allotment mode
+Export Excel
+Export CSV
+Export PDF
+Print
+32. SLA & AGEING ENGINE
+
+Implement configurable SLA.
+
+For every workflow stage maintain:
+
+SLA days
+Start date
+Due date
+Days elapsed
+Days remaining
+SLA percentage
+Breached flag
+
+Color/status:
+
+On Track
+Due Soon
+At Risk
+Breached
+
+Admin can configure SLA by stage.
+
+33. NOTIFICATION ENGINE
+
+Support:
+
+In-app notifications
+Email
+SMS-ready architecture
+
+Notifications:
+
+Application submitted
+Application assigned
+Query raised
+Query response
+Stage completed
+Approval
+Rejection
+Payment due
+Payment overdue
+LOI expiry
+Construction milestone due
+Compliance due
+Grievance update
+Cancellation notice
+SLA breach
+
+Create notification templates in Admin.
+
+34. ROLE-BASED ACCESS CONTROL
+
+Implement granular RBAC.
+
+Roles:
+
+Super Admin
+
+Full access.
+
+System Administrator
+
+Users, roles, settings, workflow configuration.
+
+APCRDA Lands Officer
+
+Land inventory, eligibility, allotment, possession.
+
+Planning Officer
+
+Land use, planning, FSI/FAR, building approvals.
+
+Technical Reviewer
+
+DPR and technical review.
+
+Economic Development Officer
+
+Economic scoring.
+
+LASC Member
+
+LASC cases and recommendations.
+
+GoM Secretariat
+
+GoM proposals.
+
+Cabinet Sub-Committee Secretariat
+
+Committee workflow.
+
+Authority Secretariat
+
+Authority approvals.
+
+Finance Officer
+
+Payments, dues, refunds, penalties.
+
+Legal Officer
+
+Legal review, agreement, registration, disputes.
+
+Monitoring Officer
+
+Construction and compliance.
+
+Grievance Officer
+
+Grievances and appeals.
+
+Auditor
+
+Read-only access + audit reports.
+
+Investor / Applicant
+
+Own applications only.
+
+Public User
+
+Published land inventory and public information only.
+
+Permissions:
+
+View
+Create
+Edit
+Delete
+Submit
+Review
+Approve
+Reject
+Return
+Assign
+Upload
+Download
+Export
+Configure
+
+Permissions must be configurable.
+
+35. DEPARTMENT & ORGANIZATION MANAGEMENT
+
+Create:
+
+Departments
+Wings
+Offices
+Committees
+Designations
+Users
+Roles
+Permissions
+Reporting hierarchy
+
+Support officer transfer.
+
+When an officer is transferred, active cases should be reassignable without breaking history.
+
+36. USER MANAGEMENT
+
+Features:
+
+Create user
+Edit user
+Activate/deactivate
+Assign role
+Assign department
+Assign designation
+Assign geographic area
+Password reset
+MFA-ready architecture
+Login history
+Last login
+Failed login attempts
+Session management
+37. ADMIN SETTINGS
+
+Create a powerful configuration module.
+
+Settings:
+
+Workflow
+Stage names
+Stage order
+Conditional stages
+Decision gates
+SLA
+Escalation
+Land
+Land-use categories
+Zones
+FSI/FAR
+Plot status
+Allotment modes
+Finance
+Payment types
+Penalties
+Interest
+Refund rules
+Payment schedules
+Documents
+Document categories
+Mandatory documents
+File types
+File size
+Notifications
+Email templates
+SMS templates
+Trigger rules
+Master Data
+Departments
+Designations
+Sectors
+Entity types
+NOC types
+Approval types
+Grievance categories
+38. AUDIT TRAIL
+
+This is mandatory.
+
+Record every sensitive action:
+
+Login
+Logout
+Create
+Edit
+Delete
+Upload
+Download
+Review
+Approve
+Reject
+Forward
+Return
+Status change
+Payment update
+Configuration change
+User permission change
+
+Audit record:
+
+User
+Role
+IP
+Timestamp
+Module
+Record ID
+Action
+Old value
+New value
+Remarks
+
+Audit logs must be immutable from normal users.
+
+39. SEARCH
+
+Implement global search.
+
+Search by:
+
+Application ID
+Applicant
+Project
+Plot ID
+Survey number
+GO number
+LOI number
+Agreement number
+Payment reference
+Phone
+Email
+Stage
+Status
+
+Add advanced search.
+
+40. DASHBOARD FILTERS
+
+Global filters:
+
+Financial year
+Date range
+Zone
+Sector
+Land-use
+Allotment mode
+Stage
+Status
+Department
+Officer
+Applicant
+
+Filters must update dashboard charts and KPIs without full-page reload.
+
+41. SECURITY
+
+Implement enterprise security:
+
+Secure authentication
+Password hashing
+JWT/session management
+Role-based authorization
+API authorization
+Input validation
+File upload validation
+File scanning architecture
+Rate limiting
+CSRF protection where applicable
+XSS protection
+SQL injection protection
+Secure headers
+Audit logging
+Session timeout
+Account lockout
+MFA-ready architecture
+
+Never expose passwords or secrets in frontend code.
+
+Use environment variables.
+
+42. TECHNICAL ARCHITECTURE
+
+Build a proper full-stack architecture.
+
+Recommended:
+
+Frontend
+Next.js
+TypeScript
+Tailwind CSS
+shadcn/ui
+Responsive design
+Recharts
+TanStack Table
+React Hook Form
+Zod
+Backend
+
+Use a clean REST API architecture.
+
+Recommended:
+
+Node.js
+NestJS or Express
+TypeScript
+Database
+PostgreSQL
+Prisma ORM
+Authentication
+JWT / secure session architecture
+RBAC
+Storage
+
+Create abstraction for:
+
+Local storage during development
+S3-compatible storage for production
+GIS
+
+Architect integration for:
+
+PostGIS
+GeoServer
+ArcGIS
+OpenStreetMap / MapLibre
+
+Do not tightly couple the system to one GIS provider.
+
+43. DATABASE DESIGN
+
+Create normalized database schema.
+
+Major entities:
+
+users
+roles
+permissions
+departments
+designations
+applicants
+applicant_users
+promoters
+projects
+land_parcels
+survey_numbers
+zones
+land_uses
+land_inventory
+allotment_modes
+applications
+application_stages
+workflow_instances
+workflow_actions
+decision_gates
+dpr_versions
+dpr_reviews
+dpr_queries
+economic_reviews
+economic_scores
+lasc_committees
+lasc_members
+lasc_meetings
+lasc_agendas
+lasc_minutes
+gom_reviews
+cabinet_subcommittee
+authority_reviews
+cabinet_reviews
+government_orders
+lois
+payments
+payment_schedules
+penalties
+refunds
+revised_dprs
+agreements
+registrations
+possessions
+building_permissions
+nocs
+construction_projects
+construction_milestones
+progress_updates
+inspections
+compliance_records
+grievances
+appeals
+cancellation_cases
+notices
+documents
+notifications
+audit_logs
+system_settings
+
+Use foreign keys, indexes, timestamps, soft deletes where appropriate, and proper status enums.
+
+44. WORKFLOW ENGINE
+
+Do NOT hard-code the entire workflow into individual screens.
+
+Create a configurable workflow engine.
+
+Each stage should support:
+
+Stage ID
+Name
+Sequence
+Owner role
+Entry conditions
+Exit conditions
+SLA
+Required documents
+Required checklist
+Decision options
+Next stage
+Conditional next stage
+Escalation
+Notifications
+
+Example:
+
+Stage 6 Authority Approval
+        |
+        v
+Cabinet Required?
+    /          \
+  YES           NO
+   |             |
+Cabinet          GO
+   |
+   v
+GO
+
+Admins should be able to modify workflow rules without rewriting the application.
+
+45. DECISION ENGINE
+
+Create reusable decision engine.
+
+Example:
+
+IF acreage > configured_threshold
+OR land_value > configured_threshold
+OR concessional_rate = TRUE
+OR sensitive_category = TRUE
+THEN Cabinet Required
+ELSE GO
+
+All rules should be configurable.
+
+Log the rule evaluation result.
+
+46. TASK & ASSIGNMENT SYSTEM
+
+Every workflow task should have:
+
+Task ID
+Application ID
+Stage
+Assigned user
+Assigned department
+Priority
+Created date
+Due date
+Status
+Completion date
+
+Support:
+
+Assign
+Reassign
+Escalate
+Delegate
+Return
+Forward
+47. ESCALATION ENGINE
+
+Automatically escalate:
+
+SLA approaching
+SLA breached
+Payment overdue
+LOI expiry approaching
+Construction milestone overdue
+Compliance overdue
+
+Escalation hierarchy must be configurable.
+
+48. HOME PAGE
+
+Create a public-facing landing page.
+
+Sections:
+
+Amaravati Land Opportunities
+Available Land
+How the Process Works
+Allotment Modes
+Investor Registration
+Application Tracking
+Announcements
+Notifications
+Government Orders
+Guidelines
+FAQs
+Contact
+Login
+
+Use professional APCRDA-style government visual design.
+
+49. INVESTOR PORTAL
+
+Investor dashboard:
+
+My Applications
+Current Stage
+Application Status
+Pending Actions
+Queries
+Documents
+Payments
+LOI
+DPR
+Building Approval
+Construction Progress
+Grievances
+Notifications
+
+Provide a clear workflow progress tracker.
+
+50. APPLICATION TRACKING
+
+Allow applicant to enter:
+
+Application ID
+Registered mobile/email
+OTP
+
+Then show:
+
+Application status
+Current stage
+Completed stages
+Pending stage
+Pending action
+Documents
+Queries
+Timeline
+
+Do not expose confidential internal remarks.
+
+51. UI / UX
+
+Design should be:
+
+Modern
+Professional
+Government enterprise style
+Clean
+Responsive
+Accessible
+Desktop-first but mobile responsive
+
+Use:
+
+Sidebar navigation
+Top header
+Breadcrumbs
+Cards
+Data tables
+Tabs
+Timeline
+Status badges
+Progress indicators
+Charts
+Modals
+Drawers
+Stepper
+Kanban
+GIS map
+
+Avoid excessive animations.
+
+Prioritize usability and performance.
+
+52. STATUS SYSTEM
+
+Create consistent statuses.
+
+Application:
+
+Draft
+Submitted
+Under Review
+Clarification Required
+Approved
+Rejected
+Deferred
+Withdrawn
+Cancelled
+Completed
+
+Stage:
+
+Not Started
+In Progress
+Pending Action
+Completed
+Returned
+Rejected
+Deferred
+Skipped
+
+Use consistent colors and labels throughout the application.
+
+53. DEMO DATA
+
+Seed realistic demo data.
+
+Create at least:
+
+25 land parcels
+15 applicants
+15 applications
+Applications at different workflow stages
+10 projects
+10 payment schedules
+5 grievances
+5 construction projects
+3 cancelled cases
+3 delayed projects
+Multiple sectors
+Multiple allotment modes
+Multiple zones
+
+Create realistic Amaravati-style names but clearly mark all data as DEMO.
+
+54. DEMO LOGIN CREDENTIALS
+
+Create these demo users:
+
+Super Admin
+
+Email:
+admin@amaravati-demo.gov.in
+
+Password:
+Admin@12345
+
+Role:
+Super Administrator
+
+Lands Officer
+
+Email:
+lands@amaravati-demo.gov.in
+
+Password:
+Lands@12345
+
+Role:
+APCRDA Lands Officer
+
+Technical Reviewer
+
+Email:
+technical@amaravati-demo.gov.in
+
+Password:
+Technical@12345
+
+Role:
+Technical Reviewer
+
+Finance Officer
+
+Email:
+finance@amaravati-demo.gov.in
+
+Password:
+Finance@12345
+
+Role:
+Finance Officer
+
+Monitoring Officer
+
+Email:
+monitoring@amaravati-demo.gov.in
+
+Password:
+Monitoring@12345
+
+Role:
+Monitoring Officer
+
+Grievance Officer
+
+Email:
+grievance@amaravati-demo.gov.in
+
+Password:
+Grievance@12345
+
+Role:
+Grievance Officer
+
+Investor
+
+Email:
+investor@amaravati-demo.in
+
+Password:
+Investor@12345
+
+Role:
+Investor / Applicant
+
+IMPORTANT:
+These credentials are DEMO credentials only.
+
+Clearly display a "Demo Environment" indicator.
+
+55. DEMO MODE
+
+Add a demo mode.
+
+Features:
+
+Reset demo database
+Generate demo applications
+Generate demo payments
+Generate demo workflow history
+Generate demo construction progress
+
+Admin-only.
+
+56. API DESIGN
+
+Create REST APIs for:
+
+Authentication
+Users
+Roles
+Permissions
+Applicants
+Applications
+Land
+GIS
+DPR
+Reviews
+LASC
+GoM
+Cabinet
+Authority
+GO
+LOI
+Payments
+Agreements
+Possession
+Building permissions
+Construction
+Compliance
+Grievances
+Reports
+Notifications
+Documents
+Audit logs
+Settings
+
+Use consistent API response format.
+
+Example:
+
+{
+  "success": true,
+  "data": {},
+  "message": "Application retrieved successfully"
+}
+
+Handle:
+
+Validation errors
+Authentication errors
+Authorization errors
+Not found
+Server errors
+Duplicate records
+57. FILE UPLOAD
+
+Support:
+
+PDF
+DOC/DOCX
+XLS/XLSX
+JPG/JPEG
+PNG
+DWG-ready architecture
+GIS files-ready architecture
+
+Show:
+
+File name
+Type
+Size
+Uploaded by
+Uploaded date
+Verification status
+Version
+58. EXPORT
+
+Every important table should support:
+
+Excel
+CSV
+PDF
+Print
+
+Exports should respect active filters and user permissions.
+
+59. PERFORMANCE
+
+The system must be designed for large datasets.
+
+Implement:
+
+Server-side pagination
+Server-side filtering
+Database indexing
+Lazy loading
+API pagination
+Search debouncing
+Caching where appropriate
+Optimized dashboard queries
+
+Do not load thousands of records into the browser unnecessarily.
+
+60. ERROR HANDLING
+
+Create:
+
+Global error handler
+Friendly error messages
+Empty states
+Loading states
+Skeleton loaders
+Retry functionality
+API timeout handling
+Validation messages
+
+Never show raw stack traces to users.
+
+61. NOTIFICATION CENTER
+
+Add notification bell in header.
+
+Notification types:
+
+Task assigned
+Approval required
+Query raised
+Payment due
+SLA warning
+SLA breached
+LOI expiring
+Construction delayed
+Compliance issue
+Grievance update
+
+Allow:
+
+Read/unread
+Mark all read
+Filter
+View related application
+62. MY WORK QUEUE
+
+Every internal user should have:
+
+My Work Queue
+
+Display:
+
+Assigned tasks
+Pending approvals
+Queries
+SLA approaching
+SLA breached
+High-priority cases
+
+Filters:
+
+Today
+This week
+Overdue
+Priority
+Stage
+63. EXECUTIVE INTELLIGENCE
+
+Create an executive dashboard showing:
+
+Land
+
+Total inventory
+Available
+Reserved
+Allotted
+Under process
+Disputed
+
+Investment
+
+Total committed
+Approved
+Under evaluation
+Sector-wise
+
+Employment
+
+Committed jobs
+Project-wise employment
+
+Finance
+
+Expected revenue
+Collected
+Outstanding
+Overdue
+
+Development
+
+Projects started
+Under construction
+Delayed
+Completed
+
+Compliance
+
+Compliant
+At risk
+Non-compliant
+Cancellation candidates
+
+64. ALERTS & RISK DASHBOARD
+
+Create "Risk & Alerts".
+
+Automatically identify:
+
+Application stuck at stage
+SLA breach
+Payment default
+LOI nearing expiry
+DPR repeatedly returned
+Construction not started
+Construction delayed
+Utilisation deadline approaching
+Compliance violation
+Litigation/dispute
+Cancellation candidate
+
+Assign severity:
+
+Critical
+High
+Medium
+Low
+65. DATA VALIDATION
+
+Examples:
+
+Duplicate survey number detection
+Duplicate plot allocation prevention
+Land extent validation
+Plot availability validation
+Applicant duplicate detection
+Payment amount validation
+Mandatory document validation
+Workflow prerequisite validation
+
+The system must prevent allocating the same land parcel to multiple active applications unless explicitly permitted by configuration.
+
+66. DEVELOPMENT REQUIREMENTS
+
+Build the application incrementally but make the architecture production-ready from the beginning.
+
+First create:
+
+Project architecture
+Database schema
+Authentication
+RBAC
+Master data
+Land inventory
+Application workflow
+Workflow engine
+Dashboard
+Document management
+Reporting
+Notifications
+Audit logs
+GIS integration layer
+Construction monitoring
+Admin settings
+67. IMPORTANT IMPLEMENTATION RULES
+
+Do not:
+
+Hard-code business rules unnecessarily
+Hard-code approval thresholds
+Hard-code SLA values
+Hard-code departments
+Hard-code roles
+Hard-code land-use categories
+Hard-code workflow transitions
+
+Make them configurable.
+
+Do not create fake backend functionality that only looks functional.
+
+All major buttons should connect to real application state/API/database functionality.
+
+Do not use static JSON as the permanent database.
+
+Use PostgreSQL.
+
+68. SEED DATA & TESTING
+
+Create database seed scripts.
+
+Create test scenarios for:
+
+Scenario 1
+
+Normal application:
+
+Application → Eligibility → DPR → Economic Review → LASC → GoM → Authority → GO → LOI → Payment → Agreement → Possession → Building Permission → Construction → Completion
+
+Scenario 2
+
+DPR returned for revision.
+
+Scenario 3
+
+Cabinet approval required.
+
+Scenario 4
+
+Payment overdue.
+
+Scenario 5
+
+LOI expires.
+
+Scenario 6
+
+Construction delayed.
+
+Scenario 7
+
+Applicant grievance.
+
+Scenario 8
+
+Cancellation due to non-utilisation.
+
+Scenario 9
+
+Land parcel unavailable.
+
+Scenario 10
+
+Application rejected and appealed.
+
+69. FINAL DELIVERABLE
+
+The final application should include:
+
+Public portal
+Investor portal
+Internal APCRDA portal
+Executive dashboard
+Application management
+Land inventory
+GIS
+DPR
+Economic review
+LASC
+GoM
+Cabinet Sub-Committee
+Authority approval
+Cabinet approval
+GO
+LOI
+Finance
+Revised DPR
+Agreement
+Possession
+Building approval
+Construction monitoring
+Compliance
+Grievances
+Appeals
+Cancellation/resumption
+Documents
+Notifications
+Reports
+Audit logs
+User management
+Role management
+Department management
+Settings
+Workflow configuration
+SLA engine
+Decision engine
+Demo data
+Demo credentials
+70. BUILD QUALITY EXPECTATION
+
+The result should look like a real enterprise government application that could eventually be deployed for APCRDA operations.
+
+Do not build a toy project.
+
+Prioritize:
+
+Correct workflow
+Data integrity
+Security
+Role-based access
+Auditability
+Configurability
+Performance
+Usability
+Reporting
+Maintainability
+
+Before considering the project complete:
+
+Test every workflow
+Test every role
+Test permissions
+Test approval transitions
+Test rejection/return loops
+Test conditional Cabinet workflow
+Test payments
+Test documents
+Test reports
+Test exports
+Test notifications
+Test audit trail
+Test dashboard calculations
+Test responsive UI
+Test error states
+Test duplicate land allocation prevention
+
+Provide a README containing:
+
+Architecture
+Installation
+Environment variables
+Database setup
+Migration commands
+Seed commands
+Demo credentials
+API documentation
+Deployment instructions
+Production configuration
+Backup strategy
+Security considerations
+
+Use clear, modular, maintainable code with meaningful naming and comments where necessary.
+
+The application must be ready for future integration with:
+
+APCRDA systems
+GIS services
+Payment gateways
+Government authentication
+e-Sign / digital signatures
+SMS gateway
+Email services
+Document management systems
+Building permission systems
+Construction monitoring systems
+
+Build the complete system end-to-end.
+
+One important addition
+
+I would not let the AI coding agent treat the workflow as a simple linear sequence. Your source specifically identifies conditional decision gates—for example, Cabinet approval is only required when configured acreage/value/concessional/sensitive-land conditions are met—and parallel grievance and cancellation paths operate alongside the main workflow.
+
+So the most important architectural components are:
+
+Workflow Engine + Decision Engine + RBAC + Audit Trail + Document Management + GIS + SLA/Alert Engine.
+
+That combination will make the portal scalable when APCRDA later changes approval rules, departments, thresholds, committee structures, or SLAs.
+
+Also, the uploaded workflow itself notes that committee constitutions, thresholds and timelines should be validated against current APCRDA notifications/standing orders before production adoption

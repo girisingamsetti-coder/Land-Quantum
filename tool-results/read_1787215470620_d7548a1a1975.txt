@@ -1,0 +1,676 @@
+     1→generator client {
+     2→  provider = "prisma-client-js"
+     3→}
+     4→
+     5→datasource db {
+     6→  provider = "sqlite"
+     7→  url      = env("DATABASE_URL")
+     8→}
+     9→
+    10→// ==================== MASTER DATA ====================
+    11→
+    12→model Role {
+    13→  id          String   @id @default(cuid())
+    14→  name        String   @unique
+    15→  description String?
+    16→  permissions String   @default("[]") // JSON array
+    17→  isSystem    Boolean  @default(false)
+    18→  createdAt   DateTime @default(now())
+    19→  updatedAt   DateTime @updatedAt
+    20→  users       User[]
+    21→}
+    22→
+    23→model Department {
+    24→  id        String      @id @default(cuid())
+    25→  name      String      @unique
+    26→  code      String      @unique
+    27→  parentId  String?
+    28→  createdAt DateTime    @default(now())
+    29→  updatedAt DateTime    @updatedAt
+    30→  parent    Department? @relation("DeptHierarchy", fields: [parentId], references: [id])
+    31→  children  Department[] @relation("DeptHierarchy")
+    32→  users     User[]
+    33→}
+    34→
+    35→model Zone {
+    36→  id          String       @id @default(cuid())
+    37→  name        String       @unique
+    38→  code        String       @unique
+    39→  description String?
+    40→  landParcels LandParcel[]
+    41→  createdAt   DateTime     @default(now())
+    42→  updatedAt   DateTime     @updatedAt
+    43→}
+    44→
+    45→model LandUse {
+    46→  id          String       @id @default(cuid())
+    47→  name        String       @unique
+    48→  code        String       @unique
+    49→  description String?
+    50→  landParcels LandParcel[]
+    51→  createdAt   DateTime     @default(now())
+    52→  updatedAt   DateTime     @updatedAt
+    53→}
+    54→
+    55→model AllotmentMode {
+    56→  id          String       @id @default(cuid())
+    57→  name        String       @unique
+    58→  code        String       @unique
+    59→  description String?
+    60→  isActive    Boolean      @default(true)
+    61→  applications Application[]
+    62→  landParcels  LandParcel[]
+    63→  createdAt   DateTime     @default(now())
+    64→  updatedAt   DateTime     @updatedAt
+    65→}
+    66→
+    67→model Sector {
+    68→  id        String   @id @default(cuid())
+    69→  name      String   @unique
+    70→  code      String   @unique
+    71→  priority  Int      @default(0)
+    72→  isActive  Boolean  @default(true)
+    73→  createdAt DateTime @default(now())
+    74→  updatedAt DateTime @updatedAt
+    75→}
+    76→
+    77→// ==================== LAND INVENTORY ====================
+    78→
+    79→model LandParcel {
+    80→  id                  String         @id @default(cuid())
+    81→  plotId              String         @unique
+    82→  surveyNumber        String
+    83→  gisReference        String?
+    84→  extentAcres         Float
+    85→  zoneId              String
+    86→  landUseId           String?
+    87→  themeCity           String?
+    88→  fsiFar              Float          @default(0)
+    89→  reservePrice        Float          @default(0)
+    90→  objectiveCategory   String?
+    91→  allotmentModeId     String?
+    92→  status              String         @default("Draft") // Draft,Under Review,Approved,Published,Reserved,Under Application,Allotted,On Hold,Withdrawn
+    93→  restrictions        String?        // JSON
+    94→  encumbranceStatus   String         @default("Clear")
+    95→  lpsDisputeStatus    String         @default("None")
+    96→  litigationStatus    String         @default("None")
+    97→  roadAlignmentStatus String         @default("Pending")
+    98→  gisCoordinates      String?        // JSON {lat, lng, polygon}
+    99→  applicantId         String?
+   100→  createdAt           DateTime       @default(now())
+   101→  updatedAt           DateTime       @updatedAt
+   102→  zone                Zone           @relation(fields: [zoneId], references: [id])
+   103→  landUse             LandUse?       @relation(fields: [landUseId], references: [id])
+   104→  allotmentMode       AllotmentMode? @relation(fields: [allotmentModeId], references: [id])
+   105→  applicant           Applicant?     @relation(fields: [applicantId], references: [id])
+   106→  applications        Application[]
+   107→  documents           Document[]
+   108→}
+   109→
+   110→// ==================== APPLICANT / INVESTOR ====================
+   111→
+   112→model Applicant {
+   113→  id                String       @id @default(cuid())
+   114→  applicantId       String       @unique // APCRDA-APP-XXXXX
+   115→  organizationName  String
+   116→  entityType        String       // Individual,Proprietorship,Partnership,LLP,Trust,Society,Pvt Ltd,Public Ltd,PSU, Govt Dept,Semi-Govt,Consortium
+   117→  registrationNumber String?
+   118→  pan               String?
+   119→  gst               String?
+   120→  registeredAddress String?
+   121→  contactPerson     String?
+   122→  contactPhone      String?
+   123→  contactEmail      String?
+   124→  authorizedRep     String?
+   125→  promoterDetails   String?       // JSON
+   126→  directors         String?       // JSON array
+   127→  netWorth          Float        @default(0)
+   128→  previousProjects  String?       // JSON array
+   129→  experience        String?
+   130→  userId            String?       @unique
+   131→  createdAt         DateTime     @default(now())
+   132→  updatedAt         DateTime     @updatedAt
+   133→  user              User?        @relation(fields: [userId], references: [id])
+   134→  applications      Application[]
+   135→  landParcels       LandParcel[]
+   136→  grievances        Grievance[]
+   137→}
+   138→
+   139→// ==================== APPLICATION & WORKFLOW ====================
+   140→
+   141→model Application {
+   142→  id                String           @id @default(cuid())
+   143→  applicationNumber String           @unique // APCRDA-APP-XXXXX
+   144→  applicantId       String
+   145→  landParcelId      String?
+   146→  projectId         String?
+   147→  allotmentModeId   String?
+   148→  projectName       String?
+   149→  sector            String?
+   150→  projectCategory   String?
+   151→  proposedInvestment Float           @default(0)
+   152→  employmentCommitment Int          @default(0)
+   153→  developmentTimeline String?
+   154→  projectDescription String?
+   155→  intendedLandUse   String?
+   156→  status            String           @default("Draft") // Draft,Submitted,Under Review,Clarification Required,Approved,Rejected,Deferred,Withdrawn,Cancelled,Completed
+   157→  priority          String           @default("Normal") // Low,Normal,High,Critical
+   158→  currentStage      String           @default("Application")
+   159→  assignedOfficerId String?
+   160→  slaDueDate        DateTime?
+   161→  remarks           String?
+   162→  rejectionReason   String?
+   163→  createdAt         DateTime         @default(now())
+   164→  updatedAt         DateTime         @updatedAt
+   165→  applicant         Applicant        @relation(fields: [applicantId], references: [id])
+   166→  landParcel        LandParcel?      @relation(fields: [landParcelId], references: [id])
+   167→  project           Project?         @relation(fields: [projectId], references: [id])
+   168→  allotmentMode     AllotmentMode?   @relation(fields: [allotmentModeId], references: [id])
+   169→  assignedOfficer   User?            @relation("AssignedOfficer", fields: [assignedOfficerId], references: [id])
+   170→  stages            ApplicationStage[]
+   171→  dprVersions       DPRVersion[]
+   172→  economicReviews   EconomicReview[]
+   173→  payments          Payment[]
+   174→  grievances        Grievance[]
+   175→  documents         Document[]
+   176→  governmentOrders  GovernmentOrder[]
+   177→  lois              LOI[]
+   178→  agreements        Agreement[]
+   179→  possessions       Possession[]
+   180→  buildingPerms     BuildingPermission[]
+   181→  constructions     ConstructionProject[]
+   182→  cancellationCases CancellationCase[]
+   183→  complianceRecords  ComplianceRecord[]
+   184→}
+   185→
+   186→model ApplicationStage {
+   187→  id           String   @id @default(cuid())
+   188→  applicationId String
+   189→  stageName    String
+   190→  stageOrder   Int
+   191→  status       String   @default("Not Started") // Not Started,In Progress,Pending Action,Completed,Returned,Rejected,Deferred,Skipped
+   192→  assignedToId String?
+   193→  startedAt    DateTime?
+   194→  completedAt  DateTime?
+   195→  slaDays      Int      @default(0)
+   196→  dueDate      DateTime?
+   197→  decision     String?  // Approved,Rejected,Deferred,Returned, etc.
+   198→  remarks      String?
+   199→  data         String?  // JSON - stage-specific data
+   200→  createdAt    DateTime @default(now())
+   201→  updatedAt    DateTime @updatedAt
+   202→  application  Application @relation(fields: [applicationId], references: [id])
+   203→  assignedTo   User?      @relation("StageAssignedTo", fields: [assignedToId], references: [id])
+   204→}
+   205→
+   206→// ==================== PROJECT ====================
+   207→
+   208→model Project {
+   209→  id                 String  @id @default(cuid())
+   210→  name               String
+   211→  sector             String?
+   212→  description        String?
+   213→  totalInvestment    Float   @default(0)
+   214→  approvedInvestment Float   @default(0)
+   215→  employmentTarget   Int     @default(0)
+   216→  startDate          DateTime?
+   217→  completionDate     DateTime?
+   218→  status             String  @default("Planned")
+   219→  createdAt          DateTime @default(now())
+   220→  updatedAt          DateTime @updatedAt
+   221→  applications       Application[]
+   222→}
+   223→
+   224→// ==================== DPR ====================
+   225→
+   226→model DPRVersion {
+   227→  id             String   @id @default(cuid())
+   228→  applicationId  String
+   229→  version        String   // R0,R1,R2,Final
+   230→  status         String   @default("Submitted") // Submitted,Under Review,Query Raised,Resubmitted,Approved,Rejected
+   231→  submittedAt    DateTime @default(now())
+   232→  reviewedAt     DateTime?
+   233→  approvedAt     DateTime?
+   234→  remarks        String?
+   235→  reviewerId     String?
+   236→  createdAt      DateTime @default(now())
+   237→  updatedAt      DateTime @updatedAt
+   238→  application    Application @relation(fields: [applicationId], references: [id])
+   239→  reviewer       User?      @relation("DPRReviewer", fields: [reviewerId], references: [id])
+   240→  queries        DPRQuery[]
+   241→  documents      Document[]
+   242→}
+   243→
+   244→model DPRQuery {
+   245→  id              String   @id @default(cuid())
+   246→  dprVersionId    String
+   247→  query           String
+   248→  response        String?
+   249→  raisedById      String?
+   250→  respondedAt     DateTime?
+   251→  status          String   @default("Open") // Open,Responded,Closed
+   252→  createdAt       DateTime @default(now())
+   253→  updatedAt       DateTime @updatedAt
+   254→  dprVersion      DPRVersion @relation(fields: [dprVersionId], references: [id])
+   255→  raisedBy        User?      @relation("QueryRaisedBy", fields: [raisedById], references: [id])
+   256→}
+   257→
+   258→// ==================== ECONOMIC REVIEW ====================
+   259→
+   260→model EconomicReview {
+   261→  id             String   @id @default(cuid())
+   262→  applicationId  String
+   263→  reviewerId     String?
+   264→  totalScore     Float    @default(0)
+   265→  maxScore       Float    @default(0)
+   266→  percentage     Float    @default(0)
+   267→  rating         String?  // Recommended,Recommended with Conditions,Clarification Required,Not Recommended
+   268→  recommendation String?
+   269→  remarks        String?
+   270→  scores         String?  // JSON - criterion scores
+   271→  status         String   @default("Pending") // Pending,In Progress,Completed
+   272→  createdAt      DateTime @default(now())
+   273→  updatedAt      DateTime @updatedAt
+   274→  application    Application @relation(fields: [applicationId], references: [id])
+   275→  reviewer       User?      @relation("EcoReviewer", fields: [reviewerId], references: [id])
+   276→}
+   277→
+   278→// ==================== COMMITTEE (Unified for LASC/GoM/Cabinet/Authority) ====================
+   279→
+   280→model CommitteeMeeting {
+   281→  id              String   @id @default(cuid())
+   282→  committeeType   String   // LASC,GoM,CabinetSubCommittee,Authority,Cabinet
+   283→  meetingNumber   String?
+   284→  meetingDate     DateTime?
+   285→  agendaNumber    String?
+   286→  venue           String?
+   287→  status          String   @default("Scheduled") // Scheduled,Completed,Cancelled
+   288→  chairPerson     String?
+   289→  resolutionNumber String?
+   290→  resolutionDate  DateTime?
+   291→  decision        String?  // Approved,Approved with Conditions,Deferred,Returned,Rejected
+   292→  conditions      String?  // JSON array
+   293→  remarks         String?
+   294→  data            String?  // JSON - type-specific data
+   295→  createdAt       DateTime @default(now())
+   296→  updatedAt       DateTime @updatedAt
+   297→}
+   298→
+   299→// ==================== GOVERNMENT ORDER ====================
+   300→
+   301→model GovernmentOrder {
+   302→  id                String   @id @default(cuid())
+   303→  goNumber          String
+   304→  goDate            DateTime?
+   305→  department        String?
+   306→  applicationId     String
+   307→  surveyNumbers     String?
+   308→  extent            Float    @default(0)
+   309→  landUse           String?
+   310→  fsiFar            Float    @default(0)
+   311→  holdingType       String?  // Leasehold,Freehold
+   312→  paymentTerms      String?  // JSON
+   313→  conditions        String?  // JSON array
+   314→  approvedInvestment Float   @default(0)
+   315→  developmentCommitments String?
+   316→  documentPath      String?
+   317→  status            String   @default("Draft")
+   318→  createdAt         DateTime @default(now())
+   319→  updatedAt         DateTime @updatedAt
+   320→  application       Application @relation(fields: [applicationId], references: [id])
+   321→}
+   322→
+   323→// ==================== LOI ====================
+   324→
+   325→model LOI {
+   326→  id                String    @id @default(cuid())
+   327→  loiNumber         String
+   328→  issueDate         DateTime  @default(now())
+   329→  expiryDate        DateTime?
+   330→  acceptanceDate    DateTime?
+   331→  applicationId     String
+   332→  landDetails       String?   // JSON
+   333→  approvedTerms     String?   // JSON
+   334→  investmentCommitment Float   @default(0)
+   335→  developmentCommitment String?
+   336→  paymentObligations String?   // JSON
+   337→  conditions        String?   // JSON array
+   338→  status            String    @default("Issued") // Issued,Accepted,Expired,Withdrawn
+   339→  createdAt         DateTime  @default(now())
+   340→  updatedAt         DateTime  @updatedAt
+   341→  application       Application @relation(fields: [applicationId], references: [id])
+   342→}
+   343→
+   344→// ==================== PAYMENT ====================
+   345→
+   346→model Payment {
+   347→  id                String   @id @default(cuid())
+   348→  applicationId     String
+   349→  paymentType       String   // Down Payment,Installment,EMD,Stamp Duty,Registration Fee,Penalty,Interest,Other
+   350→  amountDue         Float    @default(0)
+   351→  amountPaid        Float    @default(0)
+   352→  dueDate           DateTime?
+   353→  paidDate          DateTime?
+   354→  transactionRef    String?
+   355→  receiptNumber     String?
+   356→  status            String   @default("Pending") // Pending,Partially Paid,Paid,Overdue,Under Verification,Failed,Refunded,Forfeited
+   357→  penaltyAmount     Float    @default(0)
+   358→  interestAmount    Float    @default(0)
+   359→  refundAmount      Float    @default(0)
+   360→  remarks           String?
+   361→  createdAt         DateTime @default(now())
+   362→  updatedAt         DateTime @updatedAt
+   363→  application       Application @relation(fields: [applicationId], references: [id])
+   364→}
+   365→
+   366→// ==================== AGREEMENT ====================
+   367→
+   368→model Agreement {
+   369→  id                String   @id @default(cuid())
+   370→  agreementNumber   String
+   371→  agreementType     String?
+   372→  applicationId     String
+   373→  draftDate         DateTime?
+   374→  executionDate     DateTime?
+   375→  registrationDate  DateTime?
+   376→  subRegistrar      String?
+   377→  registrationOffice String?
+   378→  registrationNumber String?
+   379→  stampDuty         Float    @default(0)
+   380→  registrationFee   Float    @default(0)
+   381→  tenure            String?
+   382→  holdingType       String?  // Leasehold,Freehold
+   383→  conditions        String?  // JSON array
+   384→  status            String   @default("Draft") // Draft,Legal Review,Approved,Executed,Registered
+   385→  createdAt         DateTime @default(now())
+   386→  updatedAt         DateTime @updatedAt
+   387→  application       Application @relation(fields: [applicationId], references: [id])
+   388→}
+   389→
+   390→// ==================== POSSESSION ====================
+   391→
+   392→model Possession {
+   393→  id                 String   @id @default(cuid())
+   394→  certificateNumber   String?
+   395→  possessionDate      DateTime?
+   396→  surveyNumber       String?
+   397→  boundaries          String?  // JSON
+   398→  gisCoordinates      String?  // JSON
+   399→  handoverOfficer     String?
+   400→  investorRepresentative String?
+   401→  remarks             String?
+   402→  status              String   @default("Pending") // Pending,Handed Over,Completed
+   403→  applicationId       String
+   404→  createdAt           DateTime @default(now())
+   405→  updatedAt           DateTime @updatedAt
+   406→  application         Application @relation(fields: [applicationId], references: [id])
+   407→}
+   408→
+   409→// ==================== BUILDING PERMISSION ====================
+   410→
+   411→model BuildingPermission {
+   412→  id              String   @id @default(cuid())
+   413→  permissionNumber String?
+   414→  applicationId   String
+   415→  buildingPlans   String?  // JSON
+   416→  sitePlan        String?
+   417→  fsiFar          Float    @default(0)
+   418→  buildingHeight  Float    @default(0)
+   419→  groundCoverage  Float    @default(0)
+   420→  setbacks        String?  // JSON
+   421→  parking         String?
+   422→  nocStatus       String?  // JSON
+   423→  approvalDate    DateTime?
+   424→  conditions      String?  // JSON array
+   425→  status          String   @default("Applied") // Applied,Under Scrutiny,Query Raised,Approved,Rejected,Permission Issued
+   426→  createdAt       DateTime @default(now())
+   427→  updatedAt       DateTime @updatedAt
+   428→  application     Application @relation(fields: [applicationId], references: [id])
+   429→}
+   430→
+   431→// ==================== CONSTRUCTION MONITORING ====================
+   432→
+   433→model ConstructionProject {
+   434→  id                 String           @id @default(cuid())
+   435→  applicationId      String
+   436→  plannedStartDate   DateTime?
+   437→  actualStartDate    DateTime?
+   438→  plannedEndDate     DateTime?
+   439→  actualEndDate      DateTime?
+   440→  physicalProgress   Float            @default(0)
+   441→  financialProgress  Float            @default(0)
+   442→  status             String           @default("Not Started") // Not Started,In Progress,Delayed,On Hold,Completed
+   443→  remarks            String?
+   444→  milestones         String?          // JSON array
+   445→  progressUpdates    ProgressUpdate[]
+   446→  createdAt          DateTime         @default(now())
+   447→  updatedAt          DateTime         @updatedAt
+   448→  application        Application @relation(fields: [applicationId], references: [id])
+   449→}
+   450→
+   451→model ProgressUpdate {
+   452→  id                    String              @id @default(cuid())
+   453→  constructionProjectId String
+   454→  updateDate            DateTime            @default(now())
+   455→  physicalProgress      Float               @default(0)
+   456→  financialProgress     Float               @default(0)
+   457→  milestonesCompleted   String?             // JSON array
+   458→  delays                String?             // JSON
+   459→  deviations            String?             // JSON
+   460→  remarks               String?
+   461→  photos                String?             // JSON array of URLs
+   462→  reportedById          String?
+   463→  createdAt             DateTime            @default(now())
+   464→  updatedAt             DateTime            @updatedAt
+   465→  constructionProject    ConstructionProject @relation(fields: [constructionProjectId], references: [id])
+   466→  reportedBy            User?               @relation("ProgressReporter", fields: [reportedById], references: [id])
+   467→}
+   468→
+   469→// ==================== COMPLIANCE ====================
+   470→
+   471→model ComplianceRecord {
+   472→  id                   String   @id @default(cuid())
+   473→  applicationId        String
+   474→  commencementDeadline DateTime?
+   475→  completionDeadline   DateTime?
+   476→  lastInspectionDate   DateTime?
+   477→  nextInspectionDate   DateTime?
+   478→  conditionsCompliant  Boolean  @default(false)
+   479→  utilizationStatus    String   @default("Pending") // Compliant,At Risk,Delayed,Non-Compliant,Notice Issued,Cure Period,Cancellation Recommended,Completed
+   480→  annualCertificate    String?
+   481→  remarks              String?
+   482→  createdAt            DateTime @default(now())
+   483→  updatedAt            DateTime @updatedAt
+   484→  application          Application @relation(fields: [applicationId], references: [id])
+   485→}
+   486→
+   487→// ==================== GRIEVANCE ====================
+   488→
+   489→model Grievance {
+   490→  id             String   @id @default(cuid())
+   491→  grievanceNumber String   @unique
+   492→  applicantId     String?
+   493→  applicationId   String?
+   494→  stage           String?
+   495→  category        String?
+   496→  description     String
+   497→  status          String   @default("Open") // Open,In Progress,Resolved,Rejected,Appealed,Closed
+   498→  assignedToId    String?
+   499→  slaDays         Int      @default(7)
+   500→  response        String?
+   501→  decision        String?
+   502→  submittedAt     DateTime @default(now())
+   503→  resolvedAt      DateTime?
+   504→  createdAt       DateTime @default(now())
+   505→  updatedAt       DateTime @updatedAt
+   506→  applicant       Applicant? @relation(fields: [applicantId], references: [id])
+   507→  application     Application? @relation(fields: [applicationId], references: [id])
+   508→  assignedTo      User?      @relation("GrievanceOfficer", fields: [assignedToId], references: [id])
+   509→}
+   510→
+   511→// ==================== CANCELLATION ====================
+   512→
+   513→model CancellationCase {
+   514→  id                String   @id @default(cuid())
+   515→  caseNumber        String
+   516→  applicationId     String
+   517→  initiatedBy       String   // Investor,APCRDA
+   518→  reason            String?
+   519→  noticeDate        DateTime?
+   520→  responseDate      DateTime?
+   521→  hearingDate       DateTime?
+   522→  decision          String?  // Cancelled,Resumed,Withdrawn,Dismissed
+   523→  decisionDate      DateTime?
+   524→  financialSettlement String?
+   525→  refundAmount      Float    @default(0)
+   526→  forfeitureAmount  Float    @default(0)
+   527→  remarks           String?
+   528→  status            String   @default("Notice Issued") // Notice Issued,Under Review,Decision Made,Completed
+   529→  createdAt         DateTime @default(now())
+   530→  updatedAt         DateTime @updatedAt
+   531→  application       Application @relation(fields: [applicationId], references: [id])
+   532→}
+   533→
+   534→// ==================== DOCUMENT ====================
+   535→
+   536→model Document {
+   537→  id             String   @id @default(cuid())
+   538→  fileName       String
+   539→  fileType       String?
+   540→  fileSize       Int      @default(0)
+   541→  category       String?
+   542→  subCategory    String?
+   543→  filePath       String?
+   544→  uploadedById   String?
+   545→  applicationId  String?
+   546→  landParcelId   String?
+   547→  dprVersionId   String?
+   548→  isMandatory    Boolean  @default(false)
+   549→  verificationStatus String @default("Pending") // Pending,Verified,Rejected
+   550→  verifiedById   String?
+   551→  verifiedAt     DateTime?
+   552→  version        Int      @default(1)
+   553→  expiryDate     DateTime?
+   554→  remarks        String?
+   555→  createdAt      DateTime @default(now())
+   556→  updatedAt      DateTime @updatedAt
+   557→  application    Application?  @relation(fields: [applicationId], references: [id])
+   558→  landParcel     LandParcel?  @relation(fields: [landParcelId], references: [id])
+   559→  dprVersion     DPRVersion?  @relation(fields: [dprVersionId], references: [id])
+   560→  uploadedBy     User?        @relation("DocUploader", fields: [uploadedById], references: [id])
+   561→  verifiedBy     User?        @relation("DocVerifier", fields: [verifiedById], references: [id])
+   562→}
+   563→
+   564→// ==================== NOTIFICATION ====================
+   565→
+   566→model Notification {
+   567→  id             String   @id @default(cuid())
+   568→  userId         String?
+   569→  type           String   // Task Assigned,Approval Required,Query Raised,Payment Due,SLA Warning,SLA Breached,LOI Expiring,Construction Delayed,Compliance Issue,Grievance Update
+   570→  title          String
+   571→  message        String
+   572→  referenceId    String?  // applicationId, grievanceId, etc.
+   573→  referenceType  String?  // Application,Grievance,Payment,etc.
+   574→  isRead         Boolean  @default(false)
+   575→  createdAt      DateTime @default(now())
+   576→  user           User?    @relation("UserNotifications", fields: [userId], references: [id])
+   577→}
+   578→
+   579→// ==================== AUDIT LOG ====================
+   580→
+   581→model AuditLog {
+   582→  id         String   @id @default(cuid())
+   583→  userId     String?
+   584→  user       User?    @relation(fields: [userId], references: [id])
+   585→  userName   String?
+   586→  role       String?
+   587→  action     String   // CREATE,READ,UPDATE,DELETE,APPROVE,REJECT,LOGIN,LOGOUT,etc.
+   588→  module     String?
+   589→  recordId   String?
+   590→  oldValues  String?  // JSON
+   591→  newValues  String?  // JSON
+   592→  remarks    String?
+   593→  ipAddress  String?
+   594→  createdAt  DateTime @default(now())
+   595→}
+   596→
+   597→// ==================== SYSTEM SETTINGS ====================
+   598→
+   599→model SystemSetting {
+   600→  id        String   @id @default(cuid())
+   601→  key       String   @unique
+   602→  value     String?  // JSON string for complex values
+   603→  category  String?  // Workflow,Finance,SLA,Document,Notification,Master
+   604→  label     String?
+   605→  createdAt DateTime @default(now())
+   606→  updatedAt DateTime @updatedAt
+   607→}
+   608→
+   609→// ==================== WORKFLOW CONFIG ====================
+   610→
+   611→model WorkflowConfig {
+   612→  id              String   @id @default(cuid())
+   613→  stageName       String   @unique
+   614→  stageOrder      Int      @unique
+   615→  ownerRole       String?
+   616→  slaDays         Int      @default(7)
+   617→  entryConditions String?  // JSON
+   618→  exitConditions  String?  // JSON
+   619→  decisionOptions String?  // JSON array
+   620→  nextStages      String?  // JSON array of stage names
+   621→  conditionalNext  String?  // JSON {condition, trueStage, falseStage}
+   622→  isOptional      Boolean  @default(false)
+   623→  isActive        Boolean  @default(true)
+   624→  createdAt       DateTime @default(now())
+   625→  updatedAt       DateTime @updatedAt
+   626→}
+   627→
+   628→// ==================== USER ====================
+   629→
+   630→model User {
+   631→  id               String         @id @default(cuid())
+   632→  email            String         @unique
+   633→  password         String
+   634→  name             String
+   635→  roleId           String
+   636→  departmentId     String?
+   637→  designation      String?
+   638→  phone            String?
+   639→  avatar           String?
+   640→  employeeId       String?
+   641→  isActive         Boolean        @default(true)
+   642→  lastLogin        DateTime?
+   643→  failedAttempts   Int            @default(0)
+   644→  isLocked         Boolean        @default(false)
+   645→  createdAt        DateTime       @default(now())
+   646→  updatedAt        DateTime       @updatedAt
+   647→  role             Role           @relation(fields: [roleId], references: [id])
+   648→  department       Department?    @relation(fields: [departmentId], references: [id])
+   649→  applicant        Applicant?
+   650→  sessions         Session[]
+   651→  applicationsAssigned Application[] @relation("AssignedOfficer")
+   652→  stagesAssigned   ApplicationStage[] @relation("StageAssignedTo")
+   653→  dprReviews       DPRVersion[]   @relation("DPRReviewer")
+   654→  queriesRaised    DPRQuery[]     @relation("QueryRaisedBy")
+   655→  economicReviewsAssigned EconomicReview[] @relation("EcoReviewer")
+   656→  documentsUploaded Document[]     @relation("DocUploader")
+   657→  documentsVerified Document[]     @relation("DocVerifier")
+   658→  progressReported ProgressUpdate[] @relation("ProgressReporter")
+   659→  grievancesAssigned Grievance[]  @relation("GrievanceOfficer")
+   660→  notifications     Notification[] @relation("UserNotifications")
+   661→  auditLogs        AuditLog[]
+   662→}
+   663→
+   664→// ==================== SESSION ====================
+   665→
+   666→model Session {
+   667→  id        String   @id @default(cuid())
+   668→  token     String   @unique
+   669→  userId    String
+   670→  ipAddress String?
+   671→  userAgent String?
+   672→  expiresAt DateTime
+   673→  createdAt DateTime @default(now())
+   674→  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+   675→}
+   676→

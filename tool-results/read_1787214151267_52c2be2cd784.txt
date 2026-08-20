@@ -1,0 +1,479 @@
+     1→import { PrismaClient } from '@prisma/client';
+     2→
+     3→const db = new PrismaClient({ log: [] });
+     4→
+     5→// Pre-computed bcrypt hash for 'Admin@12345' (12 rounds)
+     6→const PWD_HASH = '$2b$12$FobY7wlA2K6HWVErFj1kwuZ6hkUOrVVCcUWcQ.lB4U5HQHqwI/M4u';
+     7→
+     8→async function main() {
+     9→  console.log('Seeding database...');
+    10→
+    11→  // ============ ROLES ============
+    12→  const superAdminPerms = JSON.stringify(['*']);
+    13→  const landsPerms = JSON.stringify(['land:view','land:create','land:edit','application:view','application:review','application:approve','eligibility:review','eligibility:approve','possession:manage']);
+    14→  const techPerms = JSON.stringify(['dpr:view','dpr:review','dpr:approve','application:view','document:view','document:upload']);
+    15→  const financePerms = JSON.stringify(['payment:view','payment:manage','payment:approve','refund:manage','penalty:manage','report:finance']);
+    16→  const monitoringPerms = JSON.stringify(['construction:view','construction:update','compliance:view','compliance:manage','report:construction']);
+    17→  const grievancePerms = JSON.stringify(['grievance:view','grievance:manage','grievance:resolve','appeal:view','appeal:manage']);
+    18→  const investorPerms = JSON.stringify(['application:create','application:view:own','document:upload:own','payment:view:own','grievance:create:own']);
+    19→  const publicPerms = JSON.stringify(['land:view:published','public:info']);
+    20→
+    21→  const roles = await Promise.all([
+    22→    db.role.upsert({ where: { name: 'Super Admin' }, update: {}, create: { name: 'Super Admin', description: 'Full system access', permissions: superAdminPerms, isSystem: true } }),
+    23→    db.role.upsert({ where: { name: 'System Administrator' }, update: {}, create: { name: 'System Administrator', description: 'Users, roles, settings', permissions: JSON.stringify(['user:manage','role:manage','settings:manage','workflow:configure']), isSystem: true } }),
+    24→    db.role.upsert({ where: { name: 'APCRDA Lands Officer' }, update: {}, create: { name: 'APCRDA Lands Officer', description: 'Land inventory, eligibility, allotment, possession', permissions: landsPerms, isSystem: true } }),
+    25→    db.role.upsert({ where: { name: 'Planning Officer' }, update: {}, create: { name: 'Planning Officer', description: 'Land use, planning, FSI/FAR, building approvals', permissions: JSON.stringify(['land:view','land:edit','planning:manage','building:view','building:approve']), isSystem: true } }),
+    26→    db.role.upsert({ where: { name: 'Technical Reviewer' }, update: {}, create: { name: 'Technical Reviewer', description: 'DPR and technical review', permissions: techPerms, isSystem: true } }),
+    27→    db.role.upsert({ where: { name: 'Economic Development Officer' }, update: {}, create: { name: 'Economic Development Officer', description: 'Economic scoring and development review', permissions: JSON.stringify(['economic:view','economic:review','economic:approve','application:view']), isSystem: true } }),
+    28→    db.role.upsert({ where: { name: 'LASC Member' }, update: {}, create: { name: 'LASC Member', description: 'LASC cases and recommendations', permissions: JSON.stringify(['lasc:view','lasc:review','lasc:recommend','application:view']), isSystem: true } }),
+    29→    db.role.upsert({ where: { name: 'GoM Secretariat' }, update: {}, create: { name: 'GoM Secretariat', description: 'GoM proposals', permissions: JSON.stringify(['gom:view','gom:review','gom:recommend']), isSystem: true } }),
+    30→    db.role.upsert({ where: { name: 'Cabinet Sub-Committee Secretariat' }, update: {}, create: { name: 'Cabinet Sub-Committee Secretariat', description: 'Cabinet sub-committee workflow', permissions: JSON.stringify(['cabinet:view','cabinet:review','cabinet:recommend']), isSystem: true } }),
+    31→    db.role.upsert({ where: { name: 'Authority Secretariat' }, update: {}, create: { name: 'Authority Secretariat', description: 'Authority approvals', permissions: JSON.stringify(['authority:view','authority:review','authority:approve']), isSystem: true } }),
+    32→    db.role.upsert({ where: { name: 'Finance Officer' }, update: {}, create: { name: 'Finance Officer', description: 'Payments, dues, refunds, penalties', permissions: financePerms, isSystem: true } }),
+    33→    db.role.upsert({ where: { name: 'Legal Officer' }, update: {}, create: { name: 'Legal Officer', description: 'Legal review, agreement, registration', permissions: JSON.stringify(['legal:view','legal:review','agreement:view','agreement:approve']), isSystem: true } }),
+    34→    db.role.upsert({ where: { name: 'Monitoring Officer' }, update: {}, create: { name: 'Monitoring Officer', description: 'Construction and compliance', permissions: monitoringPerms, isSystem: true } }),
+    35→    db.role.upsert({ where: { name: 'Grievance Officer' }, update: {}, create: { name: 'Grievance Officer', description: 'Grievances and appeals', permissions: grievancePerms, isSystem: true } }),
+    36→    db.role.upsert({ where: { name: 'Auditor' }, update: {}, create: { name: 'Auditor', description: 'Read-only access + audit reports', permissions: JSON.stringify(['audit:view','report:view','application:view']), isSystem: true } }),
+    37→    db.role.upsert({ where: { name: 'Investor' }, update: {}, create: { name: 'Investor', description: 'Own applications only', permissions: investorPerms, isSystem: true } }),
+    38→    db.role.upsert({ where: { name: 'Public User' }, update: {}, create: { name: 'Public User', description: 'Published information only', permissions: publicPerms, isSystem: true } }),
+    39→  ]);
+    40→
+    41→  const roleMap: Record<string, string> = {};
+    42→  roles.forEach(r => { roleMap[r.name] = r.id; });
+    43→
+    44→  // ============ DEPARTMENTS ============
+    45→  const depts = await Promise.all([
+    46→    db.department.upsert({ where: { code: 'ADMIN' }, update: {}, create: { name: 'Administration', code: 'ADMIN' } }),
+    47→    db.department.upsert({ where: { code: 'LANDS' }, update: {}, create: { name: 'Lands & Survey', code: 'LANDS' } }),
+    48→    db.department.upsert({ where: { code: 'PLANNING' }, update: {}, create: { name: 'Town Planning', code: 'PLANNING' } }),
+    49→    db.department.upsert({ where: { code: 'TECHNICAL' }, update: {}, create: { name: 'Technical Review', code: 'TECHNICAL' } }),
+    50→    db.department.upsert({ where: { code: 'FINANCE' }, update: {}, create: { name: 'Finance & Accounts', code: 'FINANCE' } }),
+    51→    db.department.upsert({ where: { code: 'LEGAL' }, update: {}, create: { name: 'Legal', code: 'LEGAL' } }),
+    52→    db.department.upsert({ where: { code: 'MONITORING' }, update: {}, create: { name: 'Monitoring & Compliance', code: 'MONITORING' } }),
+    53→    db.department.upsert({ where: { code: 'GRIEVANCE' }, update: {}, create: { name: 'Grievance Cell', code: 'GRIEVANCE' } }),
+    54→    db.department.upsert({ where: { code: 'ED' }, update: {}, create: { name: 'Economic Development', code: 'ED' } }),
+    55→  ]);
+    56→  const deptMap: Record<string, string> = {};
+    57→  depts.forEach(d => { deptMap[d.code] = d.id; });
+    58→
+    59→  // ============ ZONES ============
+    60→  const zones = await Promise.all([
+    61→    db.zone.upsert({ where: { code: 'Z1' }, update: {}, create: { name: 'Core Capital Zone', code: 'Z1', description: 'Primary government and institutional area' } }),
+    62→    db.zone.upsert({ where: { code: 'Z2' }, update: {}, create: { name: 'Business District', code: 'Z2', description: 'Central business and commercial hub' } }),
+    63→    db.zone.upsert({ where: { code: 'Z3' }, update: {}, create: { name: 'Knowledge City', code: 'Z3', description: 'Education, IT, and research institutions' } }),
+    64→    db.zone.upsert({ where: { code: 'Z4' }, update: {}, create: { name: 'Industrial Zone', code: 'Z4', description: 'Manufacturing and industrial development' } }),
+    65→    db.zone.upsert({ where: { code: 'Z5' }, update: {}, create: { name: 'Residential Zone', code: 'Z5', description: 'High-density residential development' } }),
+    66→  ]);
+    67→  const zoneMap: Record<string, string> = {};
+    68→  zones.forEach(z => { zoneMap[z.code] = z.id; });
+    69→
+    70→  // ============ LAND USES ============
+    71→  const landUses = await Promise.all([
+    72→    db.landUse.upsert({ where: { code: 'COMM' }, update: {}, create: { name: 'Commercial', code: 'COMM' } }),
+    73→    db.landUse.upsert({ where: { code: 'RESI' }, update: {}, create: { name: 'Residential', code: 'RESI' } }),
+    74→    db.landUse.upsert({ where: { code: 'MIXED' }, update: {}, create: { name: 'Mixed Use', code: 'MIXED' } }),
+    75→    db.landUse.upsert({ where: { code: 'INDUS' }, update: {}, create: { name: 'Industrial', code: 'INDUS' } }),
+    76→    db.landUse.upsert({ where: { code: 'INST' }, update: {}, create: { name: 'Institutional', code: 'INST' } }),
+    77→    db.landUse.upsert({ where: { code: 'IT' }, update: {}, create: { name: 'IT/ITES', code: 'IT' } }),
+    78→    db.landUse.upsert({ where: { code: 'HOSP' }, update: {}, create: { name: 'Hospitality', code: 'HOSP' } }),
+    79→    db.landUse.upsert({ where: { code: 'HEALTH' }, update: {}, create: { name: 'Healthcare', code: 'HEALTH' } }),
+    80→  ]);
+    81→  const luMap: Record<string, string> = {};
+    82→  landUses.forEach(l => { luMap[l.code] = l.id; });
+    83→
+    84→  // ============ ALLOTMENT MODES ============
+    85→  const modes = await Promise.all([
+    86→    db.allotmentMode.upsert({ where: { code: 'NOM' }, update: {}, create: { name: 'Nomination / Suo Moto', code: 'NOM' } }),
+    87→    db.allotmentMode.upsert({ where: { code: 'QBS' }, update: {}, create: { name: 'Quality-Based Selection', code: 'QBS' } }),
+    88→    db.allotmentMode.upsert({ where: { code: 'QCPS' }, update: {}, create: { name: 'Quality-cum-Price Selection', code: 'QCPS' } }),
+    89→    db.allotmentMode.upsert({ where: { code: 'ETENDER' }, update: {}, create: { name: 'Public Tender / e-Tender', code: 'ETENDER' } }),
+    90→    db.allotmentMode.upsert({ where: { code: 'EAUCTION' }, update: {}, create: { name: 'Public Auction / e-Auction', code: 'EAUCTION' } }),
+    91→    db.allotmentMode.upsert({ where: { code: 'DRAW' }, update: {}, create: { name: 'Randomized Selection / Draw of Lots', code: 'DRAW' } }),
+    92→  ]);
+    93→  const modeMap: Record<string, string> = {};
+    94→  modes.forEach(m => { modeMap[m.code] = m.id; });
+    95→
+    96→  // ============ SECTORS ============
+    97→  const sectors = ['IT & ITES', 'Real Estate', 'Healthcare', 'Education', 'Hospitality & Tourism', 'Manufacturing', 'Financial Services', 'Retail', 'Logistics', 'Energy', 'Agriculture', 'Media & Entertainment'];
+    98→  await Promise.all(sectors.map((s, i) =>
+    99→    db.sector.upsert({ where: { code: `SEC${i + 1}` }, update: {}, create: { name: s, code: `SEC${i + 1}`, priority: i + 1 } })
+   100→  ));
+   101→
+   102→  // ============ USERS ============
+   103→  const pwd = PWD_HASH;
+   104→  const users = await Promise.all([
+   105→    db.user.upsert({ where: { email: 'admin@amaravati-demo.gov.in' }, update: {}, create: { email: 'admin@amaravati-demo.gov.in', password: pwd, name: 'R. Venkateshwara Rao', roleId: roleMap['Super Admin'], departmentId: deptMap['ADMIN'], designation: 'Commissioner', phone: '+91-9876543210', isActive: true } }),
+   106→    db.user.upsert({ where: { email: 'lands@amaravati-demo.gov.in' }, update: {}, create: { email: 'lands@amaravati-demo.gov.in', password: pwd, name: 'S. Lakshmi Devi', roleId: roleMap['APCRDA Lands Officer'], departmentId: deptMap['LANDS'], designation: 'Deputy Commissioner', phone: '+91-9876543211' } }),
+   107→    db.user.upsert({ where: { email: 'technical@amaravati-demo.gov.in' }, update: {}, create: { email: 'technical@amaravati-demo.gov.in', password: pwd, name: 'M. Suresh Babu', roleId: roleMap['Technical Reviewer'], departmentId: deptMap['TECHNICAL'], designation: 'Chief Engineer', phone: '+91-9876543212' } }),
+   108→    db.user.upsert({ where: { email: 'finance@amaravati-demo.gov.in' }, update: {}, create: { email: 'finance@amaravati-demo.gov.in', password: pwd, name: 'K. Padmavathi', roleId: roleMap['Finance Officer'], departmentId: deptMap['FINANCE'], designation: 'Finance Controller', phone: '+91-9876543213' } }),
+   109→    db.user.upsert({ where: { email: 'monitoring@amaravati-demo.gov.in' }, update: {}, create: { email: 'monitoring@amaravati-demo.gov.in', password: pwd, name: 'P. Ravi Kumar', roleId: roleMap['Monitoring Officer'], departmentId: deptMap['MONITORING'], designation: 'Director', phone: '+91-9876543214' } }),
+   110→    db.user.upsert({ where: { email: 'grievance@amaravati-demo.gov.in' }, update: {}, create: { email: 'grievance@amaravati-demo.gov.in', password: pwd, name: 'A. Nagendra', roleId: roleMap['Grievance Officer'], departmentId: deptMap['GRIEVANCE'], designation: 'Grievance Officer', phone: '+91-9876543215' } }),
+   111→    db.user.upsert({ where: { email: 'investor@amaravati-demo.in' }, update: {}, create: { email: 'investor@amaravati-demo.in', password: pwd, name: 'D. Ramachandra Reddy', roleId: roleMap['Investor'], designation: 'Director', phone: '+91-9876543216' } }),
+   112→  ]);
+   113→  const userMap: Record<string, string> = {};
+   114→  users.forEach(u => { userMap[u.email] = u.id; });
+   115→
+   116→  // ============ WORKFLOW CONFIG ============
+   117→  const workflowStages = [
+   118→    { stageName: 'Application', stageOrder: 1, ownerRole: 'Investor', slaDays: 3, nextStages: '[]' },
+   119→    { stageName: 'Eligibility', stageOrder: 2, ownerRole: 'APCRDA Lands Officer', slaDays: 7, nextStages: '["DPR Review"]' },
+   120→    { stageName: 'DPR Review', stageOrder: 3, ownerRole: 'Technical Reviewer', slaDays: 14, nextStages: '["Economic Review"]' },
+   121→    { stageName: 'Economic Review', stageOrder: 4, ownerRole: 'Economic Development Officer', slaDays: 10, nextStages: '["LASC"]' },
+   122→    { stageName: 'LASC', stageOrder: 5, ownerRole: 'LASC Member', slaDays: 21, nextStages: '["GoM"]' },
+   123→    { stageName: 'GoM', stageOrder: 6, ownerRole: 'GoM Secretariat', slaDays: 14, nextStages: '["Cabinet Sub-Committee","Authority Approval"]' },
+   124→    { stageName: 'Cabinet Sub-Committee', stageOrder: 7, ownerRole: 'Cabinet Sub-Committee Secretariat', slaDays: 14, isOptional: true, nextStages: '["Authority Approval"]' },
+   125→    { stageName: 'Authority Approval', stageOrder: 8, ownerRole: 'Authority Secretariat', slaDays: 14, nextStages: '["Cabinet Approval","Government Order"]' },
+   126→    { stageName: 'Cabinet Approval', stageOrder: 9, ownerRole: 'Cabinet Sub-Committee Secretariat', slaDays: 21, isOptional: true, nextStages: '["Government Order"]' },
+   127→    { stageName: 'Government Order', stageOrder: 10, ownerRole: 'Legal Officer', slaDays: 10, nextStages: '["LOI"]' },
+   128→    { stageName: 'LOI', stageOrder: 11, ownerRole: 'APCRDA Lands Officer', slaDays: 7, nextStages: '["Payment"]' },
+   129→    { stageName: 'Payment', stageOrder: 12, ownerRole: 'Finance Officer', slaDays: 14, nextStages: '["Revised DPR"]' },
+   130→    { stageName: 'Revised DPR', stageOrder: 13, ownerRole: 'Technical Reviewer', slaDays: 14, nextStages: '["Agreement"]' },
+   131→    { stageName: 'Agreement', stageOrder: 14, ownerRole: 'Legal Officer', slaDays: 14, nextStages: '["Possession"]' },
+   132→    { stageName: 'Possession', stageOrder: 15, ownerRole: 'APCRDA Lands Officer', slaDays: 7, nextStages: '["Building Permission"]' },
+   133→    { stageName: 'Building Permission', stageOrder: 16, ownerRole: 'Planning Officer', slaDays: 21, nextStages: '["Construction"]' },
+   134→    { stageName: 'Construction', stageOrder: 17, ownerRole: 'Monitoring Officer', slaDays: 365, nextStages: '["Compliance"]' },
+   135→    { stageName: 'Compliance', stageOrder: 18, ownerRole: 'Monitoring Officer', slaDays: 365, nextStages: '[]' },
+   136→  ];
+   137→  await Promise.all(workflowStages.map(s =>
+   138→    db.workflowConfig.upsert({ where: { stageName: s.stageName }, update: {}, create: {
+   139→      stageName: s.stageName, stageOrder: s.stageOrder, ownerRole: s.ownerRole,
+   140→      slaDays: s.slaDays, isOptional: s.isOptional || false,
+   141→      nextStages: s.nextStages,
+   142→      decisionOptions: '["Proceed","Proceed with Conditions","Return","Reject","Defer"]',
+   143→    } })
+   144→  ));
+   145→
+   146→  // ============ SYSTEM SETTINGS ============
+   147→  const settings = [
+   148→    { key: 'cabinet_approval_rules', value: JSON.stringify({ acreage_threshold: 10, land_value_threshold: 500000000, concessional_rate: true, sensitive_categories: ['Religious', 'Forest', 'Water Body'] }), category: 'Workflow', label: 'Cabinet Approval Decision Rules' },
+   149→    { key: 'penalty_rate', value: '0.02', category: 'Finance', label: 'Penalty Interest Rate (%)' },
+   150→    { key: 'loi_validity_days', value: '90', category: 'Workflow', label: 'LOI Validity (days)' },
+   151→    { key: 'application_fee', value: '10000', category: 'Finance', label: 'Application Fee (INR)' },
+   152→    { key: 'emd_percentage', value: '5', category: 'Finance', label: 'EMD Percentage (%)' },
+   153→  ];
+   154→  await Promise.all(settings.map(s =>
+   155→    db.systemSetting.upsert({ where: { key: s.key }, update: {}, create: s })
+   156→  ));
+   157→
+   158→  // ============ LAND PARCELS (25) ============
+   159→  const parcelData = [
+   160→    { plotId: 'APCRDA-P-001', survey: 'SV/45/1', zone: 'Z1', lu: 'COMM', extent: 2.5, price: 125000000, fsi: 3.5, theme: 'Finance City', status: 'Allotted' },
+   161→    { plotId: 'APCRDA-P-002', survey: 'SV/45/2', zone: 'Z1', lu: 'INST', extent: 5.0, price: 150000000, fsi: 2.5, theme: 'Justice City', status: 'Allotted' },
+   162→    { plotId: 'APCRDA-P-003', survey: 'SV/46/1', zone: 'Z2', lu: 'COMM', extent: 3.0, price: 180000000, fsi: 4.0, theme: 'Business Hub', status: 'Under Application' },
+   163→    { plotId: 'APCRDA-P-004', survey: 'SV/46/2', zone: 'Z2', lu: 'MIXED', extent: 4.5, price: 225000000, fsi: 3.5, theme: 'Business Hub', status: 'Published' },
+   164→    { plotId: 'APCRDA-P-005', survey: 'SV/47/1', zone: 'Z2', lu: 'HOSP', extent: 2.0, price: 100000000, fsi: 3.0, theme: 'Hospitality District', status: 'Published' },
+   165→    { plotId: 'APCRDA-P-006', survey: 'SV/47/2', zone: 'Z3', lu: 'IT', extent: 6.0, price: 180000000, fsi: 3.5, theme: 'Knowledge City', status: 'Allotted' },
+   166→    { plotId: 'APCRDA-P-007', survey: 'SV/48/1', zone: 'Z3', lu: 'IT', extent: 8.0, price: 240000000, fsi: 4.0, theme: 'Knowledge City', status: 'Published' },
+   167→    { plotId: 'APCRDA-P-008', survey: 'SV/48/2', zone: 'Z3', lu: 'INST', extent: 10.0, price: 200000000, fsi: 2.0, theme: 'Education Hub', status: 'Published' },
+   168→    { plotId: 'APCRDA-P-009', survey: 'SV/49/1', zone: 'Z4', lu: 'INDUS', extent: 15.0, price: 300000000, fsi: 1.5, theme: 'Industrial Park', status: 'Published' },
+   169→    { plotId: 'APCRDA-P-010', survey: 'SV/49/2', zone: 'Z4', lu: 'INDUS', extent: 12.0, price: 240000000, fsi: 1.5, theme: 'Industrial Park', status: 'Under Application' },
+   170→    { plotId: 'APCRDA-P-011', survey: 'SV/50/1', zone: 'Z4', lu: 'INDUS', extent: 20.0, price: 400000000, fsi: 1.5, theme: 'Mega Industrial Zone', status: 'Published' },
+   171→    { plotId: 'APCRDA-P-012', survey: 'SV/50/2', zone: 'Z5', lu: 'RESI', extent: 1.5, price: 75000000, fsi: 3.0, theme: 'Residential District', status: 'Allotted' },
+   172→    { plotId: 'APCRDA-P-013', survey: 'SV/51/1', zone: 'Z5', lu: 'RESI', extent: 2.0, price: 100000000, fsi: 3.0, theme: 'Residential District', status: 'Published' },
+   173→    { plotId: 'APCRDA-P-014', survey: 'SV/51/2', zone: 'Z5', lu: 'MIXED', extent: 3.0, price: 150000000, fsi: 3.5, theme: 'Mixed Use District', status: 'Published' },
+   174→    { plotId: 'APCRDA-P-015', survey: 'SV/52/1', zone: 'Z1', lu: 'COMM', extent: 4.0, price: 200000000, fsi: 4.0, theme: 'Finance City', status: 'Reserved' },
+   175→    { plotId: 'APCRDA-P-016', survey: 'SV/52/2', zone: 'Z2', lu: 'COMM', extent: 5.0, price: 250000000, fsi: 4.5, theme: 'CBD Extension', status: 'Published' },
+   176→    { plotId: 'APCRDA-P-017', survey: 'SV/53/1', zone: 'Z3', lu: 'HEALTH', extent: 7.0, price: 210000000, fsi: 2.5, theme: 'Health City', status: 'Published' },
+   177→    { plotId: 'APCRDA-P-018', survey: 'SV/53/2', zone: 'Z2', lu: 'MIXED', extent: 3.5, price: 175000000, fsi: 3.5, theme: 'Business Hub', status: 'Under Application' },
+   178→    { plotId: 'APCRDA-P-019', survey: 'SV/54/1', zone: 'Z4', lu: 'INDUS', extent: 25.0, price: 500000000, fsi: 1.5, theme: 'Mega Industrial Zone', status: 'Published' },
+   179→    { plotId: 'APCRDA-P-020', survey: 'SV/54/2', zone: 'Z3', lu: 'IT', extent: 10.0, price: 300000000, fsi: 4.0, theme: 'IT Corridor', status: 'Allotted' },
+   180→    { plotId: 'APCRDA-P-021', survey: 'SV/55/1', zone: 'Z5', lu: 'RESI', extent: 1.0, price: 50000000, fsi: 3.0, theme: 'Residential District', status: 'Published' },
+   181→    { plotId: 'APCRDA-P-022', survey: 'SV/55/2', zone: 'Z1', lu: 'INST', extent: 8.0, price: 160000000, fsi: 2.0, theme: 'Admin Campus', status: 'Allotted' },
+   182→    { plotId: 'APCRDA-P-023', survey: 'SV/56/1', zone: 'Z2', lu: 'COMM', extent: 6.0, price: 300000000, fsi: 4.0, theme: 'Convention District', status: 'On Hold' },
+   183→    { plotId: 'APCRDA-P-024', survey: 'SV/56/2', zone: 'Z3', lu: 'IT', extent: 5.0, price: 150000000, fsi: 3.5, theme: 'Start-up Park', status: 'Published' },
+   184→    { plotId: 'APCRDA-P-025', survey: 'SV/57/1', zone: 'Z4', lu: 'INDUS', extent: 18.0, price: 360000000, fsi: 1.5, theme: 'Manufacturing Hub', status: 'Published' },
+   185→  ];
+   186→
+   187→  const parcels = await Promise.all(parcelData.map(p =>
+   188→    db.landParcel.create({
+   189→      data: {
+   190→        plotId: p.plotId, surveyNumber: p.survey, zoneId: zoneMap[p.zone],
+   191→        landUseId: luMap[p.lu], extentAcres: p.extent, reservePrice: p.price,
+   192→        fsiFar: p.fsi, themeCity: p.theme, status: p.status,
+   193→        gisCoordinates: JSON.stringify({ lat: 16.5 + Math.random() * 0.1, lng: 80.5 + Math.random() * 0.1 }),
+   194→        allotmentModeId: p.status === 'Allotted' ? modeMap['NOM'] : (p.status === 'Under Application' ? modeMap['QBS'] : null),
+   195→      }
+   196→    })
+   197→  ));
+   198→  const parcelMap: Record<string, string> = {};
+   199→  parcels.forEach(p => { parcelMap[p.plotId] = p.id; });
+   200→
+   201→  // ============ APPLICANTS (15) ============
+   202→  const applicantData = [
+   203→    { org: 'Sri Venkateswara Real Estates Pvt Ltd', type: 'Private Limited Company', pan: 'AABCS1234K', gst: '37AABCS1234K1ZG', regNo: 'CIN-U45200AP2020PTC123456', addr: 'Road No. 5, Banjara Hills, Hyderabad', person: 'D. Ramachandra Reddy', phone: '+91-9876543201', email: 'ram@svre.in', networth: 500000000, exp: '15 years in real estate development' },
+   204→    { org: 'Amaravati Tech Park LLP', type: 'LLP', pan: 'AABCT5678L', gst: '37AABCT5678L1ZG', regNo: 'LLPIN-AAB-5678', addr: 'HITEC City, Madhapur, Hyderabad', person: 'V. Krishnam Raju', phone: '+91-9876543202', email: 'kr@atpllp.in', networth: 1000000000, exp: '20 years in IT infrastructure' },
+   205→    { org: 'KBR Healthcare Solutions', type: 'Private Limited Company', pan: 'AABCH9012M', gst: '37AABCH9012M1ZG', regNo: 'CIN-U85110AP2019PTC234567', addr: 'Jubilee Hills, Hyderabad', person: 'K. Bhaskar Rao', phone: '+91-9876543203', email: 'bhaskar@kbrhealth.in', networth: 750000000, exp: '12 years in healthcare' },
+   206→    { org: 'Green Valley Constructions', type: 'Partnership', pan: 'AABCG3456N', gst: '37AABCG3456N1ZG', regNo: 'AAFG-2345', addr: 'Guntur, Andhra Pradesh', person: 'N. Srinivasa Rao', phone: '+91-9876543204', email: 'srinivas@greenvalley.in', networth: 350000000, exp: '10 years in construction' },
+   207→    { org: 'Mega Industrial Corp Ltd', type: 'Public Limited Company', pan: 'AABCM7890P', gst: '37AABCM7890P1ZG', regNo: 'CIN-U28100AP2018PLC345678', addr: 'Vijayawada, Andhra Pradesh', person: 'T. Ramesh Babu', phone: '+91-9876543205', email: 'ramesh@megaindustrial.in', networth: 2000000000, exp: '25 years in manufacturing' },
+   208→    { org: 'AP Educational Trust', type: 'Trust', pan: 'AABCE1234Q', gst: 'N/A', regNo: 'TRUST/AP/2019/123', addr: 'Tirupati, Andhra Pradesh', person: 'Dr. P. Lakshmi', phone: '+91-9876543206', email: 'lakshmi@apet.in', networth: 200000000, exp: '18 years in education sector' },
+   209→    { org: 'Sunrise Hospitality Group', type: 'Private Limited Company', pan: 'AABCS5678R', gst: '37AABCS5678R1ZG', regNo: 'CIN-U55101AP2021PTC456789', addr: 'Visakhapatnam, Andhra Pradesh', person: 'R. Surya Prakash', phone: '+91-9876543207', email: 'surya@sunrisehosp.in', networth: 600000000, exp: '14 years in hospitality' },
+   210→    { org: 'Krishna Agro Industries', type: 'Private Limited Company', pan: 'AABCK9012S', gst: '37AABCK9012S1ZG', regNo: 'CIN-U01122AP2017PTC567890', addr: 'Machilipatnam, Andhra Pradesh', person: 'K. Venkata Rao', phone: '+91-9876543208', email: 'venkat@krishnaagro.in', networth: 450000000, exp: '20 years in agri-processing' },
+   211→    { org: 'Capital City Developers', type: 'Private Limited Company', pan: 'AABCC3456T', gst: '37AABCC3456T1ZG', regNo: 'CIN-U45201AP2020PTC678901', addr: 'Amaravati, Andhra Pradesh', person: 'G. Siva Ram', phone: '+91-9876543209', email: 'siva@capitaldev.in', networth: 1500000000, exp: '22 years in urban development' },
+   212→    { org: 'Andhra FinTech Solutions', type: 'LLP', pan: 'AABCF7890U', gst: '37AABCF7890U1ZG', regNo: 'LLPIN-AAB-7890', addr: 'Financial District, Hyderabad', person: 'M. Padma', phone: '+91-9876543210', email: 'padma@afintech.in', networth: 300000000, exp: '8 years in fintech' },
+   213→    { org: 'NTR Memorial Housing Society', type: 'Society', pan: 'AABCH1234V', gst: 'N/A', regNo: 'SOC/AP/2018/456', addr: 'Hyderabad, Telangana', person: 'N. Harikrishna', phone: '+91-9876543211', email: 'hari@ntrhousing.in', networth: 250000000, exp: '16 years in affordable housing' },
+   214→    { org: 'East Coast Energy Pvt Ltd', type: 'Private Limited Company', pan: 'AABCE5678W', gst: '37AABCE5678W1ZG', regNo: 'CIN-U40108AP2019PTC789012', addr: 'Kakinada, Andhra Pradesh', person: 'S. Satyanarayana', phone: '+91-9876543212', email: 'satya@eastcoastenergy.in', networth: 1800000000, exp: '15 years in renewable energy' },
+   215→    { org: 'Vizag Logistics Park Ltd', type: 'Public Limited Company', pan: 'AABCM9012X', gst: '37AABCM9012X1ZG', regNo: 'CIN-U63090AP2020PLC890123', addr: 'Visakhapatnam, Andhra Pradesh', person: 'B. Rama Mohan', phone: '+91-9876543213', email: 'rama@vizaglogistics.in', networth: 900000000, exp: '18 years in logistics' },
+   216→    { org: 'Tollywood Media City Pvt Ltd', type: 'Private Limited Company', pan: 'AABCM3456Y', gst: '37AABCM3456Y1ZG', regNo: 'CIN-U92110AP2021PTC901234', addr: 'Film Nagar, Hyderabad', person: 'A. Chiranjeevi', phone: '+91-9876543214', email: 'chiran@tollywoodmedia.in', networth: 400000000, exp: '10 years in media & entertainment' },
+   217→    { org: 'State PSU - AP Industries Corp', type: 'PSU', pan: 'AABCP7890Z', gst: '37AABCP7890Z1ZG', regNo: 'PSU/AP/2016/001', addr: 'Secretariat, Amaravati', person: 'IAS Officer', phone: '+91-9876543215', email: 'md@apindustries.gov.in', networth: 5000000000, exp: 'Government undertaking' },
+   218→  ];
+   219→
+   220→  const applicants = await Promise.all(applicantData.map((a, i) =>
+   221→    db.applicant.create({
+   222→      data: {
+   223→        applicantId: `APCRDA-INV-${String(i + 1).padStart(5, '0')}`,
+   224→        organizationName: a.org, entityType: a.type, pan: a.pan, gst: a.gst,
+   225→        registrationNumber: a.regNo, registeredAddress: a.addr,
+   226→        contactPerson: a.person, contactPhone: a.phone, contactEmail: a.email,
+   227→        netWorth: a.networth, experience: a.exp,
+   228→        userId: i === 0 ? userMap['investor@amaravati-demo.in'] : null,
+   229→      }
+   230→    })
+   231→  ));
+   232→
+   233→  // ============ APPLICATIONS (15) at various stages ============
+   234→  const now = new Date();
+   235→  const day = (d: number) => new Date(now.getTime() + d * 86400000);
+   236→  const appConfigs = [
+   237→    // App 1: Completed full cycle
+   238→    { appNum: 'APCRDA-2024-0001', applicantIdx: 0, parcel: 'APCRDA-P-001', mode: 'NOM', stage: 'Compliance', status: 'Approved', priority: 'Normal', investment: 500000000, employment: 500, sector: 'Real Estate', proj: 'SV Towers Complex', desc: 'Mixed-use commercial towers in Finance City' },
+   239→    // App 2: Under Construction
+   240→    { appNum: 'APCRDA-2024-0002', applicantIdx: 1, parcel: 'APCRDA-P-006', mode: 'QBS', stage: 'Construction', status: 'Approved', priority: 'High', investment: 1000000000, employment: 2000, sector: 'IT & ITES', proj: 'Amaravati Tech Hub', desc: 'State-of-the-art IT park with SEZ facilities' },
+   241→    // App 3: At Building Permission
+   242→    { appNum: 'APCRDA-2024-0003', applicantIdx: 2, parcel: 'APCRDA-P-017', mode: 'NOM', stage: 'Building Permission', status: 'Approved', priority: 'Normal', investment: 750000000, employment: 800, sector: 'Healthcare', proj: 'KBR Super Specialty Hospital', desc: '500-bed multi-specialty hospital' },
+   243→    // App 4: At Payment
+   244→    { appNum: 'APCRDA-2024-0004', applicantIdx: 3, parcel: 'APCRDA-P-012', mode: 'QBS', stage: 'Payment', status: 'Approved', priority: 'Normal', investment: 200000000, employment: 200, sector: 'Real Estate', proj: 'Green Valley Residences', desc: 'Premium residential apartment complex' },
+   245→    // App 5: At LOI
+   246→    { appNum: 'APCRDA-2024-0005', applicantIdx: 4, parcel: 'APCRDA-P-019', mode: 'NOM', stage: 'LOI', status: 'Approved', priority: 'High', investment: 2000000000, employment: 5000, sector: 'Manufacturing', proj: 'Mega Industrial Complex', desc: 'Automobile and components manufacturing facility' },
+   247→    // App 6: At Authority Approval
+   248→    { appNum: 'APCRDA-2024-0006', applicantIdx: 5, parcel: 'APCRDA-P-008', mode: 'QBS', stage: 'Authority Approval', status: 'Under Review', priority: 'Normal', investment: 300000000, employment: 600, sector: 'Education', proj: 'AP Global University Campus', desc: 'World-class university with research facilities' },
+   249→    // App 7: At LASC
+   250→    { appNum: 'APCRDA-2024-0007', applicantIdx: 6, parcel: 'APCRDA-P-005', mode: 'QBS', stage: 'LASC', status: 'Under Review', priority: 'Normal', investment: 400000000, employment: 350, sector: 'Hospitality & Tourism', proj: 'Sunrise Luxury Resort', desc: '5-star resort and convention center' },
+   251→    // App 8: At Economic Review
+   252→    { appNum: 'APCRDA-2024-0008', applicantIdx: 7, parcel: 'APCRDA-P-009', mode: 'ETENDER', stage: 'Economic Review', status: 'Under Review', priority: 'Normal', investment: 600000000, employment: 400, sector: 'Agriculture', proj: 'Krishna Agro Processing Hub', desc: 'Food processing and cold storage facility' },
+   253→    // App 9: At DPR Review
+   254→    { appNum: 'APCRDA-2024-0009', applicantIdx: 8, parcel: 'APCRDA-P-003', mode: 'QCPS', stage: 'DPR Review', status: 'Under Review', priority: 'High', investment: 1500000000, employment: 1500, sector: 'Real Estate', proj: 'Capital City Mall', desc: 'Premium shopping mall and entertainment center' },
+   255→    // App 10: At Eligibility
+   256→    { appNum: 'APCRDA-2024-0010', applicantIdx: 9, parcel: 'APCRDA-P-016', mode: 'QBS', stage: 'Eligibility', status: 'Under Review', priority: 'Normal', investment: 350000000, employment: 300, sector: 'Financial Services', proj: 'Amaravati FinTech Tower', desc: 'Financial technology hub and incubation center' },
+   257→    // App 11: Submitted (new)
+   258→    { appNum: 'APCRDA-2024-0011', applicantIdx: 10, parcel: 'APCRDA-P-013', mode: 'NOM', stage: 'Application', status: 'Submitted', priority: 'Normal', investment: 250000000, employment: 250, sector: 'Real Estate', proj: 'NTR Housing Project', desc: 'Affordable housing for low-income groups' },
+   259→    // App 12: At GoM
+   260→    { appNum: 'APCRDA-2024-0012', applicantIdx: 11, parcel: 'APCRDA-P-020', mode: 'NOM', stage: 'GoM', status: 'Under Review', priority: 'High', investment: 1800000000, employment: 1000, sector: 'Energy', proj: 'East Coast Solar Park', desc: '500MW solar power generation facility' },
+   261→    // App 13: At Government Order
+   262→    { appNum: 'APCRDA-2024-0013', applicantIdx: 12, parcel: 'APCRDA-P-022', mode: 'NOM', stage: 'Government Order', status: 'Approved', priority: 'Normal', investment: 900000000, employment: 700, sector: 'Logistics', proj: 'AP Logistics Hub', desc: 'Integrated logistics and warehousing facility' },
+   263→    // App 14: At Possession
+   264→    { appNum: 'APCRDA-2024-0014', applicantIdx: 13, parcel: 'APCRDA-P-007', mode: 'QCPS', stage: 'Possession', status: 'Approved', priority: 'Normal', investment: 450000000, employment: 600, sector: 'Media & Entertainment', proj: 'Tollywood Studio City', desc: 'Film production and media entertainment hub' },
+   265→    // App 15: Rejected
+   266→    { appNum: 'APCRDA-2024-0015', applicantIdx: 14, parcel: 'APCRDA-P-010', mode: 'QBS', stage: 'Eligibility', status: 'Rejected', priority: 'Normal', investment: 5000000000, employment: 3000, sector: 'Manufacturing', proj: 'AP Heavy Industries', desc: 'Heavy machinery and equipment manufacturing', rejection: 'Applicant entity type (PSU) requires additional cabinet approval for direct land allotment in Industrial Zone.' },
+   267→  ];
+   268→
+   269→  const workflowStageNames = ['Application', 'Eligibility', 'DPR Review', 'Economic Review', 'LASC', 'GoM', 'Cabinet Sub-Committee', 'Authority Approval', 'Cabinet Approval', 'Government Order', 'LOI', 'Payment', 'Revised DPR', 'Agreement', 'Possession', 'Building Permission', 'Construction', 'Compliance'];
+   270→
+   271→  const applications = await Promise.all(appConfigs.map((cfg, idx) => {
+   272→    const currentStageIdx = workflowStageNames.indexOf(cfg.stage);
+   273→    return db.application.create({
+   274→      data: {
+   275→        applicationNumber: cfg.appNum,
+   276→        applicantId: applicants[cfg.applicantIdx].id,
+   277→        landParcelId: parcelMap[cfg.parcel],
+   278→        allotmentModeId: modeMap[cfg.mode],
+   279→        projectName: cfg.proj,
+   280→        sector: cfg.sector,
+   281→        proposedInvestment: cfg.investment,
+   282→        employmentCommitment: cfg.employment,
+   283→        projectDescription: cfg.desc,
+   284→        status: cfg.status,
+   285→        priority: cfg.priority,
+   286→        currentStage: cfg.stage,
+   287→        assignedOfficerId: userMap['lands@amaravati-demo.gov.in'],
+   288→        slaDueDate: day(currentStageIdx * 14 + 7),
+   289→        rejectionReason: cfg.rejection || null,
+   290→        createdAt: day(-90 + idx * 7),
+   291→        stages: {
+   292→          create: workflowStageNames.map((stageName, si) => {
+   293→            let stageStatus: string = 'Not Started';
+   294→            if (si < currentStageIdx) stageStatus = 'Completed';
+   295→            else if (si === currentStageIdx) stageStatus = cfg.status === 'Rejected' ? 'Rejected' : 'In Progress';
+   296→            else if (si === currentStageIdx + 1 && cfg.status === 'Approved') stageStatus = 'Not Started';
+   297→            return {
+   298→              stageName, stageOrder: si + 1, status: stageStatus,
+   299→              assignedToId: si === 0 ? null : userMap['lands@amaravati-demo.gov.in'],
+   300→              startedAt: si < currentStageIdx ? day(-90 + idx * 7 + si * 5) : (si === currentStageIdx ? day(-5) : null),
+   301→              completedAt: si < currentStageIdx ? day(-90 + idx * 7 + si * 5 + 3) : null,
+   302→              decision: si < currentStageIdx ? 'Approved' : null,
+   303→              slaDays: [3, 7, 14, 10, 21, 14, 14, 14, 21, 10, 7, 14, 14, 14, 7, 21, 365, 365][si] || 7,
+   304→            };
+   305→          })
+   306→        }
+   307→      },
+   308→      include: { stages: true }
+   309→    });
+   310→  }));
+   311→
+   312→  // ============ PAYMENTS (for applications at payment stage and beyond) ============
+   313→  const paymentApps = [0, 1, 2, 3, 4, 12, 13]; // indices of apps that have payments
+   314→  for (const appIdx of paymentApps) {
+   315→    const app = applications[appIdx];
+   316→    const totalDue = app.proposedInvestment * 0.25; // 25% down payment
+   317→    const paid = appIdx < 3 ? totalDue : (appIdx < 5 ? totalDue * 0.5 : 0);
+   318→    await db.payment.create({
+   319→      data: {
+   320→        applicationId: app.id, paymentType: 'Down Payment', amountDue: totalDue, amountPaid: paid,
+   321→        dueDate: day(-30), paidDate: paid > 0 ? day(-25) : null,
+   322→        transactionRef: paid > 0 ? `TXN-${app.applicationNumber}-DP` : null,
+   323→        receiptNumber: paid > 0 ? `RCP-${app.applicationNumber}-DP` : null,
+   324→        status: paid >= totalDue ? 'Paid' : (paid > 0 ? 'Partially Paid' : 'Pending'),
+   325→      }
+   326→    });
+   327→    if (appIdx < 2) {
+   328→      const instDue = app.proposedInvestment * 0.15;
+   329→      await db.payment.create({
+   330→        data: {
+   331→          applicationId: app.id, paymentType: 'Installment', amountDue: instDue, amountPaid: instDue,
+   332→          dueDate: day(30), paidDate: day(28), transactionRef: `TXN-${app.applicationNumber}-I1`,
+   333→          receiptNumber: `RCP-${app.applicationNumber}-I1`, status: 'Paid',
+   334→        }
+   335→      });
+   336→    }
+   337→  }
+   338→
+   339→  // ============ CONSTRUCTION PROJECTS ============
+   340→  for (const appIdx of [0, 1]) {
+   341→    const app = applications[appIdx];
+   342→    const physProg = appIdx === 0 ? 85 : 42;
+   343→    const finProg = appIdx === 0 ? 78 : 35;
+   344→    await db.constructionProject.create({
+   345→      data: {
+   346→        applicationId: app.id,
+   347→        plannedStartDate: day(-180), actualStartDate: day(-170),
+   348→        plannedEndDate: day(180 + appIdx * 90),
+   349→        physicalProgress: physProg, financialProgress: finProg,
+   350→        status: appIdx === 0 ? 'In Progress' : 'Delayed',
+   351→        progressUpdates: {
+   352→          create: [
+   353→            { updateDate: day(-30), physicalProgress: physProg - 15, financialProgress: finProg - 12, reportedById: userMap['monitoring@amaravati-demo.gov.in'] },
+   354→            { updateDate: day(-15), physicalProgress: physProg - 8, financialProgress: finProg - 6, reportedById: userMap['monitoring@amaravati-demo.gov.in'] },
+   355→            { updateDate: day(0), physicalProgress: physProg, financialProgress: finProg, reportedById: userMap['monitoring@amaravati-demo.gov.in'], remarks: appIdx === 1 ? 'Construction delayed due to monsoon. Expected to resume next week.' : null },
+   356→          ]
+   357→        }
+   358→      }
+   359→    });
+   360→  }
+   361→
+   362→  // ============ GRIEVANCES (5) ============
+   363→  const grievanceData = [
+   364→    { appIdx: 8, stage: 'DPR Review', category: 'DPR Rejection', desc: 'The DPR was returned citing insufficient financial details, but all required documents were submitted as per guidelines. Requesting re-review.', status: 'In Progress' },
+   365→    { appIdx: 14, stage: 'Eligibility', category: 'Eligibility Rejection', desc: 'Application rejected stating PSU cannot apply through QBS mode. However, as per APCRDA notification 2024/15, PSUs are eligible. Requesting reconsideration.', status: 'Open' },
+   366→    { appIdx: 3, stage: 'Payment', category: 'Payment Issue', desc: 'EMD amount of INR 25,00,000 was deducted but confirmation not received. Bank statement attached.', status: 'Resolved' },
+   367→    { appIdx: 7, stage: 'Economic Review', category: 'Scoring Dispute', desc: 'Economic review score of 62% appears lower than expected. Our investment commitment of 600 Cr should warrant higher scoring under investment quantum criterion.', status: 'Open' },
+   368→    { appIdx: 1, stage: 'Construction', category: 'Construction Delay', desc: 'Requesting extension of 6 months due to unforeseen site conditions and COVID-related supply chain disruptions.', status: 'In Progress' },
+   369→  ];
+   370→  await Promise.all(grievanceData.map((g, i) =>
+   371→    db.grievance.create({
+   372→      data: {
+   373→        grievanceNumber: `GRV-${String(i + 1).padStart(5, '0')}`,
+   374→        applicantId: applicants[g.appIdx].id,
+   375→        applicationId: applications[g.appIdx].id,
+   376→        stage: g.stage, category: g.category, description: g.desc,
+   377→        status: g.status, assignedToId: userMap['grievance@amaravati-demo.gov.in'],
+   378→        slaDays: 7, submittedAt: day(-i * 5 - 2),
+   379→        response: g.status === 'Resolved' ? 'Payment confirmed. EMD receipt number RCP-APCRDA-2024-0004-EMD generated.' : null,
+   380→        resolvedAt: g.status === 'Resolved' ? day(-1) : null,
+   381→      }
+   382→    })
+   383→  ));
+   384→
+   385→  // ============ CANCELLATION CASES (3) ============
+   386→  const cancelData = [
+   387→    { appIdx: 5, initBy: 'APCRDA', reason: 'Non-commencement of development within 6 months of possession', decision: 'Cancellation Recommended', status: 'Decision Made' },
+   388→    { appIdx: 6, initBy: 'Investor', reason: 'Unable to arrange required investment due to market conditions', decision: 'Withdrawn', status: 'Completed' },
+   389→    { appIdx: 8, initBy: 'APCRDA', reason: 'Non-payment of 2nd installment beyond 90 days grace period', decision: null, status: 'Notice Issued' },
+   390→  ];
+   391→  await Promise.all(cancelData.map((c, i) =>
+   392→    db.cancellationCase.create({
+   393→      data: {
+   394→        caseNumber: `CAN-${String(i + 1).padStart(5, '0')}`,
+   395→        applicationId: applications[c.appIdx].id,
+   396→        initiatedBy: c.initBy, reason: c.reason, decision: c.decision, status: c.status,
+   397→        noticeDate: day(-30 + i * 10), hearingDate: i === 0 ? day(5) : null,
+   398→        decisionDate: c.decision ? day(-10 + i * 10) : null,
+   399→      }
+   400→    })
+   401→  ));
+   402→
+   403→  // ============ DPR VERSIONS ============
+   404→  for (const appIdx of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+   405→    const app = applications[appIdx];
+   406→    await db.dPRVersion.create({
+   407→      data: {
+   408→        applicationId: app.id, version: 'R0',
+   409→        status: appIdx <= 5 ? 'Approved' : (appIdx === 9 ? 'Query Raised' : 'Under Review'),
+   410→        reviewerId: userMap['technical@amaravati-demo.gov.in'],
+   411→        reviewedAt: appIdx <= 5 ? day(-20 + appIdx) : null,
+   412→        approvedAt: appIdx <= 4 ? day(-18 + appIdx) : null,
+   413→        queries: appIdx === 9 ? { create: [{ query: 'Please provide detailed financial model with IRR and NPV calculations for the proposed investment.', raisedById: userMap['technical@amaravati-demo.gov.in'], status: 'Open' }] } : undefined,
+   414→      }
+   415→    });
+   416→    if (appIdx <= 4) {
+   417→      await db.dPRVersion.create({
+   418→        data: { applicationId: app.id, version: 'R1', status: appIdx <= 2 ? 'Approved' : 'Submitted', reviewerId: userMap['technical@amaravati-demo.gov.in'] }
+   419→      });
+   420→    }
+   421→  }
+   422→
+   423→  // ============ ECONOMIC REVIEWS ============
+   424→  for (const appIdx of [1, 2, 3, 4, 5, 7, 8]) {
+   425→    const app = applications[appIdx];
+   426→    const totalScore = 70 + appIdx * 3;
+   427→    await db.economicReview.create({
+   428→      data: {
+   429→        applicationId: app.id, reviewerId: userMap['lands@amaravati-demo.gov.in'],
+   430→        totalScore, maxScore: 100, percentage: totalScore,
+   431→        rating: totalScore >= 80 ? 'Recommended' : 'Recommended with Conditions',
+   432→        recommendation: totalScore >= 80 ? 'Strong proposal with significant economic impact.' : 'Recommended with conditions on employment generation timeline.',
+   433→        scores: JSON.stringify([
+   434→          { criterion: 'Investment Quantum', weight: 20, maxScore: 20, score: 15 + Math.floor(appIdx / 2) },
+   435→          { criterion: 'Financial Credibility', weight: 15, maxScore: 15, score: 12 },
+   436→          { criterion: 'Employment Generation', weight: 15, maxScore: 15, score: 10 + appIdx % 3 },
+   437→          { criterion: 'Sector Priority', weight: 15, maxScore: 15, score: 10 + appIdx % 4 },
+   438→          { criterion: 'Development Potential', weight: 15, maxScore: 15, score: 12 },
+   439→          { criterion: 'Strategic Importance', weight: 20, maxScore: 20, score: 11 + appIdx % 5 },
+   440→        ]),
+   441→        status: 'Completed',
+   442→      }
+   443→    });
+   444→  }
+   445→
+   446→  // ============ NOTIFICATIONS ============
+   447→  const notifData = [
+   448→    { userId: userMap['lands@amaravati-demo.gov.in'], type: 'Task Assigned', title: 'New Application Assigned', msg: 'Application APCRDA-2024-0011 assigned for eligibility review', refId: applications[10]?.id, refType: 'Application' },
+   449→    { userId: userMap['technical@amaravati-demo.gov.in'], type: 'Query Response', title: 'DPR Query Response', msg: 'Capital City Developers responded to DPR query', refId: applications[8]?.id, refType: 'Application' },
+   450→    { userId: userMap['finance@amaravati-demo.gov.in'], type: 'Payment Due', title: 'Payment Overdue', msg: 'Down payment for APCRDA-2024-0004 is overdue', refId: applications[3]?.id, refType: 'Payment' },
+   451→    { userId: userMap['monitoring@amaravati-demo.gov.in'], type: 'Construction Delayed', title: 'Construction Delay Alert', msg: 'Amaravati Tech Hub construction is behind schedule', refId: applications[1]?.id, refType: 'Application' },
+   452→    { userId: userMap['grievance@amaravati-demo.gov.in'], type: 'Grievance Update', title: 'New Grievance Filed', msg: 'Grievance GRV-00002 filed against eligibility rejection', refId: applications[14]?.id, refType: 'Grievance' },
+   453→  ];
+   454→  await Promise.all(notifData.map(n =>
+   455→    db.notification.create({
+   456→      data: { userId: n.userId, type: n.type, title: n.title, message: n.msg, referenceId: n.refId, referenceType: n.refType, isRead: false }
+   457→    })
+   458→  ));
+   459→
+   460→  // ============ AUDIT LOGS ============
+   461→  const auditData = [
+   462→    { userId: userMap['admin@amaravati-demo.gov.in'], userName: 'R. Venkateshwara Rao', role: 'Super Admin', action: 'LOGIN', module: 'Auth' },
+   463→    { userId: userMap['lands@amaravati-demo.gov.in'], userName: 'S. Lakshmi Devi', role: 'APCRDA Lands Officer', action: 'APPROVE', module: 'Eligibility', recordId: applications[9]?.id },
+   464→    { userId: userMap['technical@amaravati-demo.gov.in'], userName: 'M. Suresh Babu', role: 'Technical Reviewer', action: 'APPROVE', module: 'DPR Review', recordId: applications[8]?.id },
+   465→    { userId: userMap['finance@amaravati-demo.gov.in'], userName: 'K. Padmavathi', role: 'Finance Officer', action: 'UPDATE', module: 'Payment', recordId: applications[3]?.id },
+   466→  ];
+   467→  await Promise.all(auditData.map((a, i) =>
+   468→    db.auditLog.create({ data: { ...a, createdAt: day(-i - 1) } })
+   469→  ));
+   470→
+   471→  console.log('Seed completed successfully!');
+   472→  console.log(`Created: ${roles.length} roles, ${depts.length} departments, ${zones.length} zones, ${landUses.length} land uses, ${modes.length} allotment modes`);
+   473→  console.log(`Created: ${parcels.length} land parcels, ${applicants.length} applicants, ${applications.length} applications`);
+   474→}
+   475→
+   476→main()
+   477→  .then(async () => { await db.$disconnect(); })
+   478→  .catch(async (e) => { console.error(e); await db.$disconnect(); process.exit(1); });
+   479→

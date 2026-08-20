@@ -1,0 +1,1142 @@
+     1→// ============================================================
+     2→// APCRDA Land Allotment & Development Management Portal
+     3→// Complete Database Schema - SQLite Provider
+     4→// ============================================================
+     5→
+     6→generator client {
+     7→  provider = "prisma-client-js"
+     8→}
+     9→
+    10→datasource db {
+    11→  provider = "sqlite"
+    12→  url      = env("DATABASE_URL")
+    13→}
+    14→
+    15→// ============================================================
+    16→// === MASTER DATA ===
+    17→// ============================================================
+    18→
+    19→model Role {
+    20→  id          String   @id @default(cuid())
+    21→  name        String   @unique
+    22→  description String?
+    23→  permissions String // JSON array of permission strings
+    24→  isSystem    Boolean  @default(false)
+    25→  createdAt   DateTime @default(now())
+    26→  updatedAt   DateTime @updatedAt
+    27→
+    28→  users          User[]
+    29→  workflowStages WorkflowStage[]
+    30→}
+    31→
+    32→model Department {
+    33→  id        String   @id @default(cuid())
+    34→  name      String   @unique
+    35→  code      String   @unique
+    36→  parentId  String?
+    37→  headId    String?
+    38→  createdAt DateTime @default(now())
+    39→  updatedAt DateTime @updatedAt
+    40→
+    41→  users    User[]
+    42→  parent   Department?  @relation("DeptHierarchy", fields: [parentId], references: [id])
+    43→  children Department[] @relation("DeptHierarchy")
+    44→  head     User?        @relation("DeptHead", fields: [headId], references: [id])
+    45→}
+    46→
+    47→model Designation {
+    48→  id          String   @id @default(cuid())
+    49→  name        String   @unique
+    50→  level       Int      @default(0)
+    51→  description String?
+    52→  createdAt   DateTime @default(now())
+    53→  updatedAt   DateTime @updatedAt
+    54→
+    55→  users User[]
+    56→}
+    57→
+    58→model Zone {
+    59→  id          String   @id @default(cuid())
+    60→  name        String   @unique
+    61→  code        String   @unique
+    62→  description String?
+    63→  totalArea   Float    @default(0)
+    64→  createdAt   DateTime @default(now())
+    65→  updatedAt   DateTime @updatedAt
+    66→
+    67→  landParcels LandParcel[]
+    68→  themeCities ThemeCity[]
+    69→}
+    70→
+    71→model LandUseCategory {
+    72→  id          String   @id @default(cuid())
+    73→  name        String   @unique
+    74→  code        String   @unique
+    75→  description String?
+    76→  maxFSI      Float?
+    77→  maxFAR      Float?
+    78→  maxCoverage Float?
+    79→  createdAt   DateTime @default(now())
+    80→  updatedAt   DateTime @updatedAt
+    81→
+    82→  landParcels LandParcel[]
+    83→}
+    84→
+    85→model AllotmentMode {
+    86→  id          String   @id @default(cuid())
+    87→  name        String   @unique
+    88→  code        String   @unique
+    89→  description String?
+    90→  isActive    Boolean  @default(true)
+    91→  createdAt   DateTime @default(now())
+    92→  updatedAt   DateTime @updatedAt
+    93→
+    94→  applications Application[]
+    95→  landParcels  LandParcel[]
+    96→}
+    97→
+    98→model Sector {
+    99→  id          String   @id @default(cuid())
+   100→  name        String   @unique
+   101→  code        String   @unique
+   102→  description String?
+   103→  priority    Int      @default(0)
+   104→  isActive    Boolean  @default(true)
+   105→  createdAt   DateTime @default(now())
+   106→  updatedAt   DateTime @updatedAt
+   107→
+   108→  applications Application[]
+   109→  applicants   Applicant[]
+   110→}
+   111→
+   112→model ThemeCity {
+   113→  id          String   @id @default(cuid())
+   114→  name        String   @unique
+   115→  code        String   @unique
+   116→  description String?
+   117→  zoneId      String?
+   118→  createdAt   DateTime @default(now())
+   119→  updatedAt   DateTime @updatedAt
+   120→
+   121→  zone        Zone?        @relation(fields: [zoneId], references: [id])
+   122→  landParcels LandParcel[]
+   123→}
+   124→
+   125→model DocumentCategory {
+   126→  id           String   @id @default(cuid())
+   127→  name         String   @unique
+   128→  code         String   @unique
+   129→  stage        String?
+   130→  isMandatory  Boolean  @default(false)
+   131→  allowedTypes String? // JSON array of MIME types
+   132→  maxSizeMB    Int      @default(10)
+   133→  description  String?
+   134→  createdAt    DateTime @default(now())
+   135→  updatedAt    DateTime @updatedAt
+   136→
+   137→  documents Document[]
+   138→}
+   139→
+   140→// ============================================================
+   141→// === USERS & AUTH ===
+   142→// ============================================================
+   143→
+   144→model User {
+   145→  id                  String    @id @default(cuid())
+   146→  email               String    @unique
+   147→  passwordHash        String
+   148→  name                String
+   149→  phone               String?
+   150→  avatar              String?
+   151→  roleId              String
+   152→  departmentId        String?
+   153→  designationId       String?
+   154→  employeeId          String?   @unique
+   155→  isActive            Boolean   @default(true)
+   156→  isLocked            Boolean   @default(false)
+   157→  failedLoginAttempts Int       @default(0)
+   158→  lastLoginAt         DateTime?
+   159→  lockedAt            DateTime?
+   160→  geoArea             String?
+   161→  createdAt           DateTime  @default(now())
+   162→  updatedAt           DateTime  @updatedAt
+   163→  deletedAt           DateTime?
+   164→
+   165→  role              Role         @relation(fields: [roleId], references: [id])
+   166→  department        Department?  @relation(fields: [departmentId], references: [id])
+   167→  designation       Designation? @relation(fields: [designationId], references: [id])
+   168→  headOfDepartments Department[] @relation("DeptHead")
+   169→
+   170→  sessions             Session[]
+   171→  auditLogs            AuditLog[]
+   172→  assignedTasks        WorkflowTask[]
+   173→  createdApplications  Application[]           @relation("ApplicationCreator")
+   174→  notifications        Notification[]          @relation("NotifRecipient")
+   175→  dprReviews           DPRReview[]
+   176→  economicReviews      EconomicReview[]
+   177→  inspections          Inspection[]
+   178→  applicantProfile     Applicant?              @relation("ApplicantUser")
+   179→  stageAssignments     WorkflowStageInstance[] @relation("StageAssignee")
+   180→  committeeMemberships CommitteeMember[]
+   181→}
+   182→
+   183→model Session {
+   184→  id        String   @id @default(cuid())
+   185→  userId    String
+   186→  token     String   @unique
+   187→  ipAddress String?
+   188→  userAgent String?
+   189→  expiresAt DateTime
+   190→  createdAt DateTime @default(now())
+   191→
+   192→  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+   193→}
+   194→
+   195→// ============================================================
+   196→// === APPLICANTS ===
+   197→// ============================================================
+   198→
+   199→model Applicant {
+   200→  id                 String    @id @default(cuid())
+   201→  applicantId        String    @unique
+   202→  organizationName   String?
+   203→  entityType         String
+   204→  registrationNumber String?
+   205→  pan                String?
+   206→  gst                String?
+   207→  registeredAddress  String?
+   208→  city               String?
+   209→  state              String?
+   210→  pincode            String?
+   211→  contactPerson      String?
+   212→  contactEmail       String?
+   213→  contactPhone       String?
+   214→  website            String?
+   215→  netWorth           Float?
+   216→  previousProjects   Int       @default(0)
+   217→  experienceYears    Float?
+   218→  sectorId           String?
+   219→  userId             String?   @unique
+   220→  status             String    @default("Active")
+   221→  createdAt          DateTime  @default(now())
+   222→  updatedAt          DateTime  @updatedAt
+   223→  deletedAt          DateTime?
+   224→
+   225→  sector       Sector?       @relation(fields: [sectorId], references: [id])
+   226→  user         User?         @relation("ApplicantUser", fields: [userId], references: [id])
+   227→  applications Application[]
+   228→  promoters    Promoter[]
+   229→}
+   230→
+   231→model Promoter {
+   232→  id           String   @id @default(cuid())
+   233→  applicantId  String
+   234→  name         String
+   235→  pan          String?
+   236→  aadhaar      String?
+   237→  shareholding Float?
+   238→  designation  String?
+   239→  phone        String?
+   240→  email        String?
+   241→  address      String?
+   242→  createdAt    DateTime @default(now())
+   243→  updatedAt    DateTime @updatedAt
+   244→
+   245→  applicant Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+   246→}
+   247→
+   248→// ============================================================
+   249→// === LAND INVENTORY ===
+   250→// ============================================================
+   251→
+   252→model LandParcel {
+   253→  id                  String   @id @default(cuid())
+   254→  plotId              String   @unique
+   255→  surveyNumbers       String
+   256→  gisReference        String?
+   257→  extent              Float
+   258→  extentSqMeters      Float?
+   259→  zoneId              String?
+   260→  themeCityId         String?
+   261→  landUseCategoryId   String?
+   262→  allotmentModeId     String?
+   263→  fsi                 Float?
+   264→  far                 Float?
+   265→  reservePrice        Float?
+   266→  objectiveCategory   String?
+   267→  availabilityStatus  String   @default("Draft")
+   268→  restrictions        String?
+   269→  encumbranceStatus   String   @default("Clear")
+   270→  lpsDisputeStatus    String   @default("None")
+   271→  litigationStatus    String   @default("None")
+   272→  roadAlignmentStatus String   @default("Clear")
+   273→  gisPolygon          String?
+   274→  gisCentroid         String?
+   275→  northBoundary       String?
+   276→  southBoundary       String?
+   277→  eastBoundary        String?
+   278→  westBoundary        String?
+   279→  remarks             String?
+   280→  isPublished         Boolean  @default(false)
+   281→  createdAt           DateTime @default(now())
+   282→  updatedAt           DateTime @updatedAt
+   283→
+   284→  zone            Zone?            @relation(fields: [zoneId], references: [id])
+   285→  themeCity       ThemeCity?       @relation(fields: [themeCityId], references: [id])
+   286→  landUseCategory LandUseCategory? @relation(fields: [landUseCategoryId], references: [id])
+   287→  allotmentMode   AllotmentMode?   @relation(fields: [allotmentModeId], references: [id])
+   288→  applications    Application[]
+   289→}
+   290→
+   291→// ============================================================
+   292→// === WORKFLOW ENGINE ===
+   293→// ============================================================
+   294→
+   295→model WorkflowStage {
+   296→  id              String   @id @default(cuid())
+   297→  name            String   @unique
+   298→  code            String   @unique
+   299→  sequence        Int      @unique
+   300→  description     String?
+   301→  ownerRoleId     String?
+   302→  slaDays         Int      @default(7)
+   303→  isConditional   Boolean  @default(false)
+   304→  conditionConfig String?
+   305→  isActive        Boolean  @default(true)
+   306→  createdAt       DateTime @default(now())
+   307→  updatedAt       DateTime @updatedAt
+   308→
+   309→  ownerRole       Role?                   @relation(fields: [ownerRoleId], references: [id])
+   310→  transitionsFrom WorkflowTransition[]    @relation("StageFrom")
+   311→  transitionsTo   WorkflowTransition[]    @relation("StageTo")
+   312→  instances       WorkflowInstance[]
+   313→  stageInstances  WorkflowStageInstance[]
+   314→}
+   315→
+   316→model WorkflowTransition {
+   317→  id          String   @id @default(cuid())
+   318→  fromStageId String
+   319→  toStageId   String
+   320→  decision    String
+   321→  condition   String?
+   322→  isAuto      Boolean  @default(false)
+   323→  createdAt   DateTime @default(now())
+   324→
+   325→  fromStage WorkflowStage @relation("StageFrom", fields: [fromStageId], references: [id])
+   326→  toStage   WorkflowStage @relation("StageTo", fields: [toStageId], references: [id])
+   327→}
+   328→
+   329→model WorkflowInstance {
+   330→  id             String    @id @default(cuid())
+   331→  applicationId  String    @unique
+   332→  currentStageId String
+   333→  status         String    @default("In Progress")
+   334→  startedAt      DateTime  @default(now())
+   335→  completedAt    DateTime?
+   336→  createdAt      DateTime  @default(now())
+   337→  updatedAt      DateTime  @updatedAt
+   338→
+   339→  application    Application             @relation(fields: [applicationId], references: [id])
+   340→  currentStage   WorkflowStage           @relation(fields: [currentStageId], references: [id])
+   341→  stageInstances WorkflowStageInstance[]
+   342→}
+   343→
+   344→model WorkflowStageInstance {
+   345→  id                 String    @id @default(cuid())
+   346→  workflowInstanceId String
+   347→  stageId            String
+   348→  status             String    @default("Not Started")
+   349→  assignedUserId     String?
+   350→  assignedDeptId     String?
+   351→  priority           String    @default("Medium")
+   352→  startedAt          DateTime?
+   353→  completedAt        DateTime?
+   354→  dueDate            DateTime?
+   355→  slaBreached        Boolean   @default(false)
+   356→  decision           String?
+   357→  remarks            String?
+   358→  createdAt          DateTime  @default(now())
+   359→  updatedAt          DateTime  @updatedAt
+   360→
+   361→  workflowInstance WorkflowInstance @relation(fields: [workflowInstanceId], references: [id], onDelete: Cascade)
+   362→  stage            WorkflowStage    @relation(fields: [stageId], references: [id])
+   363→  assignedUser     User?            @relation("StageAssignee", fields: [assignedUserId], references: [id])
+   364→  tasks            WorkflowTask[]
+   365→  decisionGates    DecisionGate[]
+   366→}
+   367→
+   368→model WorkflowTask {
+   369→  id              String    @id @default(cuid())
+   370→  stageInstanceId String
+   371→  assignedUserId  String
+   372→  title           String
+   373→  description     String?
+   374→  priority        String    @default("Medium")
+   375→  status          String    @default("Pending")
+   376→  dueDate         DateTime?
+   377→  completedAt     DateTime?
+   378→  createdAt       DateTime  @default(now())
+   379→  updatedAt       DateTime  @updatedAt
+   380→
+   381→  stageInstance WorkflowStageInstance @relation(fields: [stageInstanceId], references: [id], onDelete: Cascade)
+   382→  assignedUser  User                  @relation(fields: [assignedUserId], references: [id])
+   383→}
+   384→
+   385→model DecisionGate {
+   386→  id              String    @id @default(cuid())
+   387→  stageInstanceId String
+   388→  gateName        String
+   389→  result          String?
+   390→  evaluationLog   String?
+   391→  evaluatedAt     DateTime?
+   392→  evaluatedBy     String?
+   393→  remarks         String?
+   394→  createdAt       DateTime  @default(now())
+   395→
+   396→  stageInstance WorkflowStageInstance @relation(fields: [stageInstanceId], references: [id], onDelete: Cascade)
+   397→}
+   398→
+   399→// ============================================================
+   400→// === APPLICATIONS ===
+   401→// ============================================================
+   402→
+   403→model Application {
+   404→  id                      String    @id @default(cuid())
+   405→  applicationNumber       String    @unique
+   406→  applicantId             String
+   407→  landParcelId            String?
+   408→  allotmentModeId         String?
+   409→  sectorId                String?
+   410→  creatorId               String?
+   411→  currentStage            String    @default("Application")
+   412→  status                  String    @default("Draft")
+   413→  priority                String    @default("Medium")
+   414→  proposedInvestment      Float?
+   415→  employmentCommitment    Int?
+   416→  projectDescription      String?
+   417→  intendedLandUse         String?
+   418→  preferredPlotId         String?
+   419→  alternativePlots        String?
+   420→  developmentRequirements String?
+   421→  submittedAt             DateTime?
+   422→  createdAt               DateTime  @default(now())
+   423→  updatedAt               DateTime  @updatedAt
+   424→  deletedAt               DateTime?
+   425→
+   426→  applicant            Applicant             @relation(fields: [applicantId], references: [id])
+   427→  landParcel           LandParcel?           @relation(fields: [landParcelId], references: [id])
+   428→  allotmentMode        AllotmentMode?        @relation(fields: [allotmentModeId], references: [id])
+   429→  sector               Sector?               @relation(fields: [sectorId], references: [id])
+   430→  creator              User?                 @relation("ApplicationCreator", fields: [creatorId], references: [id])
+   431→  workflowInstance     WorkflowInstance?
+   432→  dprs                 DPRVersion[]
+   433→  economicReviews      EconomicReview[]
+   434→  paymentSchedules     PaymentSchedule[]
+   435→  payments             Payment[]
+   436→  grievances           Grievance[]
+   437→  documents            Document[]
+   438→  governmentOrders     GovernmentOrder[]
+   439→  lois                 LOI[]
+   440→  agreements           Agreement[]
+   441→  possessions          Possession[]
+   442→  buildingPerms        BuildingPermission[]
+   443→  constructionProjects ConstructionProject[]
+   444→  cancellationCases    CancellationCase[]
+   445→  complianceRecords    ComplianceRecord[]
+   446→}
+   447→
+   448→// ============================================================
+   449→// === DPR ===
+   450→// ============================================================
+   451→
+   452→model DPRVersion {
+   453→  id                       String    @id @default(cuid())
+   454→  applicationId            String
+   455→  version                  String    @default("R0")
+   456→  executiveSummary         String?
+   457→  projectScope             String?
+   458→  projectPhasing           String?
+   459→  costEstimate             Float?
+   460→  financialModel           String?
+   461→  meansOfFinance           String?
+   462→  landUseJustification     String?
+   463→  conceptPlan              String?
+   464→  investmentSchedule       String?
+   465→  employmentGeneration     Int?
+   466→  environmentalCommitments String?
+   467→  statutoryCompliance      String?
+   468→  developmentTimeline      String?
+   469→  status                   String    @default("Draft")
+   470→  submittedAt              DateTime?
+   471→  approvedAt               DateTime?
+   472→  approvedBy               String?
+   473→  remarks                  String?
+   474→  createdAt                DateTime  @default(now())
+   475→  updatedAt                DateTime  @updatedAt
+   476→
+   477→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   478→  reviews     DPRReview[]
+   479→  queries     DPRQuery[]
+   480→}
+   481→
+   482→model DPRReview {
+   483→  id             String    @id @default(cuid())
+   484→  dprVersionId   String
+   485→  reviewerId     String
+   486→  checklist      String?
+   487→  observations   String?
+   488→  recommendation String?
+   489→  score          Float?
+   490→  status         String    @default("In Progress")
+   491→  reviewedAt     DateTime?
+   492→  createdAt      DateTime  @default(now())
+   493→  updatedAt      DateTime  @updatedAt
+   494→
+   495→  dprVersion DPRVersion @relation(fields: [dprVersionId], references: [id], onDelete: Cascade)
+   496→  reviewer   User       @relation(fields: [reviewerId], references: [id])
+   497→}
+   498→
+   499→model DPRQuery {
+   500→  id           String    @id @default(cuid())
+   501→  dprVersionId String
+   502→  queryNumber  Int
+   503→  queryText    String
+   504→  responseText String?
+   505→  queryBy      String?
+   506→  respondedBy  String?
+   507→  queryDate    DateTime  @default(now())
+   508→  responseDate DateTime?
+   509→  status       String    @default("Open")
+   510→  createdAt    DateTime  @default(now())
+   511→  updatedAt    DateTime  @updatedAt
+   512→
+   513→  dprVersion DPRVersion @relation(fields: [dprVersionId], references: [id], onDelete: Cascade)
+   514→}
+   515→
+   516→// ============================================================
+   517→// === ECONOMIC REVIEW ===
+   518→// ============================================================
+   519→
+   520→model EconomicReview {
+   521→  id             String    @id @default(cuid())
+   522→  applicationId  String
+   523→  reviewerId     String
+   524→  scores         String
+   525→  totalScore     Float?
+   526→  percentage     Float?
+   527→  rating         String?
+   528→  recommendation String?
+   529→  remarks        String?
+   530→  status         String    @default("In Progress")
+   531→  reviewedAt     DateTime?
+   532→  createdAt      DateTime  @default(now())
+   533→  updatedAt      DateTime  @updatedAt
+   534→
+   535→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   536→  reviewer    User        @relation(fields: [reviewerId], references: [id])
+   537→}
+   538→
+   539→// ============================================================
+   540→// === COMMITTEES (LASC, GoM, Cabinet Sub-Committee, Authority) ===
+   541→// ============================================================
+   542→
+   543→model Committee {
+   544→  id          String   @id @default(cuid())
+   545→  name        String   @unique
+   546→  code        String   @unique
+   547→  type        String
+   548→  description String?
+   549→  isActive    Boolean  @default(true)
+   550→  createdAt   DateTime @default(now())
+   551→  updatedAt   DateTime @updatedAt
+   552→
+   553→  members  CommitteeMember[]
+   554→  meetings CommitteeMeeting[]
+   555→}
+   556→
+   557→model CommitteeMember {
+   558→  id          String   @id @default(cuid())
+   559→  committeeId String
+   560→  userId      String?
+   561→  name        String
+   562→  designation String?
+   563→  role        String   @default("Member")
+   564→  isActive    Boolean  @default(true)
+   565→  createdAt   DateTime @default(now())
+   566→  updatedAt   DateTime @updatedAt
+   567→
+   568→  committee Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+   569→  user      User?     @relation(fields: [userId], references: [id])
+   570→}
+   571→
+   572→model CommitteeMeeting {
+   573→  id               String    @id @default(cuid())
+   574→  committeeId      String
+   575→  meetingNumber    Int
+   576→  meetingDate      DateTime
+   577→  venue            String?
+   578→  agenda           String?
+   579→  status           String    @default("Scheduled")
+   580→  quorumMet        Boolean?
+   581→  resolutionNumber String?
+   582→  resolutionDate   DateTime?
+   583→  minutesDocument  String?
+   584→  remarks          String?
+   585→  createdAt        DateTime  @default(now())
+   586→  updatedAt        DateTime  @updatedAt
+   587→
+   588→  committee    Committee                     @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+   589→  applications CommitteeMeetingApplication[]
+   590→}
+   591→
+   592→model CommitteeMeetingApplication {
+   593→  id                     String   @id @default(cuid())
+   594→  meetingId              String
+   595→  applicationId          String?
+   596→  agendaItem             Int
+   597→  proposal               String?
+   598→  backgroundNote         String?
+   599→  financialImplications  String?
+   600→  landDetails            String?
+   601→  conditions             String?
+   602→  decision               String?
+   603→  individualObservations String?
+   604→  remarks                String?
+   605→  createdAt              DateTime @default(now())
+   606→  updatedAt              DateTime @updatedAt
+   607→
+   608→  meeting CommitteeMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+   609→}
+   610→
+   611→// ============================================================
+   612→// === GOVERNMENT ORDER ===
+   613→// ============================================================
+   614→
+   615→model GovernmentOrder {
+   616→  id                     String   @id @default(cuid())
+   617→  applicationId          String
+   618→  goNumber               String   @unique
+   619→  goDate                 DateTime
+   620→  governmentDept         String?
+   621→  surveyNumbers          String?
+   622→  extent                 Float?
+   623→  gisCoordinates         String?
+   624→  landUse                String?
+   625→  fsi                    Float?
+   626→  holdingType            String?
+   627→  paymentTerms           String?
+   628→  conditions             String?
+   629→  approvedInvestment     Float?
+   630→  developmentCommitments String?
+   631→  goDocumentId           String?
+   632→  status                 String   @default("Draft")
+   633→  createdAt              DateTime @default(now())
+   634→  updatedAt              DateTime @updatedAt
+   635→
+   636→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   637→}
+   638→
+   639→// ============================================================
+   640→// === LOI ===
+   641→// ============================================================
+   642→
+   643→model LOI {
+   644→  id                    String    @id @default(cuid())
+   645→  applicationId         String
+   646→  loiNumber             String    @unique
+   647→  issueDate             DateTime
+   648→  applicantName         String?
+   649→  landDetails           String?
+   650→  approvedTerms         String?
+   651→  investmentCommitment  Float?
+   652→  developmentCommitment String?
+   653→  paymentObligations    String?
+   654→  conditions            String?
+   655→  validityDays          Int       @default(90)
+   656→  expiryDate            DateTime?
+   657→  acceptanceDate        DateTime?
+   658→  acceptanceDocId       String?
+   659→  status                String    @default("Active")
+   660→  createdAt             DateTime  @default(now())
+   661→  updatedAt             DateTime  @updatedAt
+   662→
+   663→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   664→}
+   665→
+   666→// ============================================================
+   667→// === PAYMENTS ===
+   668→// ============================================================
+   669→
+   670→model PaymentSchedule {
+   671→  id                String    @id @default(cuid())
+   672→  applicationId     String
+   673→  scheduleType      String
+   674→  installmentNumber Int?
+   675→  dueAmount         Float
+   676→  dueDate           DateTime?
+   677→  paidAmount        Float     @default(0)
+   678→  status            String    @default("Pending")
+   679→  penaltyAmount     Float     @default(0)
+   680→  interestAmount    Float     @default(0)
+   681→  paidAt            DateTime?
+   682→  transactionRef    String?
+   683→  receiptDocId      String?
+   684→  remarks           String?
+   685→  createdAt         DateTime  @default(now())
+   686→  updatedAt         DateTime  @updatedAt
+   687→
+   688→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   689→  payments    Payment[]
+   690→}
+   691→
+   692→model Payment {
+   693→  id             String    @id @default(cuid())
+   694→  applicationId  String
+   695→  scheduleId     String?
+   696→  amount         Float
+   697→  paymentType    String
+   698→  transactionRef String?
+   699→  paymentMode    String?
+   700→  status         String    @default("Pending")
+   701→  paidAt         DateTime?
+   702→  verifiedBy     String?
+   703→  verifiedAt     DateTime?
+   704→  receiptDocId   String?
+   705→  remarks        String?
+   706→  createdAt      DateTime  @default(now())
+   707→  updatedAt      DateTime  @updatedAt
+   708→
+   709→  application Application      @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   710→  schedule    PaymentSchedule? @relation(fields: [scheduleId], references: [id])
+   711→}
+   712→
+   713→model Penalty {
+   714→  id                String   @id @default(cuid())
+   715→  applicationId     String
+   716→  paymentScheduleId String?
+   717→  penaltyType       String
+   718→  amount            Float
+   719→  calculatedDate    DateTime @default(now())
+   720→  reason            String?
+   721→  status            String   @default("Pending")
+   722→  createdAt         DateTime @default(now())
+   723→  updatedAt         DateTime @updatedAt
+   724→}
+   725→
+   726→model Refund {
+   727→  id             String    @id @default(cuid())
+   728→  applicationId  String
+   729→  amount         Float
+   730→  refundType     String
+   731→  reason         String?
+   732→  status         String    @default("Pending")
+   733→  processedDate  DateTime?
+   734→  transactionRef String?
+   735→  createdAt      DateTime  @default(now())
+   736→  updatedAt      DateTime  @updatedAt
+   737→}
+   738→
+   739→// ============================================================
+   740→// === AGREEMENT & REGISTRATION ===
+   741→// ============================================================
+   742→
+   743→model Agreement {
+   744→  id                 String    @id @default(cuid())
+   745→  applicationId      String
+   746→  agreementType      String
+   747→  agreementNumber    String?
+   748→  draftDate          DateTime?
+   749→  executionDate      DateTime?
+   750→  registrationDate   DateTime?
+   751→  subRegistrar       String?
+   752→  registrationOffice String?
+   753→  registrationNumber String?
+   754→  stampDuty          Float?
+   755→  registrationFee    Float?
+   756→  holdingType        String?
+   757→  tenure             Int?
+   758→  conditions         String?
+   759→  agreementDocId     String?
+   760→  status             String    @default("Draft")
+   761→  createdAt          DateTime  @default(now())
+   762→  updatedAt          DateTime  @updatedAt
+   763→
+   764→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   765→}
+   766→
+   767→// ============================================================
+   768→// === POSSESSION ===
+   769→// ============================================================
+   770→
+   771→model Possession {
+   772→  id                     String    @id @default(cuid())
+   773→  applicationId          String
+   774→  possessionDate         DateTime?
+   775→  plotId                 String?
+   776→  surveyNumbers          String?
+   777→  boundaries             String?
+   778→  gisCoordinates         String?
+   779→  surveySketchDocId      String?
+   780→  demarcationDocId       String?
+   781→  handoverOfficerId      String?
+   782→  investorRepresentative String?
+   783→  photos                 String?
+   784→  checklist              String?
+   785→  remarks                String?
+   786→  status                 String    @default("Pending")
+   787→  createdAt              DateTime  @default(now())
+   788→  updatedAt              DateTime  @updatedAt
+   789→
+   790→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   791→}
+   792→
+   793→// ============================================================
+   794→// === BUILDING PERMISSION ===
+   795→// ============================================================
+   796→
+   797→model BuildingPermission {
+   798→  id                String    @id @default(cuid())
+   799→  applicationId     String
+   800→  permissionNumber  String?
+   801→  applicationDate   DateTime?
+   802→  approvedDate      DateTime?
+   803→  sitePlanDocId     String?
+   804→  layoutPlanDocId   String?
+   805→  buildingPlanDocId String?
+   806→  fsiApproved       Float?
+   807→  buildingHeight    Float?
+   808→  groundCoverage    Float?
+   809→  setbacks          String?
+   810→  parkingSpaces     Int?
+   811→  developmentParams String?
+   812→  conditions        String?
+   813→  status            String    @default("Applied")
+   814→  createdAt         DateTime  @default(now())
+   815→  updatedAt         DateTime  @updatedAt
+   816→
+   817→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   818→  nocs        NOC[]
+   819→}
+   820→
+   821→model NOC {
+   822→  id                   String    @id @default(cuid())
+   823→  buildingPermissionId String
+   824→  nocType              String
+   825→  nocNumber            String?
+   826→  issuedBy             String?
+   827→  issuedDate           DateTime?
+   828→  validUntil           DateTime?
+   829→  nocDocId             String?
+   830→  status               String    @default("Pending")
+   831→  createdAt            DateTime  @default(now())
+   832→  updatedAt            DateTime  @updatedAt
+   833→
+   834→  buildingPermission BuildingPermission @relation(fields: [buildingPermissionId], references: [id], onDelete: Cascade)
+   835→}
+   836→
+   837→// ============================================================
+   838→// === CONSTRUCTION MONITORING ===
+   839→// ============================================================
+   840→
+   841→model ConstructionProject {
+   842→  id                    String    @id @default(cuid())
+   843→  applicationId         String
+   844→  plannedStartDate      DateTime?
+   845→  actualStartDate       DateTime?
+   846→  plannedCompletionDate DateTime?
+   847→  actualCompletionDate  DateTime?
+   848→  totalPlannedProgress  Float     @default(0)
+   849→  totalActualProgress   Float     @default(0)
+   850→  financialPlanned      Float     @default(0)
+   851→  financialActual       Float     @default(0)
+   852→  status                String    @default("Not Started")
+   853→  deviationNotes        String?
+   854→  createdAt             DateTime  @default(now())
+   855→  updatedAt             DateTime  @updatedAt
+   856→
+   857→  application     Application             @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   858→  milestones      ConstructionMilestone[]
+   859→  progressUpdates ProgressUpdate[]
+   860→  inspections     Inspection[]
+   861→}
+   862→
+   863→model ConstructionMilestone {
+   864→  id                    String    @id @default(cuid())
+   865→  constructionProjectId String
+   866→  name                  String
+   867→  description           String?
+   868→  sequence              Int
+   869→  plannedDate           DateTime?
+   870→  actualDate            DateTime?
+   871→  plannedProgress       Float?
+   872→  actualProgress        Float     @default(0)
+   873→  status                String    @default("Pending")
+   874→  remarks               String?
+   875→  createdAt             DateTime  @default(now())
+   876→  updatedAt             DateTime  @updatedAt
+   877→
+   878→  constructionProject ConstructionProject @relation(fields: [constructionProjectId], references: [id], onDelete: Cascade)
+   879→}
+   880→
+   881→model ProgressUpdate {
+   882→  id                    String    @id @default(cuid())
+   883→  constructionProjectId String
+   884→  period                String
+   885→  periodDate            DateTime?
+   886→  physicalProgress      Float?
+   887→  financialProgress     Float?
+   888→  observations          String?
+   889→  photosDocIds          String?
+   890→  updatedBy             String?
+   891→  createdAt             DateTime  @default(now())
+   892→  updatedAt             DateTime  @updatedAt
+   893→
+   894→  constructionProject ConstructionProject @relation(fields: [constructionProjectId], references: [id], onDelete: Cascade)
+   895→}
+   896→
+   897→model Inspection {
+   898→  id                    String   @id @default(cuid())
+   899→  constructionProjectId String?
+   900→  applicationId         String?
+   901→  inspectorId           String
+   902→  inspectionDate        DateTime @default(now())
+   903→  inspectionType        String
+   904→  findings              String?
+   905→  complianceStatus      String?
+   906→  correctiveActions     String?
+   907→  photosDocIds          String?
+   908→  remarks               String?
+   909→  createdAt             DateTime @default(now())
+   910→  updatedAt             DateTime @updatedAt
+   911→
+   912→  constructionProject ConstructionProject? @relation(fields: [constructionProjectId], references: [id])
+   913→  inspector           User                 @relation(fields: [inspectorId], references: [id])
+   914→}
+   915→
+   916→// ============================================================
+   917→// === COMPLIANCE ===
+   918→// ============================================================
+   919→
+   920→model ComplianceRecord {
+   921→  id               String    @id @default(cuid())
+   922→  applicationId    String
+   923→  complianceType   String
+   924→  dueDate          DateTime?
+   925→  submittedDate    DateTime?
+   926→  certificateDocId String?
+   927→  status           String    @default("Pending")
+   928→  remarks          String?
+   929→  inspectedBy      String?
+   930→  createdAt        DateTime  @default(now())
+   931→  updatedAt        DateTime  @updatedAt
+   932→
+   933→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+   934→}
+   935→
+   936→// ============================================================
+   937→// === GRIEVANCES & APPEALS ===
+   938→// ============================================================
+   939→
+   940→model Grievance {
+   941→  id              String    @id @default(cuid())
+   942→  grievanceId     String    @unique
+   943→  applicationId   String?
+   944→  applicantId     String?
+   945→  stage           String?
+   946→  category        String
+   947→  description     String
+   948→  attachments     String?
+   949→  submittedDate   DateTime  @default(now())
+   950→  assignedUserId  String?
+   951→  assignedDeptId  String?
+   952→  slaDays         Int       @default(14)
+   953→  dueDate         DateTime?
+   954→  response        String?
+   955→  respondedAt     DateTime?
+   956→  decision        String?
+   957→  decisionRemarks String?
+   958→  status          String    @default("Open")
+   959→  closedAt        DateTime?
+   960→  createdAt       DateTime  @default(now())
+   961→  updatedAt       DateTime  @updatedAt
+   962→
+   963→  application Application? @relation(fields: [applicationId], references: [id])
+   964→  appeals     Appeal[]
+   965→}
+   966→
+   967→model Appeal {
+   968→  id              String    @id @default(cuid())
+   969→  grievanceId     String
+   970→  appealNumber    String    @unique
+   971→  grounds         String
+   972→  evidence        String?
+   973→  submittedDate   DateTime  @default(now())
+   974→  assignedUserId  String?
+   975→  response        String?
+   976→  decision        String?
+   977→  decisionRemarks String?
+   978→  status          String    @default("Open")
+   979→  decidedAt       DateTime?
+   980→  createdAt       DateTime  @default(now())
+   981→  updatedAt       DateTime  @updatedAt
+   982→
+   983→  grievance Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+   984→}
+   985→
+   986→// ============================================================
+   987→// === CANCELLATION / RESUMPTION ===
+   988→// ============================================================
+   989→
+   990→model CancellationCase {
+   991→  id                  String    @id @default(cuid())
+   992→  applicationId       String
+   993→  initiatedBy         String
+   994→  reason              String
+   995→  detailedReason      String?
+   996→  noticeDate          DateTime?
+   997→  noticeDocId         String?
+   998→  responseDate        DateTime?
+   999→  responseDocId       String?
+  1000→  hearingDate         DateTime?
+  1001→  decision            String?
+  1002→  decisionRemarks     String?
+  1003→  decisionDate        DateTime?
+  1004→  financialSettlement String?
+  1005→  landStatusAfter     String?
+  1006→  status              String    @default("Notice Issued")
+  1007→  createdAt           DateTime  @default(now())
+  1008→  updatedAt           DateTime  @updatedAt
+  1009→
+  1010→  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  1011→}
+  1012→
+  1013→// ============================================================
+  1014→// === DOCUMENTS ===
+  1015→// ============================================================
+  1016→
+  1017→model Document {
+  1018→  id                 String    @id @default(cuid())
+  1019→  applicationId      String?
+  1020→  categoryId         String?
+  1021→  fileName           String
+  1022→  fileSize           Int       @default(0)
+  1023→  mimeType           String?
+  1024→  filePath           String
+  1025→  version            Int       @default(1)
+  1026→  uploadedBy         String?
+  1027→  verifiedBy         String?
+  1028→  verifiedAt         DateTime?
+  1029→  verificationStatus String    @default("Pending")
+  1030→  isMandatory        Boolean   @default(false)
+  1031→  metadata           String?
+  1032→  status             String    @default("Active")
+  1033→  createdAt          DateTime  @default(now())
+  1034→  updatedAt          DateTime  @updatedAt
+  1035→
+  1036→  application Application?      @relation(fields: [applicationId], references: [id])
+  1037→  category    DocumentCategory? @relation(fields: [categoryId], references: [id])
+  1038→}
+  1039→
+  1040→// ============================================================
+  1041→// === NOTIFICATIONS ===
+  1042→// ============================================================
+  1043→
+  1044→model Notification {
+  1045→  id                String    @id @default(cuid())
+  1046→  recipientId       String?
+  1047→  type              String
+  1048→  title             String
+  1049→  message           String
+  1050→  link              String?
+  1051→  isRead            Boolean   @default(false)
+  1052→  readAt            DateTime?
+  1053→  relatedEntityType String?
+  1054→  relatedEntityId   String?
+  1055→  createdAt         DateTime  @default(now())
+  1056→
+  1057→  recipient User? @relation("NotifRecipient", fields: [recipientId], references: [id])
+  1058→}
+  1059→
+  1060→model NotificationTemplate {
+  1061→  id           String   @id @default(cuid())
+  1062→  name         String   @unique
+  1063→  code         String   @unique
+  1064→  type         String
+  1065→  subject      String?
+  1066→  body         String
+  1067→  triggerEvent String?
+  1068→  isActive     Boolean  @default(true)
+  1069→  createdAt    DateTime @default(now())
+  1070→  updatedAt    DateTime @updatedAt
+  1071→}
+  1072→
+  1073→// ============================================================
+  1074→// === AUDIT LOG ===
+  1075→// ============================================================
+  1076→
+  1077→model AuditLog {
+  1078→  id        String   @id @default(cuid())
+  1079→  userId    String?
+  1080→  userName  String?
+  1081→  userRole  String?
+  1082→  ipAddress String?
+  1083→  action    String
+  1084→  module    String?
+  1085→  recordId  String?
+  1086→  oldValue  String?
+  1087→  newValue  String?
+  1088→  remarks   String?
+  1089→  createdAt DateTime @default(now())
+  1090→
+  1091→  user User? @relation(fields: [userId], references: [id])
+  1092→}
+  1093→
+  1094→// ============================================================
+  1095→// === SYSTEM SETTINGS ===
+  1096→// ============================================================
+  1097→
+  1098→model SystemSetting {
+  1099→  id          String   @id @default(cuid())
+  1100→  category    String
+  1101→  key         String
+  1102→  value       String
+  1103→  description String?
+  1104→  createdAt   DateTime @default(now())
+  1105→  updatedAt   DateTime @updatedAt
+  1106→
+  1107→  @@unique([category, key])
+  1108→}
+  1109→
+  1110→// ============================================================
+  1111→// === SLA CONFIGURATION ===
+  1112→// ============================================================
+  1113→
+  1114→model SLAConfig {
+  1115→  id             String   @id @default(cuid())
+  1116→  stageCode      String   @unique
+  1117→  stageName      String
+  1118→  slaDays        Int
+  1119→  escalationDays Int?
+  1120→  warningDays    Int?
+  1121→  isActive       Boolean  @default(true)
+  1122→  createdAt      DateTime @default(now())
+  1123→  updatedAt      DateTime @updatedAt
+  1124→}
+  1125→
+  1126→// ============================================================
+  1127→// === ESCALATION CONFIG ===
+  1128→// ============================================================
+  1129→
+  1130→model EscalationRule {
+  1131→  id               String   @id @default(cuid())
+  1132→  name             String
+  1133→  triggerType      String
+  1134→  condition        String?
+  1135→  escalateToRoleId String?
+  1136→  escalateToDeptId String?
+  1137→  severity         String   @default("Medium")
+  1138→  isActive         Boolean  @default(true)
+  1139→  createdAt        DateTime @default(now())
+  1140→  updatedAt        DateTime @updatedAt
+  1141→}
+  1142→

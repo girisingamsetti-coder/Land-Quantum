@@ -1,0 +1,675 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== MASTER DATA ====================
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  permissions String   @default("[]") // JSON array
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
+model Department {
+  id        String      @id @default(cuid())
+  name      String      @unique
+  code      String      @unique
+  parentId  String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  parent    Department? @relation("DeptHierarchy", fields: [parentId], references: [id])
+  children  Department[] @relation("DeptHierarchy")
+  users     User[]
+}
+
+model Zone {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  code        String       @unique
+  description String?
+  landParcels LandParcel[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model LandUse {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  code        String       @unique
+  description String?
+  landParcels LandParcel[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model AllotmentMode {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  code        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  applications Application[]
+  landParcels  LandParcel[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Sector {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String   @unique
+  priority  Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== LAND INVENTORY ====================
+
+model LandParcel {
+  id                  String         @id @default(cuid())
+  plotId              String         @unique
+  surveyNumber        String
+  gisReference        String?
+  extentAcres         Float
+  zoneId              String
+  landUseId           String?
+  themeCity           String?
+  fsiFar              Float          @default(0)
+  reservePrice        Float          @default(0)
+  objectiveCategory   String?
+  allotmentModeId     String?
+  status              String         @default("Draft") // Draft,Under Review,Approved,Published,Reserved,Under Application,Allotted,On Hold,Withdrawn
+  restrictions        String?        // JSON
+  encumbranceStatus   String         @default("Clear")
+  lpsDisputeStatus    String         @default("None")
+  litigationStatus    String         @default("None")
+  roadAlignmentStatus String         @default("Pending")
+  gisCoordinates      String?        // JSON {lat, lng, polygon}
+  applicantId         String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  zone                Zone           @relation(fields: [zoneId], references: [id])
+  landUse             LandUse?       @relation(fields: [landUseId], references: [id])
+  allotmentMode       AllotmentMode? @relation(fields: [allotmentModeId], references: [id])
+  applicant           Applicant?     @relation(fields: [applicantId], references: [id])
+  applications        Application[]
+  documents           Document[]
+}
+
+// ==================== APPLICANT / INVESTOR ====================
+
+model Applicant {
+  id                String       @id @default(cuid())
+  applicantId       String       @unique // APCRDA-APP-XXXXX
+  organizationName  String
+  entityType        String       // Individual,Proprietorship,Partnership,LLP,Trust,Society,Pvt Ltd,Public Ltd,PSU, Govt Dept,Semi-Govt,Consortium
+  registrationNumber String?
+  pan               String?
+  gst               String?
+  registeredAddress String?
+  contactPerson     String?
+  contactPhone      String?
+  contactEmail      String?
+  authorizedRep     String?
+  promoterDetails   String?       // JSON
+  directors         String?       // JSON array
+  netWorth          Float        @default(0)
+  previousProjects  String?       // JSON array
+  experience        String?
+  userId            String?       @unique
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  user              User?        @relation(fields: [userId], references: [id])
+  applications      Application[]
+  landParcels       LandParcel[]
+  grievances        Grievance[]
+}
+
+// ==================== APPLICATION & WORKFLOW ====================
+
+model Application {
+  id                String           @id @default(cuid())
+  applicationNumber String           @unique // APCRDA-APP-XXXXX
+  applicantId       String
+  landParcelId      String?
+  projectId         String?
+  allotmentModeId   String?
+  projectName       String?
+  sector            String?
+  projectCategory   String?
+  proposedInvestment Float           @default(0)
+  employmentCommitment Int          @default(0)
+  developmentTimeline String?
+  projectDescription String?
+  intendedLandUse   String?
+  status            String           @default("Draft") // Draft,Submitted,Under Review,Clarification Required,Approved,Rejected,Deferred,Withdrawn,Cancelled,Completed
+  priority          String           @default("Normal") // Low,Normal,High,Critical
+  currentStage      String           @default("Application")
+  assignedOfficerId String?
+  slaDueDate        DateTime?
+  remarks           String?
+  rejectionReason   String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  applicant         Applicant        @relation(fields: [applicantId], references: [id])
+  landParcel        LandParcel?      @relation(fields: [landParcelId], references: [id])
+  project           Project?         @relation(fields: [projectId], references: [id])
+  allotmentMode     AllotmentMode?   @relation(fields: [allotmentModeId], references: [id])
+  assignedOfficer   User?            @relation("AssignedOfficer", fields: [assignedOfficerId], references: [id])
+  stages            ApplicationStage[]
+  dprVersions       DPRVersion[]
+  economicReviews   EconomicReview[]
+  payments          Payment[]
+  grievances        Grievance[]
+  documents         Document[]
+  governmentOrders  GovernmentOrder[]
+  lois              LOI[]
+  agreements        Agreement[]
+  possessions       Possession[]
+  buildingPerms     BuildingPermission[]
+  constructions     ConstructionProject[]
+  cancellationCases CancellationCase[]
+  complianceRecords  ComplianceRecord[]
+}
+
+model ApplicationStage {
+  id           String   @id @default(cuid())
+  applicationId String
+  stageName    String
+  stageOrder   Int
+  status       String   @default("Not Started") // Not Started,In Progress,Pending Action,Completed,Returned,Rejected,Deferred,Skipped
+  assignedToId String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  slaDays      Int      @default(0)
+  dueDate      DateTime?
+  decision     String?  // Approved,Rejected,Deferred,Returned, etc.
+  remarks      String?
+  data         String?  // JSON - stage-specific data
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  application  Application @relation(fields: [applicationId], references: [id])
+  assignedTo   User?      @relation("StageAssignedTo", fields: [assignedToId], references: [id])
+}
+
+// ==================== PROJECT ====================
+
+model Project {
+  id                 String  @id @default(cuid())
+  name               String
+  sector             String?
+  description        String?
+  totalInvestment    Float   @default(0)
+  approvedInvestment Float   @default(0)
+  employmentTarget   Int     @default(0)
+  startDate          DateTime?
+  completionDate     DateTime?
+  status             String  @default("Planned")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  applications       Application[]
+}
+
+// ==================== DPR ====================
+
+model DPRVersion {
+  id             String   @id @default(cuid())
+  applicationId  String
+  version        String   // R0,R1,R2,Final
+  status         String   @default("Submitted") // Submitted,Under Review,Query Raised,Resubmitted,Approved,Rejected
+  submittedAt    DateTime @default(now())
+  reviewedAt     DateTime?
+  approvedAt     DateTime?
+  remarks        String?
+  reviewerId     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  application    Application @relation(fields: [applicationId], references: [id])
+  reviewer       User?      @relation("DPRReviewer", fields: [reviewerId], references: [id])
+  queries        DPRQuery[]
+  documents      Document[]
+}
+
+model DPRQuery {
+  id              String   @id @default(cuid())
+  dprVersionId    String
+  query           String
+  response        String?
+  raisedById      String?
+  respondedAt     DateTime?
+  status          String   @default("Open") // Open,Responded,Closed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  dprVersion      DPRVersion @relation(fields: [dprVersionId], references: [id])
+  raisedBy        User?      @relation("QueryRaisedBy", fields: [raisedById], references: [id])
+}
+
+// ==================== ECONOMIC REVIEW ====================
+
+model EconomicReview {
+  id             String   @id @default(cuid())
+  applicationId  String
+  reviewerId     String?
+  totalScore     Float    @default(0)
+  maxScore       Float    @default(0)
+  percentage     Float    @default(0)
+  rating         String?  // Recommended,Recommended with Conditions,Clarification Required,Not Recommended
+  recommendation String?
+  remarks        String?
+  scores         String?  // JSON - criterion scores
+  status         String   @default("Pending") // Pending,In Progress,Completed
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  application    Application @relation(fields: [applicationId], references: [id])
+  reviewer       User?      @relation("EcoReviewer", fields: [reviewerId], references: [id])
+}
+
+// ==================== COMMITTEE (Unified for LASC/GoM/Cabinet/Authority) ====================
+
+model CommitteeMeeting {
+  id              String   @id @default(cuid())
+  committeeType   String   // LASC,GoM,CabinetSubCommittee,Authority,Cabinet
+  meetingNumber   String?
+  meetingDate     DateTime?
+  agendaNumber    String?
+  venue           String?
+  status          String   @default("Scheduled") // Scheduled,Completed,Cancelled
+  chairPerson     String?
+  resolutionNumber String?
+  resolutionDate  DateTime?
+  decision        String?  // Approved,Approved with Conditions,Deferred,Returned,Rejected
+  conditions      String?  // JSON array
+  remarks         String?
+  data            String?  // JSON - type-specific data
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ==================== GOVERNMENT ORDER ====================
+
+model GovernmentOrder {
+  id                String   @id @default(cuid())
+  goNumber          String
+  goDate            DateTime?
+  department        String?
+  applicationId     String
+  surveyNumbers     String?
+  extent            Float    @default(0)
+  landUse           String?
+  fsiFar            Float    @default(0)
+  holdingType       String?  // Leasehold,Freehold
+  paymentTerms      String?  // JSON
+  conditions        String?  // JSON array
+  approvedInvestment Float   @default(0)
+  developmentCommitments String?
+  documentPath      String?
+  status            String   @default("Draft")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  application       Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== LOI ====================
+
+model LOI {
+  id                String    @id @default(cuid())
+  loiNumber         String
+  issueDate         DateTime  @default(now())
+  expiryDate        DateTime?
+  acceptanceDate    DateTime?
+  applicationId     String
+  landDetails       String?   // JSON
+  approvedTerms     String?   // JSON
+  investmentCommitment Float   @default(0)
+  developmentCommitment String?
+  paymentObligations String?   // JSON
+  conditions        String?   // JSON array
+  status            String    @default("Issued") // Issued,Accepted,Expired,Withdrawn
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  application       Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== PAYMENT ====================
+
+model Payment {
+  id                String   @id @default(cuid())
+  applicationId     String
+  paymentType       String   // Down Payment,Installment,EMD,Stamp Duty,Registration Fee,Penalty,Interest,Other
+  amountDue         Float    @default(0)
+  amountPaid        Float    @default(0)
+  dueDate           DateTime?
+  paidDate          DateTime?
+  transactionRef    String?
+  receiptNumber     String?
+  status            String   @default("Pending") // Pending,Partially Paid,Paid,Overdue,Under Verification,Failed,Refunded,Forfeited
+  penaltyAmount     Float    @default(0)
+  interestAmount    Float    @default(0)
+  refundAmount      Float    @default(0)
+  remarks           String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  application       Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== AGREEMENT ====================
+
+model Agreement {
+  id                String   @id @default(cuid())
+  agreementNumber   String
+  agreementType     String?
+  applicationId     String
+  draftDate         DateTime?
+  executionDate     DateTime?
+  registrationDate  DateTime?
+  subRegistrar      String?
+  registrationOffice String?
+  registrationNumber String?
+  stampDuty         Float    @default(0)
+  registrationFee   Float    @default(0)
+  tenure            String?
+  holdingType       String?  // Leasehold,Freehold
+  conditions        String?  // JSON array
+  status            String   @default("Draft") // Draft,Legal Review,Approved,Executed,Registered
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  application       Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== POSSESSION ====================
+
+model Possession {
+  id                 String   @id @default(cuid())
+  certificateNumber   String?
+  possessionDate      DateTime?
+  surveyNumber       String?
+  boundaries          String?  // JSON
+  gisCoordinates      String?  // JSON
+  handoverOfficer     String?
+  investorRepresentative String?
+  remarks             String?
+  status              String   @default("Pending") // Pending,Handed Over,Completed
+  applicationId       String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  application         Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== BUILDING PERMISSION ====================
+
+model BuildingPermission {
+  id              String   @id @default(cuid())
+  permissionNumber String?
+  applicationId   String
+  buildingPlans   String?  // JSON
+  sitePlan        String?
+  fsiFar          Float    @default(0)
+  buildingHeight  Float    @default(0)
+  groundCoverage  Float    @default(0)
+  setbacks        String?  // JSON
+  parking         String?
+  nocStatus       String?  // JSON
+  approvalDate    DateTime?
+  conditions      String?  // JSON array
+  status          String   @default("Applied") // Applied,Under Scrutiny,Query Raised,Approved,Rejected,Permission Issued
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  application     Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== CONSTRUCTION MONITORING ====================
+
+model ConstructionProject {
+  id                 String           @id @default(cuid())
+  applicationId      String
+  plannedStartDate   DateTime?
+  actualStartDate    DateTime?
+  plannedEndDate     DateTime?
+  actualEndDate      DateTime?
+  physicalProgress   Float            @default(0)
+  financialProgress  Float            @default(0)
+  status             String           @default("Not Started") // Not Started,In Progress,Delayed,On Hold,Completed
+  remarks            String?
+  milestones         String?          // JSON array
+  progressUpdates    ProgressUpdate[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  application        Application @relation(fields: [applicationId], references: [id])
+}
+
+model ProgressUpdate {
+  id                    String              @id @default(cuid())
+  constructionProjectId String
+  updateDate            DateTime            @default(now())
+  physicalProgress      Float               @default(0)
+  financialProgress     Float               @default(0)
+  milestonesCompleted   String?             // JSON array
+  delays                String?             // JSON
+  deviations            String?             // JSON
+  remarks               String?
+  photos                String?             // JSON array of URLs
+  reportedById          String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  constructionProject    ConstructionProject @relation(fields: [constructionProjectId], references: [id])
+  reportedBy            User?               @relation("ProgressReporter", fields: [reportedById], references: [id])
+}
+
+// ==================== COMPLIANCE ====================
+
+model ComplianceRecord {
+  id                   String   @id @default(cuid())
+  applicationId        String
+  commencementDeadline DateTime?
+  completionDeadline   DateTime?
+  lastInspectionDate   DateTime?
+  nextInspectionDate   DateTime?
+  conditionsCompliant  Boolean  @default(false)
+  utilizationStatus    String   @default("Pending") // Compliant,At Risk,Delayed,Non-Compliant,Notice Issued,Cure Period,Cancellation Recommended,Completed
+  annualCertificate    String?
+  remarks              String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  application          Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== GRIEVANCE ====================
+
+model Grievance {
+  id             String   @id @default(cuid())
+  grievanceNumber String   @unique
+  applicantId     String?
+  applicationId   String?
+  stage           String?
+  category        String?
+  description     String
+  status          String   @default("Open") // Open,In Progress,Resolved,Rejected,Appealed,Closed
+  assignedToId    String?
+  slaDays         Int      @default(7)
+  response        String?
+  decision        String?
+  submittedAt     DateTime @default(now())
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  applicant       Applicant? @relation(fields: [applicantId], references: [id])
+  application     Application? @relation(fields: [applicationId], references: [id])
+  assignedTo      User?      @relation("GrievanceOfficer", fields: [assignedToId], references: [id])
+}
+
+// ==================== CANCELLATION ====================
+
+model CancellationCase {
+  id                String   @id @default(cuid())
+  caseNumber        String
+  applicationId     String
+  initiatedBy       String   // Investor,APCRDA
+  reason            String?
+  noticeDate        DateTime?
+  responseDate      DateTime?
+  hearingDate       DateTime?
+  decision          String?  // Cancelled,Resumed,Withdrawn,Dismissed
+  decisionDate      DateTime?
+  financialSettlement String?
+  refundAmount      Float    @default(0)
+  forfeitureAmount  Float    @default(0)
+  remarks           String?
+  status            String   @default("Notice Issued") // Notice Issued,Under Review,Decision Made,Completed
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  application       Application @relation(fields: [applicationId], references: [id])
+}
+
+// ==================== DOCUMENT ====================
+
+model Document {
+  id             String   @id @default(cuid())
+  fileName       String
+  fileType       String?
+  fileSize       Int      @default(0)
+  category       String?
+  subCategory    String?
+  filePath       String?
+  uploadedById   String?
+  applicationId  String?
+  landParcelId   String?
+  dprVersionId   String?
+  isMandatory    Boolean  @default(false)
+  verificationStatus String @default("Pending") // Pending,Verified,Rejected
+  verifiedById   String?
+  verifiedAt     DateTime?
+  version        Int      @default(1)
+  expiryDate     DateTime?
+  remarks        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  application    Application?  @relation(fields: [applicationId], references: [id])
+  landParcel     LandParcel?  @relation(fields: [landParcelId], references: [id])
+  dprVersion     DPRVersion?  @relation(fields: [dprVersionId], references: [id])
+  uploadedBy     User?        @relation("DocUploader", fields: [uploadedById], references: [id])
+  verifiedBy     User?        @relation("DocVerifier", fields: [verifiedById], references: [id])
+}
+
+// ==================== NOTIFICATION ====================
+
+model Notification {
+  id             String   @id @default(cuid())
+  userId         String?
+  type           String   // Task Assigned,Approval Required,Query Raised,Payment Due,SLA Warning,SLA Breached,LOI Expiring,Construction Delayed,Compliance Issue,Grievance Update
+  title          String
+  message        String
+  referenceId    String?  // applicationId, grievanceId, etc.
+  referenceType  String?  // Application,Grievance,Payment,etc.
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  user           User?    @relation("UserNotifications", fields: [userId], references: [id])
+}
+
+// ==================== AUDIT LOG ====================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  userName   String?
+  role       String?
+  action     String   // CREATE,READ,UPDATE,DELETE,APPROVE,REJECT,LOGIN,LOGOUT,etc.
+  module     String?
+  recordId   String?
+  oldValues  String?  // JSON
+  newValues  String?  // JSON
+  remarks    String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+// ==================== SYSTEM SETTINGS ====================
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String?  // JSON string for complex values
+  category  String?  // Workflow,Finance,SLA,Document,Notification,Master
+  label     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== WORKFLOW CONFIG ====================
+
+model WorkflowConfig {
+  id              String   @id @default(cuid())
+  stageName       String   @unique
+  stageOrder      Int      @unique
+  ownerRole       String?
+  slaDays         Int      @default(7)
+  entryConditions String?  // JSON
+  exitConditions  String?  // JSON
+  decisionOptions String?  // JSON array
+  nextStages      String?  // JSON array of stage names
+  conditionalNext  String?  // JSON {condition, trueStage, falseStage}
+  isOptional      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ==================== USER ====================
+
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  password         String
+  name             String
+  roleId           String
+  departmentId     String?
+  designation      String?
+  phone            String?
+  avatar           String?
+  employeeId       String?
+  isActive         Boolean        @default(true)
+  lastLogin        DateTime?
+  failedAttempts   Int            @default(0)
+  isLocked         Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  role             Role           @relation(fields: [roleId], references: [id])
+  department       Department?    @relation(fields: [departmentId], references: [id])
+  applicant        Applicant?
+  sessions         Session[]
+  applicationsAssigned Application[] @relation("AssignedOfficer")
+  stagesAssigned   ApplicationStage[] @relation("StageAssignedTo")
+  dprReviews       DPRVersion[]   @relation("DPRReviewer")
+  queriesRaised    DPRQuery[]     @relation("QueryRaisedBy")
+  economicReviewsAssigned EconomicReview[] @relation("EcoReviewer")
+  documentsUploaded Document[]     @relation("DocUploader")
+  documentsVerified Document[]     @relation("DocVerifier")
+  progressReported ProgressUpdate[] @relation("ProgressReporter")
+  grievancesAssigned Grievance[]  @relation("GrievanceOfficer")
+  notifications     Notification[] @relation("UserNotifications")
+  auditLogs        AuditLog[]
+}
+
+// ==================== SESSION ====================
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

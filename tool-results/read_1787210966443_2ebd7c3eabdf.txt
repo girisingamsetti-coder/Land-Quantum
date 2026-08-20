@@ -1,0 +1,2002 @@
+     1→Build a Full-Stack Amaravati Land Allotment & Development Management Portal
+     2→1. PROJECT OBJECTIVE
+     3→
+     4→Build a production-ready, enterprise-grade web application for the Amaravati Land Allotment & Development Approval Process under APCRDA.
+     5→
+     6→The portal must digitally manage the complete lifecycle of land allotment:
+     7→
+     8→Land Inventory → Investor Registration → Application → Eligibility → DPR → Technical Review → Economic Development Review → LASC → GoM → Cabinet Sub-Committee → APCRDA Authority → Cabinet Approval where applicable → Government Order → LOI → Payment → Revised DPR → Agreement → Registration → Possession → Building Permission → Construction Monitoring → Utilisation Compliance → Completion
+     9→
+    10→The application must support:
+    11→
+    12→Application submission
+    13→Multi-level review
+    14→Workflow routing
+    15→Decision gates
+    16→Document management
+    17→GIS/land parcel information
+    18→Financial/payment tracking
+    19→Committee proceedings
+    20→Government approvals
+    21→Building permissions
+    22→Construction progress monitoring
+    23→Grievances and appeals
+    24→Cancellation/resumption
+    25→Notifications
+    26→SLA monitoring
+    27→Reports
+    28→Dashboards
+    29→Audit trails
+    30→Role-based access
+    31→Configurable workflow
+    32→User and department management
+    33→
+    34→The application should look and feel like a modern government enterprise portal, with a clean, professional, secure and data-heavy interface.
+    35→
+    36→Do NOT build a simple CRUD application.
+    37→
+    38→Build a complete workflow-driven case management system.
+    39→
+    40→2. IMPORTANT SOURCE WORKFLOW
+    41→
+    42→Use the following workflow as the primary business-process reference.
+    43→
+    44→PHASE A — ORIGINATION & ELIGIBILITY
+    45→Stage 0 — Land Inventory & Invitation
+    46→
+    47→APCRDA Planning/Lands creates and publishes available land.
+    48→
+    49→Capture:
+    50→
+    51→Plot ID
+    52→Survey number
+    53→GIS reference
+    54→Extent
+    55→Zone
+    56→Theme-city / zone code
+    57→Land-use classification
+    58→FSI/FAR
+    59→Reserve price
+    60→Objective category
+    61→Allotment mode
+    62→Availability status
+    63→Restrictions
+    64→Encumbrance status
+    65→LPS dispute status
+    66→Litigation status
+    67→Road alignment status
+    68→GIS polygon/location
+    69→Supporting documents
+    70→Marketing booklet / invitation document
+    71→
+    72→Statuses:
+    73→
+    74→Draft
+    75→Under Review
+    76→Approved
+    77→Published
+    78→Reserved
+    79→Under Application
+    80→Allotted
+    81→On Hold
+    82→Withdrawn
+    83→3. ALLOTMENT MODES
+    84→
+    85→Support these modes:
+    86→
+    87→Nomination / Suo Moto Application
+    88→Quality-Based Selection
+    89→Quality-cum-Price Selection
+    90→Public Tender / e-Tender
+    91→Public Auction / e-Auction
+    92→Randomized Selection / Draw of Lots
+    93→
+    94→The mode must affect the workflow and required information.
+    95→
+    96→Make the allotment-mode engine configurable from Admin Settings.
+    97→
+    98→4. PHASE A — APPLICATION
+    99→Stage 1 — Investor / Applicant Registration
+   100→
+   101→Create an external Investor Portal.
+   102→
+   103→Applicant types:
+   104→
+   105→Individual
+   106→Proprietorship
+   107→Partnership
+   108→LLP
+   109→Trust
+   110→Society
+   111→Private Limited Company
+   112→Public Limited Company
+   113→PSU
+   114→Government Department
+   115→Semi-Government Organization
+   116→Consortium
+   117→
+   118→Capture:
+   119→
+   120→Applicant Profile
+   121→Applicant ID
+   122→Organization name
+   123→Entity type
+   124→Registration number
+   125→PAN
+   126→GST
+   127→Registered address
+   128→Contact details
+   129→Authorized representative
+   130→Promoter details
+   131→Directors
+   132→Partners
+   133→Beneficial ownership where applicable
+   134→Financial profile
+   135→Net worth
+   136→Previous projects
+   137→Experience
+   138→Sector
+   139→Project Information
+   140→Project name
+   141→Sector
+   142→Project category
+   143→Proposed investment
+   144→Employment commitment
+   145→Development timeline
+   146→Project description
+   147→Intended land use
+   148→Preferred plot
+   149→Alternative plots
+   150→Development requirements
+   151→Financial Information
+   152→Application fee
+   153→EMD
+   154→Payment status
+   155→Transaction reference
+   156→Payment receipt
+   157→5. STAGE 1A — ELIGIBILITY & MODE CHECK
+   158→
+   159→Create a dedicated decision gate.
+   160→
+   161→Checklist:
+   162→
+   163→Applicant eligible?
+   164→Documents valid?
+   165→Entity type valid?
+   166→Proposed use compatible?
+   167→Plot available?
+   168→Land-use compatible?
+   169→Required approvals available?
+   170→Allotment mode applicable?
+   171→
+   172→Outcomes:
+   173→
+   174→Eligible → Proceed
+   175→Ineligible → Reject
+   176→Clarification Required
+   177→Hold
+   178→
+   179→Every rejection must require:
+   180→
+   181→Reason
+   182→Remarks
+   183→Supporting document
+   184→Officer
+   185→Date/time
+   186→
+   187→Allow grievance/appeal after rejection.
+   188→
+   189→6. PHASE B — EVALUATION
+   190→Stage 2 — DPR Submission & Review
+   191→
+   192→Support DPR versions:
+   193→
+   194→R0
+   195→R1
+   196→R2 if required
+   197→Final Revised DPR
+   198→
+   199→DPR contents:
+   200→
+   201→Executive summary
+   202→Project scope
+   203→Project phasing
+   204→Cost estimate
+   205→Financial model
+   206→Means of finance
+   207→Land-use justification
+   208→Concept plan
+   209→Investment schedule
+   210→Employment generation
+   211→Environmental commitments
+   212→Statutory compliance
+   213→Development timeline
+   214→
+   215→Features:
+   216→
+   217→Upload DPR
+   218→Version control
+   219→Document comparison
+   220→Reviewer assignment
+   221→Review checklist
+   222→Query generation
+   223→Applicant response
+   224→Resubmission
+   225→Approval
+   226→Rejection
+   227→Comments
+   228→Review history
+   229→SLA tracking
+   230→
+   231→Create a complete DPR Query & Response module.
+   232→
+   233→7. STAGE 3 — ECONOMIC DEVELOPMENT REVIEW
+   234→
+   235→Create configurable scoring.
+   236→
+   237→Criteria:
+   238→
+   239→Investment quantum
+   240→Financial credibility
+   241→Employment generation
+   242→Sector priority
+   243→Theme-city compatibility
+   244→Development potential
+   245→Socio-economic impact
+   246→Surrounding land value impact
+   247→Strategic importance
+   248→
+   249→Each criterion should have:
+   250→
+   251→Weight
+   252→Maximum score
+   253→Actual score
+   254→Reviewer comments
+   255→Evidence
+   256→Recommendation
+   257→
+   258→Automatically calculate:
+   259→
+   260→Total score
+   261→Percentage
+   262→Rating
+   263→Recommendation
+   264→
+   265→Possible outcomes:
+   266→
+   267→Recommended
+   268→Recommended with Conditions
+   269→Clarification Required
+   270→Not Recommended
+   271→8. STAGE 4 — LASC
+   272→
+   273→Create a dedicated Land Allotment Scrutiny Committee module.
+   274→
+   275→Support:
+   276→
+   277→R0
+   278→R1
+   279→R2
+   280→
+   281→Committee features:
+   282→
+   283→Committee configuration
+   284→Member management
+   285→Agenda creation
+   286→Agenda items
+   287→Meeting scheduling
+   288→Meeting notice
+   289→Documents
+   290→Committee members
+   291→Attendance
+   292→Quorum
+   293→Discussion points
+   294→Individual observations
+   295→Recommendation
+   296→Minutes
+   297→Approval
+   298→Digital document upload
+   299→Resolution number
+   300→Resolution date
+   301→LASC Verification
+   302→
+   303→Mandatory checklist:
+   304→
+   305→Physical site inspection
+   306→Plot availability
+   307→Survey verification
+   308→Title verification
+   309→Encumbrance check
+   310→LPS dispute check
+   311→Litigation check
+   312→Road alignment check
+   313→Zoning verification
+   314→Land-use verification
+   315→
+   316→Recommendation:
+   317→
+   318→Proceed
+   319→Proceed with Conditions
+   320→Clarification
+   321→Return to Applicant
+   322→Reject
+   323→9. STAGE 5 — GROUP OF MINISTERS
+   324→
+   325→Create GoM workflow.
+   326→
+   327→Support:
+   328→
+   329→R0
+   330→R1
+   331→Auto progression
+   332→
+   333→Capture:
+   334→
+   335→Agenda
+   336→Proposal
+   337→Background note
+   338→Committee recommendation
+   339→Financial implications
+   340→Land details
+   341→Conditions
+   342→Decision
+   343→Remarks
+   344→Meeting reference
+   345→Decision date
+   346→Supporting documents
+   347→
+   348→Decisions:
+   349→
+   350→Approved
+   351→Approved with Conditions
+   352→Deferred
+   353→Returned
+   354→Rejected
+   355→
+   356→Create configurable Auto Qualification Rules.
+   357→
+   358→10. STAGE 5A — CABINET SUB-COMMITTEE
+   359→
+   360→Create separate Cabinet Sub-Committee workflow.
+   361→
+   362→Features:
+   363→
+   364→Proposal submission
+   365→Agenda
+   366→Meeting
+   367→Members
+   368→Notes
+   369→Recommendations
+   370→Decision
+   371→Conditions
+   372→Minutes
+   373→Resolution
+   374→
+   375→This stage should be configurable because it only applies to applicable proposals.
+   376→
+   377→11. STAGE 6 — APCRDA AUTHORITY APPROVAL
+   378→
+   379→Create Authority Approval module.
+   380→
+   381→Capture:
+   382→
+   383→Authority meeting
+   384→Agenda number
+   385→Proposal
+   386→Recommendation
+   387→Resolution number
+   388→Resolution date
+   389→Conditions
+   390→Approved land
+   391→Approved extent
+   392→Approved terms
+   393→Officer remarks
+   394→
+   395→Decision:
+   396→
+   397→Approved
+   398→Approved with Conditions
+   399→Deferred
+   400→Returned
+   401→Rejected
+   402→12. STAGE 6A — CABINET APPROVAL TEST
+   403→
+   404→Create an automated decision engine.
+   405→
+   406→Evaluate configurable conditions such as:
+   407→
+   408→Acreage threshold
+   409→Land value threshold
+   410→Concessional pricing
+   411→Sensitive land category
+   412→Special policy category
+   413→
+   414→Display:
+   415→
+   416→CABINET APPROVAL REQUIRED: YES / NO
+   417→
+   418→Admin must be able to configure thresholds without modifying source code.
+   419→
+   420→13. STAGE 7 — CABINET APPROVAL
+   421→
+   422→Where applicable:
+   423→
+   424→Cabinet proposal
+   425→Cabinet note
+   426→Agenda
+   427→Decision
+   428→Conditions
+   429→Approval date
+   430→Reference number
+   431→Supporting documents
+   432→
+   433→Decision:
+   434→
+   435→Approved
+   436→Approved with Conditions
+   437→Deferred
+   438→Rejected
+   439→14. STAGE 8 — GOVERNMENT ORDER
+   440→
+   441→Create GO module.
+   442→
+   443→Capture:
+   444→
+   445→GO number
+   446→GO date
+   447→Government department
+   448→Applicant
+   449→Plot
+   450→Survey numbers
+   451→Extent
+   452→GIS coordinates
+   453→Land-use
+   454→FSI/FAR
+   455→Holding type
+   456→Leasehold/freehold
+   457→Payment terms
+   458→Conditions
+   459→Approved investment
+   460→Development commitments
+   461→GO document
+   462→
+   463→Support:
+   464→
+   465→GO upload
+   466→Versioning
+   467→Digital signature metadata
+   468→Search
+   469→Download
+   470→Verification
+   471→15. STAGE 9 — LETTER OF INTENT
+   472→
+   473→Create LOI generation and management.
+   474→
+   475→Capture:
+   476→
+   477→LOI number
+   478→Date
+   479→Applicant
+   480→Land details
+   481→Approved terms
+   482→Investment commitment
+   483→Development commitment
+   484→Payment obligations
+   485→Conditions
+   486→Validity period
+   487→Expiry date
+   488→Acceptance date
+   489→Acceptance document
+   490→
+   491→Automatically calculate:
+   492→
+   493→LOI expiry countdown
+   494→Days remaining
+   495→Overdue status
+   496→
+   497→Notifications must trigger before expiry.
+   498→
+   499→16. STAGE 10 — PAYMENT & FINANCE
+   500→
+   501→Create complete Financial Management module.
+   502→
+   503→Features:
+   504→
+   505→Payment schedule
+   506→Down payment
+   507→Installments
+   508→EMD
+   509→Taxes
+   510→Stamp duty
+   511→Registration charges
+   512→Other charges
+   513→Penalties
+   514→Interest
+   515→Outstanding amount
+   516→Paid amount
+   517→Balance
+   518→Due date
+   519→Payment receipt
+   520→Transaction reference
+   521→Refund
+   522→Forfeiture
+   523→
+   524→Dashboard:
+   525→
+   526→Total payable
+   527→Total received
+   528→Outstanding
+   529→Overdue
+   530→Penalty
+   531→Refund
+   532→Forfeiture
+   533→
+   534→Payment statuses:
+   535→
+   536→Pending
+   537→Partially Paid
+   538→Paid
+   539→Overdue
+   540→Under Verification
+   541→Failed
+   542→Refunded
+   543→Forfeited
+   544→17. STAGE 11 — REVISED DPR
+   545→
+   546→Create final DPR workflow.
+   547→
+   548→Features:
+   549→
+   550→Upload
+   551→Versioning
+   552→Review
+   553→Comments
+   554→Queries
+   555→Approval
+   556→Rejection
+   557→Final acceptance
+   558→
+   559→The system must clearly identify:
+   560→
+   561→Initial DPR vs Final Revised DPR
+   562→
+   563→18. STAGE 12 — AGREEMENT & REGISTRATION
+   564→
+   565→Create agreement management.
+   566→
+   567→Capture:
+   568→
+   569→Agreement type
+   570→Agreement number
+   571→Draft date
+   572→Execution date
+   573→Registration date
+   574→Sub-Registrar
+   575→Registration office
+   576→Registration number
+   577→Stamp duty
+   578→Registration fee
+   579→Lease/freehold
+   580→Tenure
+   581→Conditions
+   582→Agreement document
+   583→
+   584→Track:
+   585→
+   586→Draft → Legal Review → Approved → Executed → Registered
+   587→
+   588→19. STAGE 12A — POSSESSION
+   589→
+   590→Create possession management.
+   591→
+   592→Capture:
+   593→
+   594→Possession certificate
+   595→Possession date
+   596→Plot
+   597→Survey number
+   598→Boundaries
+   599→GIS coordinates
+   600→Survey sketch
+   601→Demarcation document
+   602→Handover officer
+   603→Investor representative
+   604→Photos
+   605→Remarks
+   606→
+   607→Support:
+   608→
+   609→GIS map
+   610→Boundary visualization
+   611→Possession checklist
+   612→Digital acknowledgement
+   613→20. STAGE 13 — BUILDING PERMISSION / DEVELOPMENT APPROVAL
+   614→
+   615→Create Building Approval module.
+   616→
+   617→Track:
+   618→
+   619→Building plans
+   620→Site plan
+   621→Layout
+   622→FSI/FAR
+   623→Building height
+   624→Ground coverage
+   625→Setbacks
+   626→Parking
+   627→Development parameters
+   628→Fire NOC
+   629→Environmental NOC
+   630→Airport/railway NOC
+   631→Irrigation NOC
+   632→Other statutory NOCs
+   633→
+   634→Workflow:
+   635→
+   636→Application → Technical Scrutiny → Query → Resubmission → Approval → Permission Issued
+   637→
+   638→Generate:
+   639→
+   640→Permission number
+   641→Approval date
+   642→Approved plan
+   643→Conditions
+   644→21. STAGE 14 — CONSTRUCTION MONITORING
+   645→
+   646→Create a powerful Construction Monitoring module.
+   647→
+   648→Track:
+   649→
+   650→Construction commencement
+   651→Planned start date
+   652→Actual start date
+   653→Project milestones
+   654→Planned progress
+   655→Actual progress
+   656→Physical progress %
+   657→Financial progress %
+   658→Milestone completion
+   659→Delays
+   660→Deviations
+   661→Site inspections
+   662→Photos
+   663→Videos
+   664→Drone imagery
+   665→GIS location
+   666→Remarks
+   667→Corrective actions
+   668→
+   669→Allow monthly/quarterly progress updates.
+   670→
+   671→Create:
+   672→
+   673→Progress Dashboard
+   674→Planned vs Actual
+   675→Progress %
+   676→Schedule variance
+   677→Delayed projects
+   678→On-track projects
+   679→At-risk projects
+   680→Completed projects
+   681→
+   682→Use charts and progress bars.
+   683→
+   684→22. STAGE 15 — UTILISATION & COMPLETION
+   685→
+   686→Track:
+   687→
+   688→Commencement deadline
+   689→Completion deadline
+   690→Annual utilisation certificate
+   691→Periodic compliance
+   692→Project completion
+   693→Completion certificate
+   694→Final inspection
+   695→Conditions compliance
+   696→
+   697→Status:
+   698→
+   699→Compliant
+   700→At Risk
+   701→Delayed
+   702→Non-Compliant
+   703→Notice Issued
+   704→Cure Period
+   705→Cancellation Recommended
+   706→Resumption Recommended
+   707→Completed
+   708→
+   709→Automatically identify dormant/non-utilised allotments.
+   710→
+   711→23. GRIEVANCE & APPEAL MODULE
+   712→
+   713→Grievance must run parallel to every workflow stage.
+   714→
+   715→Applicant can raise grievance against:
+   716→
+   717→Eligibility rejection
+   718→DPR rejection
+   719→LASC decision
+   720→GoM decision
+   721→Payment issue
+   722→LOI issue
+   723→Agreement issue
+   724→Building approval
+   725→Cancellation
+   726→Other decisions
+   727→
+   728→Features:
+   729→
+   730→Grievance ID
+   731→Application ID
+   732→Stage
+   733→Category
+   734→Description
+   735→Attachments
+   736→Submitted date
+   737→Assigned officer
+   738→SLA
+   739→Response
+   740→Decision
+   741→Appeal
+   742→Closure
+   743→24. CANCELLATION / RESUMPTION MODULE
+   744→
+   745→Support both:
+   746→
+   747→Investor Initiated
+   748→Withdrawal request
+   749→Reason
+   750→Financial settlement
+   751→Refund
+   752→Forfeiture
+   753→Approval
+   754→APCRDA Initiated
+   755→
+   756→Reasons:
+   757→
+   758→Non-payment
+   759→Non-commencement
+   760→Non-utilisation
+   761→Breach of conditions
+   762→False information
+   763→Other violation
+   764→
+   765→Workflow:
+   766→
+   767→Notice → Response → Hearing/Review → Decision → Cancellation/Resumption → Financial Settlement → Land Status Update
+   768→
+   769→25. MASTER DASHBOARD
+   770→
+   771→Create a highly visual executive dashboard.
+   772→
+   773→Top KPI cards:
+   774→
+   775→Total Applications
+   776→Applications Under Process
+   777→Approved
+   778→Rejected
+   779→Pending
+   780→Total Land Allotted
+   781→Total Investment
+   782→Employment Commitment
+   783→Payments Received
+   784→Outstanding Payments
+   785→Projects Under Construction
+   786→Completed Projects
+   787→Delayed Projects
+   788→Non-Compliant Allotments
+   789→
+   790→Charts:
+   791→
+   792→Applications by Stage
+   793→Applications by Status
+   794→Applications by Sector
+   795→Applications by Allotment Mode
+   796→Land Allotted by Zone
+   797→Investment by Sector
+   798→Application Trend
+   799→Approval Trend
+   800→Payment Collection Trend
+   801→Construction Progress
+   802→Delayed Projects
+   803→Utilisation Compliance
+   804→Grievance Status
+   805→Cancellation/Resumption
+   806→SLA Performance
+   807→26. WORKFLOW DASHBOARD
+   808→
+   809→Create a Kanban/workflow visualization.
+   810→
+   811→Columns:
+   812→
+   813→Application
+   814→Eligibility
+   815→DPR
+   816→Economic Review
+   817→LASC
+   818→GoM
+   819→Cabinet Sub-Committee
+   820→Authority
+   821→Cabinet
+   822→GO
+   823→LOI
+   824→Payment
+   825→Revised DPR
+   826→Agreement
+   827→Possession
+   828→Building Permission
+   829→Construction
+   830→Compliance
+   831→Completed
+   832→
+   833→Each application should appear as a card.
+   834→
+   835→Card should display:
+   836→
+   837→Application ID
+   838→Investor
+   839→Project
+   840→Plot
+   841→Current Stage
+   842→Officer
+   843→SLA
+   844→Days pending
+   845→Priority
+   846→Status
+   847→27. APPLICATION DETAIL PAGE
+   848→
+   849→Create a comprehensive single-page case view.
+   850→
+   851→Header:
+   852→
+   853→Application ID
+   854→Investor
+   855→Project
+   856→Current Stage
+   857→Status
+   858→Priority
+   859→Assigned Officer
+   860→SLA countdown
+   861→
+   862→Tabs:
+   863→
+   864→Overview
+   865→Applicant
+   866→Land
+   867→Project
+   868→DPR
+   869→Reviews
+   870→LASC
+   871→GoM
+   872→Authority
+   873→Cabinet
+   874→GO
+   875→LOI
+   876→Payments
+   877→Revised DPR
+   878→Agreement
+   879→Possession
+   880→Building Approval
+   881→Construction
+   882→Compliance
+   883→Grievances
+   884→Documents
+   885→Timeline
+   886→Audit Log
+   887→28. TIMELINE
+   888→
+   889→Create a complete chronological timeline.
+   890→
+   891→Example:
+   892→
+   893→Application Submitted
+   894→↓
+   895→Eligibility Approved
+   896→↓
+   897→DPR R0 Submitted
+   898→↓
+   899→DPR Query Raised
+   900→↓
+   901→DPR R1 Submitted
+   902→↓
+   903→Economic Review Completed
+   904→↓
+   905→LASC Meeting
+   906→↓
+   907→GoM Decision
+   908→↓
+   909→Authority Approval
+   910→↓
+   911→GO Issued
+   912→↓
+   913→LOI Issued
+   914→↓
+   915→Payment
+   916→↓
+   917→Agreement
+   918→↓
+   919→Possession
+   920→↓
+   921→Building Permission
+   922→↓
+   923→Construction Started
+   924→↓
+   925→Progress Updates
+   926→↓
+   927→Completion
+   928→
+   929→Every event must show:
+   930→
+   931→Date
+   932→Time
+   933→User
+   934→Department
+   935→Action
+   936→Previous status
+   937→New status
+   938→Remarks
+   939→Document
+   940→29. DOCUMENT MANAGEMENT
+   941→
+   942→Create centralized document repository.
+   943→
+   944→Categories:
+   945→
+   946→Applicant documents
+   947→Company documents
+   948→DPR
+   949→Financial documents
+   950→Land documents
+   951→GIS documents
+   952→Committee documents
+   953→LASC minutes
+   954→GoM documents
+   955→Cabinet documents
+   956→Authority resolutions
+   957→GO
+   958→LOI
+   959→Payment receipts
+   960→Agreements
+   961→Registration
+   962→Possession
+   963→Building plans
+   964→NOCs
+   965→Construction documents
+   966→Completion documents
+   967→Grievance documents
+   968→
+   969→Features:
+   970→
+   971→Upload
+   972→Preview
+   973→Download
+   974→Version control
+   975→Document type
+   976→Mandatory/optional
+   977→Expiry date
+   978→Verification status
+   979→Verified by
+   980→Verified date
+   981→Digital signature metadata
+   982→Document history
+   983→30. GIS / LAND MODULE
+   984→
+   985→Create an interactive GIS interface.
+   986→
+   987→Map features:
+   988→
+   989→Amaravati boundary
+   990→Zones
+   991→Plots
+   992→Survey numbers
+   993→Land-use
+   994→Allotted land
+   995→Available land
+   996→Reserved land
+   997→Under-process land
+   998→Disputed land
+   999→LPS information where applicable
+  1000→Roads
+  1001→Infrastructure
+  1002→Project locations
+  1003→
+  1004→Clicking a parcel should open:
+  1005→
+  1006→Plot ID
+  1007→Survey number
+  1008→Extent
+  1009→Land use
+  1010→FSI/FAR
+  1011→Status
+  1012→Applicant
+  1013→Project
+  1014→Allotment date
+  1015→Current stage
+  1016→GIS coordinates
+  1017→
+  1018→Provide:
+  1019→
+  1020→Map search
+  1021→Plot search
+  1022→Layer controls
+  1023→Filters
+  1024→Satellite/map toggle
+  1025→Polygon information
+  1026→GIS export
+  1027→
+  1028→If a real GIS backend is unavailable, create a realistic mock GIS layer and architect the frontend so a real GIS service can be integrated later.
+  1029→
+  1030→31. REPORTING MODULE
+  1031→
+  1032→Create a dedicated Reports module.
+  1033→
+  1034→Reports:
+  1035→
+  1036→Application Reports
+  1037→Application register
+  1038→Stage-wise applications
+  1039→Pending applications
+  1040→Approved applications
+  1041→Rejected applications
+  1042→Application ageing
+  1043→Land Reports
+  1044→Available land
+  1045→Allotted land
+  1046→Land by zone
+  1047→Land by land-use
+  1048→Land by sector
+  1049→Land by allotment mode
+  1050→Financial Reports
+  1051→Payment collection
+  1052→Outstanding dues
+  1053→Overdue payments
+  1054→Penalties
+  1055→Refunds
+  1056→Forfeitures
+  1057→Approval Reports
+  1058→LASC decisions
+  1059→GoM decisions
+  1060→Authority approvals
+  1061→Cabinet approvals
+  1062→GO issued
+  1063→Construction Reports
+  1064→Construction progress
+  1065→Delayed projects
+  1066→Milestone status
+  1067→Planned vs actual
+  1068→Completion
+  1069→Compliance Reports
+  1070→Non-utilised land
+  1071→Delayed commencement
+  1072→Expired LOIs
+  1073→Payment defaults
+  1074→Conditions breached
+  1075→Cancellation candidates
+  1076→Grievance Reports
+  1077→Open grievances
+  1078→SLA breached
+  1079→Category-wise
+  1080→Stage-wise
+  1081→Resolution time
+  1082→Audit Reports
+  1083→User activity
+  1084→Login history
+  1085→Status changes
+  1086→Document activity
+  1087→Approval activity
+  1088→
+  1089→Every report must support:
+  1090→
+  1091→Date filters
+  1092→Stage
+  1093→Department
+  1094→District/zone
+  1095→Sector
+  1096→Applicant
+  1097→Status
+  1098→Allotment mode
+  1099→Export Excel
+  1100→Export CSV
+  1101→Export PDF
+  1102→Print
+  1103→32. SLA & AGEING ENGINE
+  1104→
+  1105→Implement configurable SLA.
+  1106→
+  1107→For every workflow stage maintain:
+  1108→
+  1109→SLA days
+  1110→Start date
+  1111→Due date
+  1112→Days elapsed
+  1113→Days remaining
+  1114→SLA percentage
+  1115→Breached flag
+  1116→
+  1117→Color/status:
+  1118→
+  1119→On Track
+  1120→Due Soon
+  1121→At Risk
+  1122→Breached
+  1123→
+  1124→Admin can configure SLA by stage.
+  1125→
+  1126→33. NOTIFICATION ENGINE
+  1127→
+  1128→Support:
+  1129→
+  1130→In-app notifications
+  1131→Email
+  1132→SMS-ready architecture
+  1133→
+  1134→Notifications:
+  1135→
+  1136→Application submitted
+  1137→Application assigned
+  1138→Query raised
+  1139→Query response
+  1140→Stage completed
+  1141→Approval
+  1142→Rejection
+  1143→Payment due
+  1144→Payment overdue
+  1145→LOI expiry
+  1146→Construction milestone due
+  1147→Compliance due
+  1148→Grievance update
+  1149→Cancellation notice
+  1150→SLA breach
+  1151→
+  1152→Create notification templates in Admin.
+  1153→
+  1154→34. ROLE-BASED ACCESS CONTROL
+  1155→
+  1156→Implement granular RBAC.
+  1157→
+  1158→Roles:
+  1159→
+  1160→Super Admin
+  1161→
+  1162→Full access.
+  1163→
+  1164→System Administrator
+  1165→
+  1166→Users, roles, settings, workflow configuration.
+  1167→
+  1168→APCRDA Lands Officer
+  1169→
+  1170→Land inventory, eligibility, allotment, possession.
+  1171→
+  1172→Planning Officer
+  1173→
+  1174→Land use, planning, FSI/FAR, building approvals.
+  1175→
+  1176→Technical Reviewer
+  1177→
+  1178→DPR and technical review.
+  1179→
+  1180→Economic Development Officer
+  1181→
+  1182→Economic scoring.
+  1183→
+  1184→LASC Member
+  1185→
+  1186→LASC cases and recommendations.
+  1187→
+  1188→GoM Secretariat
+  1189→
+  1190→GoM proposals.
+  1191→
+  1192→Cabinet Sub-Committee Secretariat
+  1193→
+  1194→Committee workflow.
+  1195→
+  1196→Authority Secretariat
+  1197→
+  1198→Authority approvals.
+  1199→
+  1200→Finance Officer
+  1201→
+  1202→Payments, dues, refunds, penalties.
+  1203→
+  1204→Legal Officer
+  1205→
+  1206→Legal review, agreement, registration, disputes.
+  1207→
+  1208→Monitoring Officer
+  1209→
+  1210→Construction and compliance.
+  1211→
+  1212→Grievance Officer
+  1213→
+  1214→Grievances and appeals.
+  1215→
+  1216→Auditor
+  1217→
+  1218→Read-only access + audit reports.
+  1219→
+  1220→Investor / Applicant
+  1221→
+  1222→Own applications only.
+  1223→
+  1224→Public User
+  1225→
+  1226→Published land inventory and public information only.
+  1227→
+  1228→Permissions:
+  1229→
+  1230→View
+  1231→Create
+  1232→Edit
+  1233→Delete
+  1234→Submit
+  1235→Review
+  1236→Approve
+  1237→Reject
+  1238→Return
+  1239→Assign
+  1240→Upload
+  1241→Download
+  1242→Export
+  1243→Configure
+  1244→
+  1245→Permissions must be configurable.
+  1246→
+  1247→35. DEPARTMENT & ORGANIZATION MANAGEMENT
+  1248→
+  1249→Create:
+  1250→
+  1251→Departments
+  1252→Wings
+  1253→Offices
+  1254→Committees
+  1255→Designations
+  1256→Users
+  1257→Roles
+  1258→Permissions
+  1259→Reporting hierarchy
+  1260→
+  1261→Support officer transfer.
+  1262→
+  1263→When an officer is transferred, active cases should be reassignable without breaking history.
+  1264→
+  1265→36. USER MANAGEMENT
+  1266→
+  1267→Features:
+  1268→
+  1269→Create user
+  1270→Edit user
+  1271→Activate/deactivate
+  1272→Assign role
+  1273→Assign department
+  1274→Assign designation
+  1275→Assign geographic area
+  1276→Password reset
+  1277→MFA-ready architecture
+  1278→Login history
+  1279→Last login
+  1280→Failed login attempts
+  1281→Session management
+  1282→37. ADMIN SETTINGS
+  1283→
+  1284→Create a powerful configuration module.
+  1285→
+  1286→Settings:
+  1287→
+  1288→Workflow
+  1289→Stage names
+  1290→Stage order
+  1291→Conditional stages
+  1292→Decision gates
+  1293→SLA
+  1294→Escalation
+  1295→Land
+  1296→Land-use categories
+  1297→Zones
+  1298→FSI/FAR
+  1299→Plot status
+  1300→Allotment modes
+  1301→Finance
+  1302→Payment types
+  1303→Penalties
+  1304→Interest
+  1305→Refund rules
+  1306→Payment schedules
+  1307→Documents
+  1308→Document categories
+  1309→Mandatory documents
+  1310→File types
+  1311→File size
+  1312→Notifications
+  1313→Email templates
+  1314→SMS templates
+  1315→Trigger rules
+  1316→Master Data
+  1317→Departments
+  1318→Designations
+  1319→Sectors
+  1320→Entity types
+  1321→NOC types
+  1322→Approval types
+  1323→Grievance categories
+  1324→38. AUDIT TRAIL
+  1325→
+  1326→This is mandatory.
+  1327→
+  1328→Record every sensitive action:
+  1329→
+  1330→Login
+  1331→Logout
+  1332→Create
+  1333→Edit
+  1334→Delete
+  1335→Upload
+  1336→Download
+  1337→Review
+  1338→Approve
+  1339→Reject
+  1340→Forward
+  1341→Return
+  1342→Status change
+  1343→Payment update
+  1344→Configuration change
+  1345→User permission change
+  1346→
+  1347→Audit record:
+  1348→
+  1349→User
+  1350→Role
+  1351→IP
+  1352→Timestamp
+  1353→Module
+  1354→Record ID
+  1355→Action
+  1356→Old value
+  1357→New value
+  1358→Remarks
+  1359→
+  1360→Audit logs must be immutable from normal users.
+  1361→
+  1362→39. SEARCH
+  1363→
+  1364→Implement global search.
+  1365→
+  1366→Search by:
+  1367→
+  1368→Application ID
+  1369→Applicant
+  1370→Project
+  1371→Plot ID
+  1372→Survey number
+  1373→GO number
+  1374→LOI number
+  1375→Agreement number
+  1376→Payment reference
+  1377→Phone
+  1378→Email
+  1379→Stage
+  1380→Status
+  1381→
+  1382→Add advanced search.
+  1383→
+  1384→40. DASHBOARD FILTERS
+  1385→
+  1386→Global filters:
+  1387→
+  1388→Financial year
+  1389→Date range
+  1390→Zone
+  1391→Sector
+  1392→Land-use
+  1393→Allotment mode
+  1394→Stage
+  1395→Status
+  1396→Department
+  1397→Officer
+  1398→Applicant
+  1399→
+  1400→Filters must update dashboard charts and KPIs without full-page reload.
+  1401→
+  1402→41. SECURITY
+  1403→
+  1404→Implement enterprise security:
+  1405→
+  1406→Secure authentication
+  1407→Password hashing
+  1408→JWT/session management
+  1409→Role-based authorization
+  1410→API authorization
+  1411→Input validation
+  1412→File upload validation
+  1413→File scanning architecture
+  1414→Rate limiting
+  1415→CSRF protection where applicable
+  1416→XSS protection
+  1417→SQL injection protection
+  1418→Secure headers
+  1419→Audit logging
+  1420→Session timeout
+  1421→Account lockout
+  1422→MFA-ready architecture
+  1423→
+  1424→Never expose passwords or secrets in frontend code.
+  1425→
+  1426→Use environment variables.
+  1427→
+  1428→42. TECHNICAL ARCHITECTURE
+  1429→
+  1430→Build a proper full-stack architecture.
+  1431→
+  1432→Recommended:
+  1433→
+  1434→Frontend
+  1435→Next.js
+  1436→TypeScript
+  1437→Tailwind CSS
+  1438→shadcn/ui
+  1439→Responsive design
+  1440→Recharts
+  1441→TanStack Table
+  1442→React Hook Form
+  1443→Zod
+  1444→Backend
+  1445→
+  1446→Use a clean REST API architecture.
+  1447→
+  1448→Recommended:
+  1449→
+  1450→Node.js
+  1451→NestJS or Express
+  1452→TypeScript
+  1453→Database
+  1454→PostgreSQL
+  1455→Prisma ORM
+  1456→Authentication
+  1457→JWT / secure session architecture
+  1458→RBAC
+  1459→Storage
+  1460→
+  1461→Create abstraction for:
+  1462→
+  1463→Local storage during development
+  1464→S3-compatible storage for production
+  1465→GIS
+  1466→
+  1467→Architect integration for:
+  1468→
+  1469→PostGIS
+  1470→GeoServer
+  1471→ArcGIS
+  1472→OpenStreetMap / MapLibre
+  1473→
+  1474→Do not tightly couple the system to one GIS provider.
+  1475→
+  1476→43. DATABASE DESIGN
+  1477→
+  1478→Create normalized database schema.
+  1479→
+  1480→Major entities:
+  1481→
+  1482→users
+  1483→roles
+  1484→permissions
+  1485→departments
+  1486→designations
+  1487→applicants
+  1488→applicant_users
+  1489→promoters
+  1490→projects
+  1491→land_parcels
+  1492→survey_numbers
+  1493→zones
+  1494→land_uses
+  1495→land_inventory
+  1496→allotment_modes
+  1497→applications
+  1498→application_stages
+  1499→workflow_instances
+  1500→workflow_actions
+  1501→decision_gates
+  1502→dpr_versions
+  1503→dpr_reviews
+  1504→dpr_queries
+  1505→economic_reviews
+  1506→economic_scores
+  1507→lasc_committees
+  1508→lasc_members
+  1509→lasc_meetings
+  1510→lasc_agendas
+  1511→lasc_minutes
+  1512→gom_reviews
+  1513→cabinet_subcommittee
+  1514→authority_reviews
+  1515→cabinet_reviews
+  1516→government_orders
+  1517→lois
+  1518→payments
+  1519→payment_schedules
+  1520→penalties
+  1521→refunds
+  1522→revised_dprs
+  1523→agreements
+  1524→registrations
+  1525→possessions
+  1526→building_permissions
+  1527→nocs
+  1528→construction_projects
+  1529→construction_milestones
+  1530→progress_updates
+  1531→inspections
+  1532→compliance_records
+  1533→grievances
+  1534→appeals
+  1535→cancellation_cases
+  1536→notices
+  1537→documents
+  1538→notifications
+  1539→audit_logs
+  1540→system_settings
+  1541→
+  1542→Use foreign keys, indexes, timestamps, soft deletes where appropriate, and proper status enums.
+  1543→
+  1544→44. WORKFLOW ENGINE
+  1545→
+  1546→Do NOT hard-code the entire workflow into individual screens.
+  1547→
+  1548→Create a configurable workflow engine.
+  1549→
+  1550→Each stage should support:
+  1551→
+  1552→Stage ID
+  1553→Name
+  1554→Sequence
+  1555→Owner role
+  1556→Entry conditions
+  1557→Exit conditions
+  1558→SLA
+  1559→Required documents
+  1560→Required checklist
+  1561→Decision options
+  1562→Next stage
+  1563→Conditional next stage
+  1564→Escalation
+  1565→Notifications
+  1566→
+  1567→Example:
+  1568→
+  1569→Stage 6 Authority Approval
+  1570→        |
+  1571→        v
+  1572→Cabinet Required?
+  1573→    /          \
+  1574→  YES           NO
+  1575→   |             |
+  1576→Cabinet          GO
+  1577→   |
+  1578→   v
+  1579→GO
+  1580→
+  1581→Admins should be able to modify workflow rules without rewriting the application.
+  1582→
+  1583→45. DECISION ENGINE
+  1584→
+  1585→Create reusable decision engine.
+  1586→
+  1587→Example:
+  1588→
+  1589→IF acreage > configured_threshold
+  1590→OR land_value > configured_threshold
+  1591→OR concessional_rate = TRUE
+  1592→OR sensitive_category = TRUE
+  1593→THEN Cabinet Required
+  1594→ELSE GO
+  1595→
+  1596→All rules should be configurable.
+  1597→
+  1598→Log the rule evaluation result.
+  1599→
+  1600→46. TASK & ASSIGNMENT SYSTEM
+  1601→
+  1602→Every workflow task should have:
+  1603→
+  1604→Task ID
+  1605→Application ID
+  1606→Stage
+  1607→Assigned user
+  1608→Assigned department
+  1609→Priority
+  1610→Created date
+  1611→Due date
+  1612→Status
+  1613→Completion date
+  1614→
+  1615→Support:
+  1616→
+  1617→Assign
+  1618→Reassign
+  1619→Escalate
+  1620→Delegate
+  1621→Return
+  1622→Forward
+  1623→47. ESCALATION ENGINE
+  1624→
+  1625→Automatically escalate:
+  1626→
+  1627→SLA approaching
+  1628→SLA breached
+  1629→Payment overdue
+  1630→LOI expiry approaching
+  1631→Construction milestone overdue
+  1632→Compliance overdue
+  1633→
+  1634→Escalation hierarchy must be configurable.
+  1635→
+  1636→48. HOME PAGE
+  1637→
+  1638→Create a public-facing landing page.
+  1639→
+  1640→Sections:
+  1641→
+  1642→Amaravati Land Opportunities
+  1643→Available Land
+  1644→How the Process Works
+  1645→Allotment Modes
+  1646→Investor Registration
+  1647→Application Tracking
+  1648→Announcements
+  1649→Notifications
+  1650→Government Orders
+  1651→Guidelines
+  1652→FAQs
+  1653→Contact
+  1654→Login
+  1655→
+  1656→Use professional APCRDA-style government visual design.
+  1657→
+  1658→49. INVESTOR PORTAL
+  1659→
+  1660→Investor dashboard:
+  1661→
+  1662→My Applications
+  1663→Current Stage
+  1664→Application Status
+  1665→Pending Actions
+  1666→Queries
+  1667→Documents
+  1668→Payments
+  1669→LOI
+  1670→DPR
+  1671→Building Approval
+  1672→Construction Progress
+  1673→Grievances
+  1674→Notifications
+  1675→
+  1676→Provide a clear workflow progress tracker.
+  1677→
+  1678→50. APPLICATION TRACKING
+  1679→
+  1680→Allow applicant to enter:
+  1681→
+  1682→Application ID
+  1683→Registered mobile/email
+  1684→OTP
+  1685→
+  1686→Then show:
+  1687→
+  1688→Application status
+  1689→Current stage
+  1690→Completed stages
+  1691→Pending stage
+  1692→Pending action
+  1693→Documents
+  1694→Queries
+  1695→Timeline
+  1696→
+  1697→Do not expose confidential internal remarks.
+  1698→
+  1699→51. UI / UX
+  1700→
+  1701→Design should be:
+  1702→
+  1703→Modern
+  1704→Professional
+  1705→Government enterprise style
+  1706→Clean
+  1707→Responsive
+  1708→Accessible
+  1709→Desktop-first but mobile responsive
+  1710→
+  1711→Use:
+  1712→
+  1713→Sidebar navigation
+  1714→Top header
+  1715→Breadcrumbs
+  1716→Cards
+  1717→Data tables
+  1718→Tabs
+  1719→Timeline
+  1720→Status badges
+  1721→Progress indicators
+  1722→Charts
+  1723→Modals
+  1724→Drawers
+  1725→Stepper
+  1726→Kanban
+  1727→GIS map
+  1728→
+  1729→Avoid excessive animations.
+  1730→
+  1731→Prioritize usability and performance.
+  1732→
+  1733→52. STATUS SYSTEM
+  1734→
+  1735→Create consistent statuses.
+  1736→
+  1737→Application:
+  1738→
+  1739→Draft
+  1740→Submitted
+  1741→Under Review
+  1742→Clarification Required
+  1743→Approved
+  1744→Rejected
+  1745→Deferred
+  1746→Withdrawn
+  1747→Cancelled
+  1748→Completed
+  1749→
+  1750→Stage:
+  1751→
+  1752→Not Started
+  1753→In Progress
+  1754→Pending Action
+  1755→Completed
+  1756→Returned
+  1757→Rejected
+  1758→Deferred
+  1759→Skipped
+  1760→
+  1761→Use consistent colors and labels throughout the application.
+  1762→
+  1763→53. DEMO DATA
+  1764→
+  1765→Seed realistic demo data.
+  1766→
+  1767→Create at least:
+  1768→
+  1769→25 land parcels
+  1770→15 applicants
+  1771→15 applications
+  1772→Applications at different workflow stages
+  1773→10 projects
+  1774→10 payment schedules
+  1775→5 grievances
+  1776→5 construction projects
+  1777→3 cancelled cases
+  1778→3 delayed projects
+  1779→Multiple sectors
+  1780→Multiple allotment modes
+  1781→Multiple zones
+  1782→
+  1783→Create realistic Amaravati-style names but clearly mark all data as DEMO.
+  1784→
+  1785→54. DEMO LOGIN CREDENTIALS
+  1786→
+  1787→Create these demo users:
+  1788→
+  1789→Super Admin
+  1790→
+  1791→Email:
+  1792→admin@amaravati-demo.gov.in
+  1793→
+  1794→Password:
+  1795→Admin@12345
+  1796→
+  1797→Role:
+  1798→Super Administrator
+  1799→
+  1800→Lands Officer
+  1801→
+  1802→Email:
+  1803→lands@amaravati-demo.gov.in
+  1804→
+  1805→Password:
+  1806→Lands@12345
+  1807→
+  1808→Role:
+  1809→APCRDA Lands Officer
+  1810→
+  1811→Technical Reviewer
+  1812→
+  1813→Email:
+  1814→technical@amaravati-demo.gov.in
+  1815→
+  1816→Password:
+  1817→Technical@12345
+  1818→
+  1819→Role:
+  1820→Technical Reviewer
+  1821→
+  1822→Finance Officer
+  1823→
+  1824→Email:
+  1825→finance@amaravati-demo.gov.in
+  1826→
+  1827→Password:
+  1828→Finance@12345
+  1829→
+  1830→Role:
+  1831→Finance Officer
+  1832→
+  1833→Monitoring Officer
+  1834→
+  1835→Email:
+  1836→monitoring@amaravati-demo.gov.in
+  1837→
+  1838→Password:
+  1839→Monitoring@12345
+  1840→
+  1841→Role:
+  1842→Monitoring Officer
+  1843→
+  1844→Grievance Officer
+  1845→
+  1846→Email:
+  1847→grievance@amaravati-demo.gov.in
+  1848→
+  1849→Password:
+  1850→Grievance@12345
+  1851→
+  1852→Role:
+  1853→Grievance Officer
+  1854→
+  1855→Investor
+  1856→
+  1857→Email:
+  1858→investor@amaravati-demo.in
+  1859→
+  1860→Password:
+  1861→Investor@12345
+  1862→
+  1863→Role:
+  1864→Investor / Applicant
+  1865→
+  1866→IMPORTANT:
+  1867→These credentials are DEMO credentials only.
+  1868→
+  1869→Clearly display a "Demo Environment" indicator.
+  1870→
+  1871→55. DEMO MODE
+  1872→
+  1873→Add a demo mode.
+  1874→
+  1875→Features:
+  1876→
+  1877→Reset demo database
+  1878→Generate demo applications
+  1879→Generate demo payments
+  1880→Generate demo workflow history
+  1881→Generate demo construction progress
+  1882→
+  1883→Admin-only.
+  1884→
+  1885→56. API DESIGN
+  1886→
+  1887→Create REST APIs for:
+  1888→
+  1889→Authentication
+  1890→Users
+  1891→Roles
+  1892→Permissions
+  1893→Applicants
+  1894→Applications
+  1895→Land
+  1896→GIS
+  1897→DPR
+  1898→Reviews
+  1899→LASC
+  1900→GoM
+  1901→Cabinet
+  1902→Authority
+  1903→GO
+  1904→LOI
+  1905→Payments
+  1906→Agreements
+  1907→Possession
+  1908→Building permissions
+  1909→Construction
+  1910→Compliance
+  1911→Grievances
+  1912→Reports
+  1913→Notifications
+  1914→Documents
+  1915→Audit logs
+  1916→Settings
+  1917→
+  1918→Use consistent API response format.
+  1919→
+  1920→Example:
+  1921→
+  1922→{
+  1923→  "success": true,
+  1924→  "data": {},
+  1925→  "message": "Application retrieved successfully"
+  1926→}
+  1927→
+  1928→Handle:
+  1929→
+  1930→Validation errors
+  1931→Authentication errors
+  1932→Authorization errors
+  1933→Not found
+  1934→Server errors
+  1935→Duplicate records
+  1936→57. FILE UPLOAD
+  1937→
+  1938→Support:
+  1939→
+  1940→PDF
+  1941→DOC/DOCX
+  1942→XLS/XLSX
+  1943→JPG/JPEG
+  1944→PNG
+  1945→DWG-ready architecture
+  1946→GIS files-ready architecture
+  1947→
+  1948→Show:
+  1949→
+  1950→File name
+  1951→Type
+  1952→Size
+  1953→Uploaded by
+  1954→Uploaded date
+  1955→Verification status
+  1956→Version
+  1957→58. EXPORT
+  1958→
+  1959→Every important table should support:
+  1960→
+  1961→Excel
+  1962→CSV
+  1963→PDF
+  1964→Print
+  1965→
+  1966→Exports should respect active filters and user permissions.
+  1967→
+  1968→59. PERFORMANCE
+  1969→
+  1970→The system must be designed for large datasets.
+  1971→
+  1972→Implement:
+  1973→
+  1974→Server-side pagination
+  1975→Server-side filtering
+  1976→Database indexing
+  1977→Lazy loading
+  1978→API pagination
+  1979→Search debouncing
+  1980→Caching where appropriate
+  1981→Optimized dashboard queries
+  1982→
+  1983→Do not load thousands of records into the browser unnecessarily.
+  1984→
+  1985→60. ERROR HANDLING
+  1986→
+  1987→Create:
+  1988→
+  1989→Global error handler
+  1990→Friendly error messages
+  1991→Empty states
+  1992→Loading states
+  1993→Skeleton loaders
+  1994→Retry functionality
+  1995→API timeout handling
+  1996→Validation messages
+  1997→
+  1998→Never show raw stack traces to users.
+  1999→
+  2000→61. NOTIFICATION CENTER
+
+[showing lines 1-2000 of 2345; use offset=2001 with limit to continue reading]
