@@ -1,16 +1,28 @@
 'use client'
 
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
-import { Loader2 } from 'lucide-react'
-
-const LoginForm = lazy(() => import('@/components/login/login-form').then(m => ({ default: m.LoginForm })))
-const AppShell = lazy(() => import('@/components/app-shell').then(m => ({ default: m.AppShell })))
+import { LoginForm } from '@/components/login/login-form'
+import { Loader2, Building2 } from 'lucide-react'
 
 export default function Home() {
   const { isAuthenticated, isLoading, checkSession } = useAuthStore()
+  const [AppShell, setAppShell] = useState<React.ComponentType | null>(null)
+  const [shellLoading, setShellLoading] = useState(false)
+
+  const loadShell = useCallback(() => {
+    if (AppShell || shellLoading) return
+    setShellLoading(true)
+    import('@/components/app-shell').then(m => {
+      setAppShell(() => m.AppShell)
+      setShellLoading(false)
+    }).catch(() => setShellLoading(false))
+  }, [AppShell, shellLoading])
 
   useEffect(() => { checkSession() }, [checkSession])
+  useEffect(() => {
+    if (isAuthenticated) loadShell()
+  }, [isAuthenticated, loadShell])
 
   if (isLoading) {
     return (
@@ -21,16 +33,22 @@ export default function Home() {
   }
 
   if (!isAuthenticated) {
+    return <LoginForm />
+  }
+
+  if (!AppShell) {
     return (
-      <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}>
-        <LoginForm />
-      </Suspense>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
+          <Building2 className="h-6 w-6 text-primary-foreground" />
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm">Loading portal...</span>
+        </div>
+      </div>
     )
   }
 
-  return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}>
-      <AppShell />
-    </Suspense>
-  )
+  return <AppShell />
 }

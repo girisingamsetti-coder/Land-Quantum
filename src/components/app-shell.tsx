@@ -2,8 +2,9 @@
 
 import { lazy, Suspense } from 'react'
 import { AppLayout, useAppLayout } from '@/components/layout/app-layout'
-import { ApplicationDetail } from '@/components/applications/application-detail'
 import { Loader2 } from 'lucide-react'
+
+const ApplicationDetailLazy = lazy(() => import('@/components/applications/application-detail').then(m => ({ default: m.ApplicationDetail })))
 
 const DashboardView = lazy(() => import('@/components/dashboard/dashboard-view').then(m => ({ default: m.DashboardView })))
 const ApplicationsList = lazy(() => import('@/components/applications/applications-list').then(m => ({ default: m.ApplicationsList })))
@@ -31,7 +32,7 @@ function ViewRouter() {
   const { view, viewParams } = useAppLayout()
 
   if (view === 'application-detail' && viewParams.id) {
-    return <ApplicationDetail />
+    return <Suspense fallback={<Fallback />}><ApplicationDetailLazy /></Suspense>
   }
 
   const viewMap: Record<string, React.ReactNode> = {
