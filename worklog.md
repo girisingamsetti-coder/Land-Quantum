@@ -24,3 +24,24 @@ Stage Summary:
 - Production build is the only stable mode (turbopack crashes in this sandbox due to kata-agent cache dropping)
 - Key startup: `NODE_ENV=production NODE_OPTIONS='--max-old-space-size=384' npx next start -p 3000`
 - Demo credentials: admin@amaravati-demo.gov.in / Admin@12345
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix dev server stability - portal showing only Z.ai logo
+
+Work Log:
+- Diagnosed that Turbopack dev server was being killed (not OOM - sandbox kills background processes when shell exits)
+- Discovered agent-browser Chrome processes were consuming ~1.1GB RAM, contributing to memory pressure
+- Tried --webpack flag (heavier, OOM during compilation), reverted to Turbopack
+- Key discovery: background processes die when Bash tool shell session exits, even with nohup/disown/setsid
+- Solution: FIFO pipe approach - redirect server stdout to named pipe, cat process keeps pipe open, server survives shell exit
+- Cleared .next cache, started server with FIFO persistence
+- Verified full portal flow via agent-browser: Login → Dashboard (15 apps, ₹1.06B revenue, 25 parcels) → My Work Queue (13 applications table)
+- Server stable at ~920MB RSS, all API routes responding in <50ms after initial compilation
+- Added allowedDevOrigins config to suppress cross-origin warnings
+
+Stage Summary:
+- Portal is fully functional and accessible in Preview Panel
+- Root cause: sandbox process lifecycle management, not code bugs
+- FIFO pipe technique ensures server survives across Bash tool invocations
+- All previous code fixes (circular import, lazy loading) remain intact
