@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
 import {
-  Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
-  SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton,
+  Sidebar, SidebarContent, SidebarFooter,
+  SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton,
   SidebarMenuItem, SidebarProvider, SidebarRail, SidebarSeparator,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -64,58 +64,23 @@ interface NavItem {
   view: View; label: string; icon: React.ComponentType<{ className?: string }>
 }
 
-const navGroups: { label: string; items: NavItem[] }[] = [
-  {
-    label: 'Overview',
-    items: [
-      { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { view: 'my-work-queue', label: 'My Work Queue', icon: ClipboardList },
-    ],
-  },
-  {
-    label: 'Applications',
-    items: [
-      { view: 'applications', label: 'All Applications', icon: FileText },
-      { view: 'workflow-kanban', label: 'Workflow Board', icon: KanbanSquare },
-      { view: 'cancellations', label: 'Cancellations', icon: ScrollText },
-    ],
-  },
-  {
-    label: 'Land & Assets',
-    items: [
-      { view: 'land-parcels', label: 'Land Inventory', icon: MapPin },
-      { view: 'gis', label: 'GIS Map', icon: Map },
-    ],
-  },
-  {
-    label: 'Projects',
-    items: [
-      { view: 'constructions', label: 'Construction', icon: HardHat },
-    ],
-  },
-  {
-    label: 'Finance',
-    items: [
-      { view: 'payments', label: 'Payments', icon: CreditCard },
-    ],
-  },
-  {
-    label: 'Services',
-    items: [
-      { view: 'grievances', label: 'Grievances', icon: MessageSquare },
-      { view: 'risk-alerts', label: 'Risk & Alerts', icon: AlertTriangle },
-    ],
-  },
-  {
-    label: 'System',
-    items: [
-      { view: 'users', label: 'Users', icon: Users },
-      { view: 'departments', label: 'Departments', icon: Building2 },
-      { view: 'reports', label: 'Reports', icon: BarChart3 },
-      { view: 'audit-log', label: 'Audit Trail', icon: Shield },
-      { view: 'settings', label: 'Settings', icon: Settings },
-    ],
-  },
+const navItems: NavItem[] = [
+  { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { view: 'my-work-queue', label: 'My Work Queue', icon: ClipboardList },
+  { view: 'applications', label: 'All Applications', icon: FileText },
+  { view: 'workflow-kanban', label: 'Workflow Board', icon: KanbanSquare },
+  { view: 'cancellations', label: 'Cancellations', icon: ScrollText },
+  { view: 'land-parcels', label: 'Land Inventory', icon: MapPin },
+  { view: 'gis', label: 'GIS Map', icon: Map },
+  { view: 'constructions', label: 'Construction', icon: HardHat },
+  { view: 'payments', label: 'Payments', icon: CreditCard },
+  { view: 'grievances', label: 'Grievances', icon: MessageSquare },
+  { view: 'risk-alerts', label: 'Risk & Alerts', icon: AlertTriangle },
+  { view: 'users', label: 'Users', icon: Users },
+  { view: 'departments', label: 'Departments', icon: Building2 },
+  { view: 'reports', label: 'Reports', icon: BarChart3 },
+  { view: 'audit-log', label: 'Audit Trail', icon: Shield },
+  { view: 'settings', label: 'Settings', icon: Settings },
 ]
 
 // Breadcrumb config for each view
@@ -324,40 +289,26 @@ export function AppLayout({ children }: AppLayoutProps) {
             </SidebarMenu>
           </SidebarHeader>
           <SidebarSeparator className="mx-3" />
-          <SidebarContent className="gap-0 px-2 py-1">
-            {navGroups.map((group, gi) => (
-              <React.Fragment key={group.label}>
-                <SidebarGroup>
-                  <SidebarGroupLabel className="text-[11px] font-medium uppercase tracking-wider text-sidebar-group-foreground px-2">
-                    {group.label}
-                  </SidebarGroupLabel>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {group.items.map((item) => {
-                        const isActive = view === item.view ||
-                          (view === 'application-detail' && item.view === 'applications')
-                        return (
-                          <SidebarMenuItem key={item.view}>
-                            <SidebarMenuButton
-                              isActive={isActive}
-                              tooltip={item.label}
-                              onClick={() => setView(item.view)}
-                              className="rounded-md"
-                            >
-                              <item.icon className="size-4" />
-                              <span>{item.label}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        )
-                      })}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-                {gi < navGroups.length - 1 && (
-                  <div className="mx-3 my-1 border-t border-border/50" />
-                )}
-              </React.Fragment>
-            ))}
+          <SidebarContent className="px-2 py-1">
+            <SidebarMenu>
+              {navItems.map((item) => {
+                const isActive = view === item.view ||
+                  (view === 'application-detail' && item.view === 'applications')
+                return (
+                  <SidebarMenuItem key={item.view}>
+                    <SidebarMenuButton
+                      isActive={isActive}
+                      tooltip={item.label}
+                      onClick={() => setView(item.view)}
+                      className="rounded-md"
+                    >
+                      <item.icon className="size-4" />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
           </SidebarContent>
           <SidebarFooter className="gap-1.5">
             <div className="mx-2">
