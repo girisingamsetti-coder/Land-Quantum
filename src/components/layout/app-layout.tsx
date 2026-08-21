@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -11,13 +11,16 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   LayoutDashboard, FileText, MapPin, CreditCard, HardHat, AlertTriangle,
   Users, Building2, LogOut, Bell, ChevronDown, KanbanSquare, BarChart3,
   Shield, Settings, ScrollText, Map, ClipboardList, MessageSquare,
+  Atom, Check, Circle, Clock,
 } from 'lucide-react'
 
 interface AppLayoutProps { children: React.ReactNode }
@@ -25,7 +28,7 @@ interface AppLayoutProps { children: React.ReactNode }
 export type View =
   | 'dashboard' | 'applications' | 'application-detail' | 'workflow-kanban'
   | 'land-parcels' | 'payments' | 'constructions' | 'grievances'
-  | 'cancellations' | 'reports' | 'audit-log' | 'notifications'
+  | 'cancellations' | 'reports' | 'audit-log'
   | 'users' | 'roles' | 'departments' | 'settings' | 'gis'
   | 'my-work-queue' | 'risk-alerts'
 
@@ -99,17 +102,22 @@ const navGroups: { label: string; items: NavItem[] }[] = [
       { view: 'departments', label: 'Departments', icon: Building2 },
       { view: 'reports', label: 'Reports', icon: BarChart3 },
       { view: 'audit-log', label: 'Audit Trail', icon: Shield },
-      { view: 'notifications', label: 'Notifications', icon: Bell },
       { view: 'settings', label: 'Settings', icon: Settings },
     ],
   },
 ]
+
+interface Notification {
+  id: string; type: string; title: string; message: string; isRead: boolean; createdAt: string
+}
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { user, logout, meta } = useAuthStore()
   const [view, setView] = useState<View>('dashboard')
   const [viewParams, setViewParams] = useState<Record<string, string>>({})
   const [unreadNotifications, setUnreadNotifications] = useState(meta?.unreadNotifications ?? 0)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifOpen, setNotifOpen] = useState(false)
 
   const navigateTo = (v: View, params?: Record<string, string>) => {
     setView(v)
@@ -124,6 +132,47 @@ export function AppLayout({ children }: AppLayoutProps) {
     .replace(/-/g, ' ')
     .replace(/\b\w/g, c => c.toUpperCase())
 
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch('/api/notifications')
+      const json = await res.json()
+      if (json.success) {
+        setNotifications(json.data.notifications.slice(0, 8))
+        setUnreadNotifications(json.data.unread)
+      }
+    } catch { /* silent */ }
+  }
+
+  useEffect(() => { fetchNotifications() }, [])
+
+  const markAllRead = async () => {
+    const ids = notifications.filter(n => !n.isRead).map(n => n.id)
+    if (ids.length === 0) return
+    try {
+      await fetch('/api/notifications', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids }) })
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+      setUnreadNotifications(0)
+    } catch { /* silent */ }
+  }
+
+  const notifIcon = (type: string) => {
+    switch (type) {
+      case 'stage': return <Check className="h-3.5 w-3.5 text-blue-600" />
+      case 'assignment': return <Circle className="h-3.5 w-3.5 text-violet-600" />
+      case 'sla': return <Clock className="h-3.5 w-3.5 text-amber-600" />
+      default: return <Bell className="h-3.5 w-3.5 text-slate-500" />
+    }
+  }
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 60) return `${mins}m ago`
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return `${hrs}h ago`
+    return `${Math.floor(hrs / 24)}d ago`
+  }
+
   return (
     <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications }}>
       <SidebarProvider>
@@ -133,11 +182,11 @@ export function AppLayout({ children }: AppLayoutProps) {
               <SidebarMenuItem>
                 <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                    <Building2 className="size-4" />
+                    <Atom className="size-4" />
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="text-sm font-semibold tracking-tight">APCRDA</span>
-                    <span className="text-[11px] text-muted-foreground font-normal">Land Portal</span>
+                    <span className="text-sm font-semibold tracking-tight">Land Quantum</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">Management Portal</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -182,7 +231,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <SidebarFooter className="gap-1.5">
             <div className="mx-2">
               <Badge variant="outline" className="w-full justify-center text-[10px] font-medium border-primary/20 text-primary/70 bg-primary/5 hover:bg-primary/5">
-                DEMO ENVIRONMENT
+                DEMO
               </Badge>
             </div>
             <SidebarMenu>
@@ -202,26 +251,73 @@ export function AppLayout({ children }: AppLayoutProps) {
           <SidebarRail />
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card px-5">
+          <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card/80 backdrop-blur-sm px-5">
             <div className="flex-1 min-w-0">
               <h2 className="text-sm font-semibold tracking-tight truncate">
                 {viewLabel}
               </h2>
             </div>
             <div className="flex items-center gap-1.5">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
-                onClick={() => setView('notifications')}
-              >
-                <Bell className="h-4 w-4" />
-                {unreadNotifications > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-white ring-2 ring-card">
-                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                  </span>
-                )}
-              </Button>
+              {/* Notification Bell Popover */}
+              <Popover open={notifOpen} onOpenChange={setNotifOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
+                  >
+                    <Bell className="h-4 w-4" />
+                    {unreadNotifications > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-white ring-2 ring-card">
+                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-80 p-0">
+                  <div className="flex items-center justify-between px-4 py-3 border-b">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-semibold">Notifications</h3>
+                      {unreadNotifications > 0 && (
+                        <Badge className="text-[10px] h-5 px-1.5">{unreadNotifications} new</Badge>
+                      )}
+                    </div>
+                    {unreadNotifications > 0 && (
+                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={markAllRead}>
+                        Mark all read
+                      </Button>
+                    )}
+                  </div>
+                  <ScrollArea className="max-h-[320px]">
+                    {notifications.length === 0 ? (
+                      <div className="py-8 text-center">
+                        <Bell className="h-6 w-6 mx-auto text-muted-foreground/50" />
+                        <p className="text-xs text-muted-foreground mt-2">No notifications</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {notifications.map((n) => (
+                          <div
+                            key={n.id}
+                            className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer ${!n.isRead ? 'bg-primary/[0.03]' : ''}`}
+                          >
+                            <div className="mt-0.5 rounded-full bg-muted p-1.5 shrink-0">
+                              {notifIcon(n.type)}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className={`text-xs leading-snug ${!n.isRead ? 'font-medium' : 'text-muted-foreground'}`}>{n.title}</p>
+                              <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
+                              <p className="text-[10px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</p>
+                            </div>
+                            {!n.isRead && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0" />}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </PopoverContent>
+              </Popover>
+
               <Separator orientation="vertical" className="h-5" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -257,7 +353,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             {children}
           </main>
           <footer className="border-t px-4 py-2.5 bg-card text-center text-[11px] text-muted-foreground">
-            APCRDA Land Allotment & Development Management Portal — Demo Environment
+            Land Quantum — Land Allotment & Development Management Portal · Demo Environment
           </footer>
         </SidebarInset>
       </SidebarProvider>

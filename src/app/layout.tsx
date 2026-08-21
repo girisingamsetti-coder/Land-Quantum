@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "APCRDA - Land Management Portal",
-  description: "Amaravati Capital Region Development Authority Land Management System",
+  title: "Land Quantum — Land Management Portal",
+  description: "Land Quantum — Modern Land Allotment & Development Management System",
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },

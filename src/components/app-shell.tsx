@@ -16,7 +16,6 @@ const GrievancesView = lazy(() => import('@/components/views/grievances-view').t
 const CancellationsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.CancellationsView })))
 const ReportsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.ReportsView })))
 const AuditLogView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.AuditLogView })))
-const NotificationsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.NotificationsView })))
 const UsersView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.UsersView })))
 const DepartmentsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.DepartmentsView })))
 const SettingsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.SettingsView })))
@@ -46,7 +45,6 @@ function ViewRouter() {
     'cancellations': <Suspense fallback={<Fallback />}><CancellationsView /></Suspense>,
     'reports': <Suspense fallback={<Fallback />}><ReportsView /></Suspense>,
     'audit-log': <Suspense fallback={<Fallback />}><AuditLogView /></Suspense>,
-    'notifications': <Suspense fallback={<Fallback />}><NotificationsView /></Suspense>,
     'users': <Suspense fallback={<Fallback />}><UsersView /></Suspense>,
     'departments': <Suspense fallback={<Fallback />}><DepartmentsView /></Suspense>,
     'settings': <Suspense fallback={<Fallback />}><SettingsView /></Suspense>,

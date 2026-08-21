@@ -1,116 +1,30 @@
-# APCRDA Portal Worklog
-
 ---
 Task ID: 1
 Agent: Main Agent
-Task: Fix APCRDA Portal - blank page showing only Z logo in preview panel
+Task: Complete theme and UX overhaul of Land Quantum portal
 
 Work Log:
-- **Root cause 1**: `index-kanban.tsx` had a circular import (re-exported from itself), causing turbopack compilation to hang indefinitely
-- **Root cause 2**: Prisma query logging (`log: ['query']`) generating massive I/O, destabilizing turbopack in the memory-constrained sandbox
-- **Root cause 3**: No Node.js heap size limit, causing the kata-agent hypervisor to kill the process when Chrome (agent-browser) + Next.js exceeded sandbox memory limits
-
-- Fixed circular import by writing a proper 180-line WorkflowKanban component
-- Made ApplicationDetail lazy in app-shell.tsx
-- Disabled Prisma query logging in db.ts
-- Removed `output: "standalone"` from next.config.ts
-- Fixed dev script in package.json (removed `| tee dev.log` pipe)
-- Built production version with `npx next build` (8.7s, 21 routes)
-- Set `NODE_OPTIONS='--max-old-space-size=384'` for stable production serving
-- Created watchdog serve.sh for auto-restart
-
-Stage Summary:
-- Portal fully verified: Login → Dashboard (15 apps, 25 parcels, ₹1.06Cr revenue) → Applications table
-- Production build is the only stable mode (turbopack crashes in this sandbox due to kata-agent cache dropping)
-- Key startup: `NODE_ENV=production NODE_OPTIONS='--max-old-space-size=384' npx next start -p 3000`
-- Demo credentials: admin@amaravati-demo.gov.in / Admin@12345
----
-Task ID: 1
-Agent: Main Agent
-Task: Fix dev server stability - portal showing only Z.ai logo
-
-Work Log:
-- Diagnosed that Turbopack dev server was being killed (not OOM - sandbox kills background processes when shell exits)
-- Discovered agent-browser Chrome processes were consuming ~1.1GB RAM, contributing to memory pressure
-- Tried --webpack flag (heavier, OOM during compilation), reverted to Turbopack
-- Key discovery: background processes die when Bash tool shell session exits, even with nohup/disown/setsid
-- Solution: FIFO pipe approach - redirect server stdout to named pipe, cat process keeps pipe open, server survives shell exit
-- Cleared .next cache, started server with FIFO persistence
-- Verified full portal flow via agent-browser: Login → Dashboard (15 apps, ₹1.06B revenue, 25 parcels) → My Work Queue (13 applications table)
-- Server stable at ~920MB RSS, all API routes responding in <50ms after initial compilation
-- Added allowedDevOrigins config to suppress cross-origin warnings
+- Read all key source files to understand current codebase structure
+- Updated globals.css with new modern color theme (rich slate-blue primary, professional palette)
+- Changed project name from "APCRDA Land Portal" to "Land Quantum" across layout.tsx, login-form.tsx, page.tsx, app-layout.tsx
+- Replaced Building2 icon with Atom icon for Land Quantum branding
+- Modernized login page with gradient background, shadow effects, improved typography
+- Complete dashboard overhaul: colored stat tiles (blue, emerald, violet, amber, rose), recharts bar chart (applications by status) and donut chart (land availability), activity feed
+- Removed standalone Notifications view from sidebar navigation
+- Added notification popover (bell icon) next to profile button in header with time-ago formatting, mark-all-read, scroll area
+- Rewrote Risk & Alerts with drill-down functionality: click any alert to expand and see detailed info grid, action required, and timeline history
+- Added severity-colored tiles that act as clickable filters in Risk & Alerts
+- Added FilterBar component with Clear button across: Cancellations, Audit Log, Users, GIS, Payments, Grievances, Land Parcels, Construction
+- Added search inputs to: Payments, Grievances, Cancellations, Audit Log, Users, Land Parcels
+- Added status/type/role/sector dropdown filters to all applicable views
+- Modernized all badge styling to use variant="outline" with color-coded borders
+- Added colored summary stat tiles to: Payments (violet/emerald/amber/red), Grievances (slate/amber/blue/emerald), Construction (5 colored tiles), My Work Queue
+- Made construction status tiles clickable as filters
+- Made land parcel status tiles clickable as filters
+- Updated footer text to "Land Quantum — Land Allotment & Development Management Portal"
+- Fixed all lint errors (missing semicolons in one-liner useMemo, missing Button import)
+- Verified: lint passes clean, server starts, login API responds correctly, HTML renders with new branding
 
 Stage Summary:
-- Portal is fully functional and accessible in Preview Panel
-- Root cause: sandbox process lifecycle management, not code bugs
-- FIFO pipe technique ensures server survives across Bash tool invocations
-- All previous code fixes (circular import, lazy loading) remain intact
----
-Task ID: 2
-Agent: Main Agent
-Task: Add role-based demo credentials dropdown to login page
-
-Work Log:
-- Read seed data to extract all 7 demo user accounts with roles, names, designations, emails
-- Added DEMO_ACCOUNTS constant array with label, description, email, password for each role
-- Replaced static demo hint text with shadcn/ui Select dropdown above the email field
-- Dropdown groups accounts: "Internal Officers" (6 roles) and "External" (Investor)
-- Each option shows role name + full name + designation
-- Selecting a role auto-fills email and password fields
-- Manual editing of email/password clears the dropdown selection (bidirectional sync)
-- Removed the old static demo hint text at the bottom
-- Verified via agent-browser: opened dropdown, selected Finance Officer, fields auto-filled, clicked Sign In, dashboard loaded as K. Padmavathi (Finance Officer)
-
-Stage Summary:
-- Login page now has a "Demo Account" dropdown with 7 role-based accounts
-- Auto-fills credentials on selection — user just hits Sign In
-- Tested end-to-end: dropdown → select Finance Officer → auto-fill → login → dashboard
----
-Task ID: 3
-Agent: Main Agent
-Task: Reorganize sidebar menu hierarchy + modern professional theme refresh
-
-Work Log:
-- Audited all 36 emerald, 26 amber, 30 destructive color references across 18 files
-- Reorganized sidebar from 5 accordion groups (16 items) to 7 always-expanded logical groups (16 items):
-  - Overview: Dashboard, My Work Queue
-  - Applications: All Applications, Workflow Board, Cancellations
-  - Land & Assets: Land Inventory, GIS Map
-  - Projects: Construction
-  - Finance: Payments
-  - Services: Grievances, Risk & Alerts
-  - System: Users, Departments, Reports, Audit Trail, Notifications, Settings
-- Removed accordion click-to-expand behavior — all groups always visible
-- Complete color palette overhaul in globals.css:
-  - Primary: deep navy blue oklch(0.35 0.065 258) — authoritative, enterprise
-  - Background: subtle blue-tinted white
-  - Sidebar: cool white with blue undertone
-  - Added sidebar-group-foreground token for group labels
-  - Professional chart colors (blue, teal, purple, gold, coral)
-  - Refined border radius 0.5rem, softer ring color
-- Updated app-layout.tsx brand elements: logo/avatars use bg-primary instead of bg-emerald
-- Improved header: semibold title, better icon button sizing, ring on notification badge
-- Content area: bg-muted/30 instead of bg-gray-50/50
-- Footer: tighter padding, shorter text
-- Updated sidebar.tsx SidebarGroupLabel: uppercase, smaller, tracking-wider
-- Login page auto-inherits new primary via bg-primary token
-
-Stage Summary:
-- Sidebar reorganized into 7 logical module groups (always expanded, no accordion)
-- Professional navy blue primary palette applied across the entire application
-- All status badges (emerald/amber) intentionally preserved as semantic colors
-- Verified: login, dashboard with all stats, sidebar navigation all working
----
-Task ID: 4
-Agent: Main Agent
-Task: Keep dev server alive for user preview
-
-Work Log:
-- Server started with FIFO keepalive approach
-- Turbopack compiled / in ~6s
-- All API routes warm
-- Portal accessible via Preview Panel
-
-Stage Summary:
-- Server alive on port 3000 via FIFO keepalive
-- User should refresh Preview Panel to see the portal
+- All 7 user requirements implemented: modern theme, colored stat tiles & charts, alert drill-downs, notification popover (removed module), filters with clear, additional improvements, renamed to Land Quantum
+- 13 files modified: globals.css, layout.tsx, page.tsx, login-form.tsx, app-layout.tsx, app-shell.tsx, dashboard-view.tsx, simple-views.tsx, payments-view.tsx, grievances-view.tsx, construction-view.tsx, land-parcels-view.tsx, views/index.tsx

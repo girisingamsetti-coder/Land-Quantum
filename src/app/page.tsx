@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
 import { LoginForm } from '@/components/login/login-form'
-import { Loader2, Building2 } from 'lucide-react'
+import { Loader2, Atom } from 'lucide-react'
 
 export default function Home() {
   const { isAuthenticated, isLoading, checkSession } = useAuthStore()
@@ -39,12 +39,12 @@ export default function Home() {
   if (!AppShell) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
-          <Building2 className="h-6 w-6 text-primary-foreground" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20">
+          <Atom className="h-6 w-6 text-primary-foreground" />
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
-          <span className="text-sm">Loading portal...</span>
+          <span className="text-sm">Loading Land Quantum...</span>
         </div>
       </div>
     )
