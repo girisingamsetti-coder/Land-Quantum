@@ -5,8 +5,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton,
-  SidebarMenuItem, SidebarProvider, SidebarRail, SidebarSeparator, SidebarMenuSub,
-  SidebarMenuSubButton, SidebarMenuSubItem,
+  SidebarMenuItem, SidebarProvider, SidebarRail, SidebarSeparator,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -18,9 +17,8 @@ import { Separator } from '@/components/ui/separator'
 import {
   LayoutDashboard, FileText, MapPin, CreditCard, HardHat, AlertTriangle,
   Users, Building2, LogOut, Bell, ChevronDown, KanbanSquare, BarChart3,
-  Shield, Settings, ScrollText, Map, ClipboardList, FolderOpen, ChevronRight,
+  Shield, Settings, ScrollText, Map, ClipboardList, MessageSquare,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 interface AppLayoutProps { children: React.ReactNode }
 
@@ -49,7 +47,7 @@ export const LayoutContext = React.createContext<LayoutContextType>({
 export { type View }
 
 interface NavItem {
-  view: View; label: string; icon: React.ComponentType<{ className?: string }>; children?: { view: View; label: string }[]
+  view: View; label: string; icon: React.ComponentType<{ className?: string }>
 }
 
 const navGroups: { label: string; items: NavItem[] }[] = [
@@ -58,40 +56,50 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     items: [
       { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { view: 'my-work-queue', label: 'My Work Queue', icon: ClipboardList },
-      { view: 'risk-alerts', label: 'Risk & Alerts', icon: AlertTriangle },
     ],
   },
   {
-    label: 'Workflow',
+    label: 'Applications',
     items: [
-      { view: 'applications', label: 'Applications', icon: FileText },
+      { view: 'applications', label: 'All Applications', icon: FileText },
       { view: 'workflow-kanban', label: 'Workflow Board', icon: KanbanSquare },
-    ],
-  },
-  {
-    label: 'Land & Infrastructure',
-    items: [
-      { view: 'land-parcels', label: 'Land Inventory', icon: MapPin },
-      { view: 'gis', label: 'GIS Map', icon: Map },
-      { view: 'constructions', label: 'Construction', icon: HardHat },
-    ],
-  },
-  {
-    label: 'Finance & Legal',
-    items: [
-      { view: 'payments', label: 'Payments', icon: CreditCard },
-      { view: 'grievances', label: 'Grievances', icon: AlertTriangle },
       { view: 'cancellations', label: 'Cancellations', icon: ScrollText },
     ],
   },
   {
-    label: 'Administration',
+    label: 'Land & Assets',
     items: [
+      { view: 'land-parcels', label: 'Land Inventory', icon: MapPin },
+      { view: 'gis', label: 'GIS Map', icon: Map },
+    ],
+  },
+  {
+    label: 'Projects',
+    items: [
+      { view: 'constructions', label: 'Construction', icon: HardHat },
+    ],
+  },
+  {
+    label: 'Finance',
+    items: [
+      { view: 'payments', label: 'Payments', icon: CreditCard },
+    ],
+  },
+  {
+    label: 'Services',
+    items: [
+      { view: 'grievances', label: 'Grievances', icon: MessageSquare },
+      { view: 'risk-alerts', label: 'Risk & Alerts', icon: AlertTriangle },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { view: 'users', label: 'Users', icon: Users },
+      { view: 'departments', label: 'Departments', icon: Building2 },
       { view: 'reports', label: 'Reports', icon: BarChart3 },
       { view: 'audit-log', label: 'Audit Trail', icon: Shield },
       { view: 'notifications', label: 'Notifications', icon: Bell },
-      { view: 'users', label: 'Users', icon: Users },
-      { view: 'departments', label: 'Departments', icon: Building2 },
       { view: 'settings', label: 'Settings', icon: Settings },
     ],
   },
@@ -102,83 +110,90 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [view, setView] = useState<View>('dashboard')
   const [viewParams, setViewParams] = useState<Record<string, string>>({})
   const [unreadNotifications, setUnreadNotifications] = useState(meta?.unreadNotifications ?? 0)
-  const [expandedGroup, setExpandedGroup] = useState<string | null>('Overview')
 
   const navigateTo = (v: View, params?: Record<string, string>) => {
     setView(v)
     if (params) setViewParams(params)
   }
 
-  const initials = user?.name ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : 'U'
+  const initials = user?.name
+    ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    : 'U'
+
+  const viewLabel = view
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
 
   return (
     <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications }}>
       <SidebarProvider>
         <Sidebar collapsible="icon">
-          <SidebarHeader>
+          <SidebarHeader className="px-3 pt-4 pb-2">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="gap-3">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-emerald-700 text-white">
+                <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
                     <Building2 className="size-4" />
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="font-semibold">APCRDA</span>
-                    <span className="text-xs text-muted-foreground">Land Portal</span>
+                    <span className="text-sm font-semibold tracking-tight">APCRDA</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">Land Portal</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarHeader>
-          <SidebarSeparator />
-          <SidebarContent className="px-2">
-            {navGroups.map(group => (
-              <SidebarGroup key={group.label}>
-                <SidebarGroupLabel
-                  className="cursor-pointer select-none hover:text-foreground"
-                  onClick={() => setExpandedGroup(expandedGroup === group.label ? null : group.label)}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span>{group.label}</span>
-                    <ChevronRight className={cn('h-3 w-3 transition-transform', expandedGroup === group.label && 'rotate-90')} />
-                  </div>
-                </SidebarGroupLabel>
-                {(expandedGroup === group.label) && (
+          <SidebarSeparator className="mx-3" />
+          <SidebarContent className="gap-0 px-2 py-1">
+            {navGroups.map((group, gi) => (
+              <React.Fragment key={group.label}>
+                <SidebarGroup>
+                  <SidebarGroupLabel className="text-[11px] font-medium uppercase tracking-wider text-sidebar-group-foreground px-2">
+                    {group.label}
+                  </SidebarGroupLabel>
                   <SidebarGroupContent>
                     <SidebarMenu>
-                      {group.items.map((item) => (
-                        <SidebarMenuItem key={item.view}>
-                          <SidebarMenuButton
-                            isActive={view === item.view || (view === 'application-detail' && item.view === 'applications')}
-                            tooltip={item.label}
-                            onClick={() => setView(item.view)}
-                          >
-                            <item.icon className="size-4" />
-                            <span>{item.label}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
+                      {group.items.map((item) => {
+                        const isActive = view === item.view ||
+                          (view === 'application-detail' && item.view === 'applications')
+                        return (
+                          <SidebarMenuItem key={item.view}>
+                            <SidebarMenuButton
+                              isActive={isActive}
+                              tooltip={item.label}
+                              onClick={() => setView(item.view)}
+                              className="rounded-md"
+                            >
+                              <item.icon className="size-4" />
+                              <span>{item.label}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        )
+                      })}
                     </SidebarMenu>
                   </SidebarGroupContent>
+                </SidebarGroup>
+                {gi < navGroups.length - 1 && (
+                  <div className="mx-3 my-1 border-t border-border/50" />
                 )}
-              </SidebarGroup>
+              </React.Fragment>
             ))}
           </SidebarContent>
-          <SidebarFooter>
-            <div className="mx-2 mb-1">
-              <Badge variant="outline" className="w-full justify-center text-[10px] border-amber-500 text-amber-700 bg-amber-50">
+          <SidebarFooter className="gap-1.5">
+            <div className="mx-2">
+              <Badge variant="outline" className="w-full justify-center text-[10px] font-medium border-primary/20 text-primary/70 bg-primary/5 hover:bg-primary/5">
                 DEMO ENVIRONMENT
               </Badge>
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="gap-3">
+                <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs font-medium bg-emerald-100 text-emerald-800">{initials}</AvatarFallback>
+                    <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-0.5 leading-none">
                     <span className="text-sm font-medium truncate max-w-[140px]">{user?.name}</span>
-                    <span className="text-xs text-muted-foreground truncate max-w-[140px]">{user?.role.name}</span>
+                    <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">{user?.role.name}</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -187,37 +202,44 @@ export function AppLayout({ children }: AppLayoutProps) {
           <SidebarRail />
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-white">
-            <div className="flex-1">
-              <h2 className="text-sm font-medium text-muted-foreground capitalize">
-                {view.replace(/-/g, ' ')}
+          <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card px-5">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-sm font-semibold tracking-tight truncate">
+                {viewLabel}
               </h2>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative" onClick={() => setView('notifications')}>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
+                onClick={() => setView('notifications')}
+              >
                 <Bell className="h-4 w-4" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-white">
+                  <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-white ring-2 ring-card">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
               </Button>
-              <Separator orientation="vertical" className="h-6" />
+              <Separator orientation="vertical" className="h-5" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2 px-2">
+                  <Button variant="ghost" className="gap-2 h-9 px-2">
                     <Avatar className="h-7 w-7">
-                      <AvatarFallback className="text-xs bg-emerald-100 text-emerald-800">{initials}</AvatarFallback>
+                      <AvatarFallback className="text-[11px] font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
                     </Avatar>
                     <span className="hidden sm:inline text-sm max-w-[120px] truncate">{user?.name}</span>
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-2 py-1.5">
+                  <div className="px-2.5 py-2">
                     <p className="text-sm font-medium">{user?.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                    {user?.designation && <Badge variant="secondary" className="mt-1 text-[10px]">{user.designation}</Badge>}
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
+                    {user?.designation && (
+                      <Badge variant="secondary" className="mt-1.5 text-[10px] font-medium">{user.designation}</Badge>
+                    )}
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setView('settings')} className="cursor-pointer">
@@ -231,11 +253,11 @@ export function AppLayout({ children }: AppLayoutProps) {
               </DropdownMenu>
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-4 md:p-6 bg-gray-50/50">
+          <main className="flex-1 overflow-auto p-4 md:p-6 bg-muted/30">
             {children}
           </main>
-          <footer className="border-t px-4 py-3 bg-white text-center text-xs text-muted-foreground">
-            APCRDA Land Allotment & Development Management Portal — Demo Environment — All data is for demonstration purposes only
+          <footer className="border-t px-4 py-2.5 bg-card text-center text-[11px] text-muted-foreground">
+            APCRDA Land Allotment & Development Management Portal — Demo Environment
           </footer>
         </SidebarInset>
       </SidebarProvider>
