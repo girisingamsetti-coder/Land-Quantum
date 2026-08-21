@@ -16,12 +16,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   LayoutDashboard, FileText, MapPin, CreditCard, HardHat, AlertTriangle,
   Users, Building2, LogOut, Bell, ChevronDown, KanbanSquare, BarChart3,
   Shield, Settings, ScrollText, Map, ClipboardList, MessageSquare,
-  Atom, Check, Circle, Clock,
+  Atom, Check, Circle, Clock, X, SlidersHorizontal,
 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface AppLayoutProps { children: React.ReactNode }
 
@@ -32,6 +34,12 @@ export type View =
   | 'users' | 'roles' | 'departments' | 'settings' | 'gis'
   | 'my-work-queue' | 'risk-alerts'
 
+export interface GlobalFilters {
+  zone: string
+  status: string
+  dateRange: string
+}
+
 interface LayoutContextType {
   view: View
   setView: (v: View) => void
@@ -40,11 +48,14 @@ interface LayoutContextType {
   navigateTo: (view: View, params?: Record<string, string>) => void
   unreadNotifications: number
   setUnreadNotifications: (n: number) => void
+  globalFilters: GlobalFilters
+  setGlobalFilters: React.Dispatch<React.SetStateAction<GlobalFilters>>
 }
 
 export const LayoutContext = React.createContext<LayoutContextType>({
   view: 'dashboard', setView: () => {}, viewParams: {}, setViewParams: () => {},
   navigateTo: () => {}, unreadNotifications: 0, setUnreadNotifications: () => {},
+  globalFilters: { zone: '', status: '', dateRange: '' }, setGlobalFilters: () => {},
 })
 
 export { type View }
@@ -107,8 +118,125 @@ const navGroups: { label: string; items: NavItem[] }[] = [
   },
 ]
 
+// Breadcrumb config for each view
+const viewDescriptions: Record<string, string> = {
+  dashboard: 'Overview of key metrics and alerts',
+  applications: 'View and manage all land allotment applications',
+  'workflow-kanban': 'Visual workflow board for application stages',
+  'application-detail': 'Application details and processing',
+  'land-parcels': 'Browse and manage land parcels inventory',
+  gis: 'Interactive map of land parcels',
+  constructions: 'Monitor construction progress and compliance',
+  payments: 'Track payments, invoices, and revenue',
+  grievances: 'Handle investor grievances and appeals',
+  cancellations: 'Track cancellation and resumption cases',
+  'risk-alerts': 'Automated risk identification and escalations',
+  users: 'Manage system users and permissions',
+  departments: 'Organization structure and roles',
+  reports: 'Comprehensive analytics and reports',
+  'audit-log': 'Immutable record of all system actions',
+  settings: 'Configure workflow, SLA, and system settings',
+  'my-work-queue': 'Pending tasks assigned to you',
+}
+
 interface Notification {
   id: string; type: string; title: string; message: string; isRead: boolean; createdAt: string
+}
+
+const ZONES = ['All Zones', 'Zone A — Core', 'Zone B — Growth', 'Zone C — Industrial', 'Zone D — Residential']
+const DATE_RANGES = ['All Time', 'Today', 'This Week', 'This Month', 'This Quarter', 'This Year']
+const STATUS_OPTIONS: Record<string, string[]> = {
+  applications: ['All Statuses', 'Submitted', 'Under Review', 'Approved', 'Rejected', 'On Hold'],
+  'land-parcels': ['All Statuses', 'Published', 'Allotted', 'Under Application', 'Reserved', 'On Hold'],
+  payments: ['All Statuses', 'Paid', 'Partially Paid', 'Pending', 'Overdue'],
+  constructions: ['All Statuses', 'Not Started', 'In Progress', 'Delayed', 'Completed'],
+  grievances: ['All Statuses', 'Open', 'In Progress', 'Resolved', 'Closed'],
+  cancellations: ['All Statuses', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'],
+}
+
+function GlobalFilterBar({ view, filters, setFilters }: {
+  view: View; filters: GlobalFilters; setFilters: React.Dispatch<React.SetStateAction<GlobalFilters>>
+}) {
+  const [showFilters, setShowFilters] = useState(false)
+  const activeCount = [filters.zone, filters.status, filters.dateRange].filter(Boolean).length
+
+  // Hide on dashboard and system views
+  const hideOnViews: View[] = ['dashboard', 'settings', 'reports', 'audit-log', 'users', 'departments', 'gis', 'application-detail', 'workflow-kanban']
+  if (hideOnViews.includes(view)) return null
+
+  const currentStatuses = STATUS_OPTIONS[view] || []
+
+  const clearFilters = () => setFilters({ zone: '', status: '', dateRange: '' })
+
+  return (
+    <div className="border-b bg-card/60 backdrop-blur-sm">
+      <div className="px-5 py-2 flex items-center gap-3">
+        <Button
+          variant={showFilters ? 'secondary' : 'ghost'}
+          size="sm"
+          className={cn('h-7 gap-1.5 text-xs', showFilters && 'bg-primary/10 text-primary border-primary/20')}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          <SlidersHorizontal className="h-3 w-3" />
+          Filters
+          {activeCount > 0 && (
+            <Badge className="h-4 min-w-4 px-1 text-[10px] rounded-full ml-0.5">{activeCount}</Badge>
+          )}
+        </Button>
+
+        {!showFilters && activeCount > 0 && (
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            {filters.zone && (
+              <Badge variant="secondary" className="text-[10px] gap-1 pr-1 shrink-0">
+                {filters.zone} <button onClick={() => setFilters(p => ({...p, zone: ''}))}><X className="h-2.5 w-2.5" /></button>
+              </Badge>
+            )}
+            {filters.status && (
+              <Badge variant="secondary" className="text-[10px] gap-1 pr-1 shrink-0">
+                {filters.status} <button onClick={() => setFilters(p => ({...p, status: ''}))}><X className="h-2.5 w-2.5" /></button>
+              </Badge>
+            )}
+            {filters.dateRange && (
+              <Badge variant="secondary" className="text-[10px] gap-1 pr-1 shrink-0">
+                {filters.dateRange} <button onClick={() => setFilters(p => ({...p, dateRange: ''}))}><X className="h-2.5 w-2.5" /></button>
+              </Badge>
+            )}
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] text-muted-foreground hover:text-destructive shrink-0" onClick={clearFilters}>
+              Clear all
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Expanded filter panel */}
+      {showFilters && (
+        <div className="px-5 pb-3 flex flex-wrap items-center gap-2 animate-in slide-in-from-top-1 duration-150">
+          <Select value={filters.zone || ZONES[0]} onValueChange={v => setFilters(p => ({...p, zone: v === ZONES[0] ? '' : v}))}>
+            <SelectTrigger className="w-[180px] h-8 text-xs"><SelectValue placeholder="Zone" /></SelectTrigger>
+            <SelectContent>{ZONES.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}</SelectContent>
+          </Select>
+
+          {currentStatuses.length > 0 && (
+            <Select value={filters.status || STATUS_OPTIONS[view][0]} onValueChange={v => setFilters(p => ({...p, status: v === STATUS_OPTIONS[view][0] ? '' : v}))}>
+              <SelectTrigger className="w-[160px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectContent>{currentStatuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+            </Select>
+          )}
+
+          <Select value={filters.dateRange || DATE_RANGES[0]} onValueChange={v => setFilters(p => ({...p, dateRange: v === DATE_RANGES[0] ? '' : v}))}>
+            <SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue placeholder="Date Range" /></SelectTrigger>
+            <SelectContent>{DATE_RANGES.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+          </Select>
+
+          {activeCount > 0 && (
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
+              <X className="h-3 w-3" /> Clear filters ({activeCount})
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
@@ -118,6 +246,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [unreadNotifications, setUnreadNotifications] = useState(meta?.unreadNotifications ?? 0)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [notifOpen, setNotifOpen] = useState(false)
+  const [globalFilters, setGlobalFilters] = useState<GlobalFilters>({ zone: '', status: '', dateRange: '' })
 
   const navigateTo = (v: View, params?: Record<string, string>) => {
     setView(v)
@@ -130,7 +259,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const viewLabel = view
     .replace(/-/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\w/g, c => c.toUpperCase())
+
+  const viewDescription = viewDescriptions[view] || ''
 
   const fetchNotifications = async () => {
     try {
@@ -157,7 +288,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const notifIcon = (type: string) => {
     switch (type) {
-      case 'stage': return <Check className="h-3.5 w-3.5 text-blue-600" />
+      case 'stage': return <Check className="h-3.5 w-3.5 text-teal-600" />
       case 'assignment': return <Circle className="h-3.5 w-3.5 text-violet-600" />
       case 'sla': return <Clock className="h-3.5 w-3.5 text-amber-600" />
       default: return <Bell className="h-3.5 w-3.5 text-slate-500" />
@@ -174,14 +305,14 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications }}>
+    <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications, globalFilters, setGlobalFilters }}>
       <SidebarProvider>
         <Sidebar collapsible="icon">
           <SidebarHeader className="px-3 pt-4 pb-2">
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-sm">
                     <Atom className="size-4" />
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
@@ -251,14 +382,18 @@ export function AppLayout({ children }: AppLayoutProps) {
           <SidebarRail />
         </Sidebar>
         <SidebarInset>
+          {/* Header */}
           <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card/80 backdrop-blur-sm px-5">
             <div className="flex-1 min-w-0">
-              <h2 className="text-sm font-semibold tracking-tight truncate">
-                {viewLabel}
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold tracking-tight truncate">{viewLabel}</h2>
+                {viewDescription && view !== 'dashboard' && (
+                  <span className="hidden md:inline text-xs text-muted-foreground">— {viewDescription}</span>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-1.5">
-              {/* Notification Bell Popover */}
+              {/* Notification Bell */}
               <Popover open={notifOpen} onOpenChange={setNotifOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -349,6 +484,10 @@ export function AppLayout({ children }: AppLayoutProps) {
               </DropdownMenu>
             </div>
           </header>
+
+          {/* Global Filter Bar */}
+          <GlobalFilterBar view={view} filters={globalFilters} setFilters={setGlobalFilters} />
+
           <main className="flex-1 overflow-auto p-4 md:p-6 bg-muted/30">
             {children}
           </main>

@@ -39,8 +39,8 @@ export default function Home() {
   if (!AppShell) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20">
-          <Atom className="h-6 w-6 text-primary-foreground" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/20">
+          <Atom className="h-6 w-6 text-white" />
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />

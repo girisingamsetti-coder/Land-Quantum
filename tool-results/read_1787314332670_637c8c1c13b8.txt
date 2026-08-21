@@ -1,0 +1,520 @@
+     1→'use client'
+     2→import { useState, useEffect, useMemo } from 'react'
+     3→import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+     4→import { Badge } from '@/components/ui/badge'
+     5→import { Skeleton } from '@/components/ui/skeleton'
+     6→import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+     7→import { Progress } from '@/components/ui/progress'
+     8→import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+     9→import { Button } from '@/components/ui/button'
+    10→import { Input } from '@/components/ui/input'
+    11→import { Separator } from '@/components/ui/separator'
+    12→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+    13→import {
+    14→  ScrollText, Users, Building2, Settings, Map, ClipboardList,
+    15→  AlertTriangle, AlertCircle, CheckCircle2, XCircle, Shield, BarChart3,
+    16→  Search, Filter, X, ChevronDown, ChevronUp, Clock, ArrowRight, FileWarning,
+    17→  IndianRupee,
+    18→} from 'lucide-react'
+    19→import { cn } from '@/lib/utils'
+    20→
+    21→function formatINR(amount: number) { return `\u20B9${amount.toLocaleString('en-IN')}` }
+    22→
+    23→function statusColor(s: string) {
+    24→  if (['Approved','Completed','Paid','Compliant','Resolved','Issued','Executed','Registered'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
+    25→  if (['Under Review','In Progress','Pending','Open','Draft','Submitted','Notice Issued','Decision Made','Scheduled','Under Scrutiny'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
+    26→  if (['Rejected','Failed','Non-Compliant','Overdue','Cancelled'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
+    27→  if (['Deferred','On Hold','Delayed','At Risk','Partially Paid'].includes(s)) return 'bg-orange-100 text-orange-700 border-orange-200'
+    28→  return 'bg-slate-100 text-slate-600 border-slate-200'
+    29→}
+    30→
+    31→function severityColor(s: string) {
+    32→  if (s === 'Critical') return 'bg-red-100 text-red-700 border-red-200'
+    33→  if (s === 'High') return 'bg-orange-100 text-orange-700 border-orange-200'
+    34→  if (s === 'Medium') return 'bg-amber-100 text-amber-700 border-amber-200'
+    35→  return 'bg-blue-100 text-blue-700 border-blue-200'
+    36→}
+    37→
+    38→function severityTileColor(s: string) {
+    39→  if (s === 'Critical') return { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-700', iconBg: 'bg-red-100', iconText: 'text-red-600' }
+    40→  if (s === 'High') return { bg: 'bg-orange-50', border: 'border-orange-100', text: 'text-orange-700', iconBg: 'bg-orange-100', iconText: 'text-orange-600' }
+    41→  if (s === 'Medium') return { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-700', iconBg: 'bg-amber-100', iconText: 'text-amber-600' }
+    42→  return { bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-700', iconBg: 'bg-blue-100', iconText: 'text-blue-600' }
+    43→}
+    44→
+    45→// Filter bar component
+    46→function FilterBar({ children, activeCount, onClear }: { children: React.ReactNode; activeCount: number; onClear: () => void }) {
+    47→  return (
+    48→    <Card>
+    49→      <CardContent className="p-3 flex flex-wrap gap-2 items-center">
+    50→        <div className="flex items-center gap-1.5 text-muted-foreground mr-1">
+    51→          <Filter className="h-3.5 w-3.5" />
+    52→          <span className="text-xs font-medium">Filters</span>
+    53→        </div>
+    54→        {children}
+    55→        {activeCount > 0 && (
+    56→          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground hover:text-foreground" onClick={onClear}>
+    57→            <X className="h-3 w-3" /> Clear ({activeCount})
+    58→          </Button>
+    59→        )}
+    60→      </CardContent>
+    61→    </Card>
+    62→  )
+    63→}
+    64→
+    65→function SearchInput({ value, onChange, onSearch, placeholder }: {
+    66→  value: string; onChange: (v: string) => void; onSearch: () => void; placeholder?: string
+    67→}) {
+    68→  return (
+    69→    <div className="relative flex-1 max-w-sm">
+    70→      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+    71→      <Input
+    72→        placeholder={placeholder || 'Search...'}
+    73→        className="pl-8 h-8 text-sm"
+    74→        value={value}
+    75→        onChange={(e) => onChange(e.target.value)}
+    76→        onKeyDown={(e) => e.key === 'Enter' && onSearch()}
+    77→      />
+    78→    </div>
+    79→  )
+    80→}
+    81→
+    82→// CANCELLATIONS
+    83→export function CancellationsView() {
+    84→  const [data, setData] = useState<any>(null)
+    85→  const [loading, setLoading] = useState(true)
+    86→  const [status, setStatus] = useState('')
+    87→  const [search, setSearch] = useState('')
+    88→
+    89→  useEffect(() => { fetch('/api/cancellations').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+    90→
+    91→  const filtered = useMemo(() => {
+    92→    if (!data?.cases) return []
+    93→    return data.cases.filter((c: any) => {
+    94→      if (status && c.status !== status) return false
+    95→      if (search) {
+    96→        const s = search.toLowerCase()
+    97→        return c.caseNumber?.toLowerCase().includes(s) || c.application?.projectName?.toLowerCase().includes(s) || c.reason?.toLowerCase().includes(s)
+    98→      }
+    99→      return true
+   100→    })
+   101→  }, [data, status, search])
+   102→
+   103→  const activeFilters = [status, search].filter(Boolean).length
+   104→
+   105→  return (
+   106→    <div className="space-y-4">
+   107→      <div><h1 className="text-2xl font-bold tracking-tight">Cancellation & Resumption</h1><p className="text-sm text-muted-foreground">Track cancellation cases, notices, and resumption proceedings</p></div>
+   108→      <FilterBar activeCount={activeFilters} onClear={() => { setStatus(''); setSearch('') }}>
+   109→        <SearchInput value={search} onChange={setSearch} onSearch={() => {}} placeholder="Search cases..." />
+   110→        <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
+   111→          <SelectTrigger className="w-[140px] h-8"><SelectValue placeholder="Status" /></SelectTrigger>
+   112→          <SelectContent>{['All','Open','Notice Issued','Decision Made','Completed','Cancelled'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+   113→        </Select>
+   114→      </FilterBar>
+   115→      <Card><CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({length:3}).map((_,i)=><Skeleton key={i} className="h-14 w-full"/>)}</div> :
+   116→      <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
+   117→        {filtered.map((c: any) => (
+   118→          <TableRow key={c.id}>
+   119→            <TableCell className="font-mono text-xs font-medium">{c.caseNumber}</TableCell>
+   120→            <TableCell className="font-mono text-[11px]">{c.application?.applicationNumber}</TableCell>
+   121→            <TableCell className="text-xs">{c.application?.projectName}</TableCell>
+   122→            <TableCell><Badge variant="outline" className={cn('text-[10px]', c.initiatedBy === 'APCRDA' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200')}>{c.initiatedBy}</Badge></TableCell>
+   123→            <TableCell className="text-xs max-w-[200px] truncate">{c.reason}</TableCell>
+   124→            <TableCell className="text-xs">{c.decision || '—'}</TableCell>
+   125→            <TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(c.status))}>{c.status}</Badge></TableCell>
+   126→          </TableRow>))}
+   127→      </TableBody></Table>}</CardContent></Card>
+   128→    </div>
+   129→  )
+   130→}
+   131→
+   132→// REPORTS
+   133→export function ReportsView() {
+   134→  const [data, setData] = useState<any>(null)
+   135→  const [loading, setLoading] = useState(true)
+   136→  useEffect(() => { fetch('/api/reports?type=overview').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+   137→  return (
+   138→    <div className="space-y-4">
+   139→      <div><h1 className="text-2xl font-bold tracking-tight">Reports & Analytics</h1><p className="text-sm text-muted-foreground">Comprehensive reports on applications, land, finance, and compliance</p></div>
+   140→      <Tabs defaultValue="status"><TabsList><TabsTrigger value="status">By Status</TabsTrigger><TabsTrigger value="stage">By Stage</TabsTrigger><TabsTrigger value="sector">By Sector</TabsTrigger><TabsTrigger value="finance">Finance</TabsTrigger></TabsList>
+   141→        <TabsContent value="status"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Status</TableHead><TableHead className="text-right">Count</TableHead><TableHead>Share</TableHead></TableRow></TableHeader><TableBody>
+   142→          {data?.byStatus?.map((s: any) => (<TableRow key={s.status}><TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(s.status))}>{s.status}</Badge></TableCell><TableCell className="text-right font-bold">{s._count}</TableCell><TableCell><div className="flex items-center gap-2"><Progress value={(s._count/(data?.totalApps||1))*100} className="h-2 flex-1"/><span className="text-xs tabular-nums">{((s._count/(data?.totalApps||1))*100).toFixed(1)}%</span></div></TableCell></TableRow>))}
+   143→        </TableBody></Table></CardContent></Card></TabsContent>
+   144→        <TabsContent value="stage"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead className="text-right">Applications</TableHead></TableRow></TableHeader><TableBody>
+   145→          {data?.byStage?.map((s: any) => (<TableRow key={s.currentStage}><TableCell className="text-sm">{s.currentStage}</TableCell><TableCell className="text-right font-bold">{s._count}</TableCell></TableRow>))}
+   146→        </TableBody></Table></CardContent></Card></TabsContent>
+   147→        <TabsContent value="sector"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Sector</TableHead><TableHead className="text-right">Applications</TableHead></TableRow></TableHeader><TableBody>
+   148→          {data?.bySector?.filter((s:any)=>s.sector).map((s: any) => (<TableRow key={s.sector}><TableCell className="text-sm">{s.sector}</TableCell><TableCell className="text-right font-bold">{s._count}</TableCell></TableRow>))}
+   149→        </TableBody></Table></CardContent></Card></TabsContent>
+   150→        <TabsContent value="finance"><div className="grid md:grid-cols-2 gap-4">
+   151→          <Card className="p-6"><p className="text-sm text-muted-foreground">Total Committed Investment</p><p className="text-3xl font-bold mt-2">{formatINR(data?.totalInvestment || 0)}</p></Card>
+   152→          <Card className="p-6"><p className="text-sm text-muted-foreground">Total Payments Received</p><p className="text-3xl font-bold text-emerald-700 mt-2">{formatINR(data?.payments?._sum?.amountPaid || 0)}</p></Card>
+   153→        </div></TabsContent>
+   154→      </Tabs>
+   155→    </div>
+   156→  )
+   157→}
+   158→
+   159→// AUDIT LOG
+   160→export function AuditLogView() {
+   161→  const [data, setData] = useState<any>(null)
+   162→  const [loading, setLoading] = useState(true)
+   163→  const [action, setAction] = useState('')
+   164→  const [module, setModule] = useState('')
+   165→
+   166→  useEffect(() => { fetch('/api/audit-logs?pageSize=50').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+   167→
+   168→  const actions = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.action))].sort() }, [data])
+   169→  const modules = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.module).filter(Boolean))] }, [data])
+   170→
+   171→  const filtered = useMemo(() => {
+   172→    if (!data?.logs) return []
+   173→    return data.logs.filter((l: any) => {
+   174→      if (action && l.action !== action) return false
+   175→      if (module && l.module !== module) return false
+   176→      return true
+   177→    })
+   178→  }, [data, action, module])
+   179→
+   180→  const activeFilters = [action, module].filter(Boolean).length
+   181→
+   182→  return (
+   183→    <div className="space-y-4">
+   184→      <div><h1 className="text-2xl font-bold tracking-tight">Audit Trail</h1><p className="text-sm text-muted-foreground">Immutable record of all system actions and changes</p></div>
+   185→      <FilterBar activeCount={activeFilters} onClear={() => { setAction(''); setModule('') }}>
+   186→        <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}>
+   187→          <SelectTrigger className="w-[150px] h-8"><SelectValue placeholder="Action" /></SelectTrigger>
+   188→          <SelectContent><SelectItem value="All">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
+   189→        </Select>
+   190→        <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}>
+   191→          <SelectTrigger className="w-[150px] h-8"><SelectValue placeholder="Module" /></SelectTrigger>
+   192→          <SelectContent><SelectItem value="All">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
+   193→        </Select>
+   194→      </FilterBar>
+   195→      <Card><CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-10 w-full"/>)}</div> :
+   196→      <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
+   197→        {filtered.map((l: any) => (<TableRow key={l.id}>
+   198→          <TableCell className="text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">{new Date(l.createdAt).toLocaleString('en-IN')}</TableCell>
+   199→          <TableCell className="text-xs">{l.userName || 'System'}</TableCell>
+   200→          <TableCell className="text-xs">{l.role || '—'}</TableCell>
+   201→          <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{l.action}</Badge></TableCell>
+   202→          <TableCell className="text-xs">{l.module || '—'}</TableCell>
+   203→        </TableRow>))}
+   204→      </TableBody></Table>}</CardContent></Card>
+   205→    </div>
+   206→  )
+   207→}
+   208→
+   209→// USERS
+   210→export function UsersView() {
+   211→  const [data, setData] = useState<any>(null)
+   212→  const [loading, setLoading] = useState(true)
+   213→  const [role, setRole] = useState('')
+   214→  const [search, setSearch] = useState('')
+   215→
+   216→  useEffect(() => { fetch('/api/users').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+   217→
+   218→  const roles = useMemo(() => { if (!data?.users) return []; return [...new Set(data.users.map((u: any) => u.role?.name).filter(Boolean))] }, [data])
+   219→
+   220→  const filtered = useMemo(() => {
+   221→    if (!data?.users) return []
+   222→    return data.users.filter((u: any) => {
+   223→      if (role && u.role?.name !== role) return false
+   224→      if (search) {
+   225→        const s = search.toLowerCase()
+   226→        return u.name?.toLowerCase().includes(s) || u.email?.toLowerCase().includes(s) || u.department?.name?.toLowerCase().includes(s)
+   227→      }
+   228→      return true
+   229→    })
+   230→  }, [data, role, search])
+   231→
+   232→  const activeFilters = [role, search].filter(Boolean).length
+   233→
+   234→  return (
+   235→    <div className="space-y-4">
+   236→      <div><h1 className="text-2xl font-bold tracking-tight">User Management</h1><p className="text-sm text-muted-foreground">Manage system users, roles, and department assignments</p></div>
+   237→      <FilterBar activeCount={activeFilters} onClear={() => { setRole(''); setSearch('') }}>
+   238→        <SearchInput value={search} onChange={setSearch} onSearch={() => {}} placeholder="Search users..." />
+   239→        <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}>
+   240→          <SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Role" /></SelectTrigger>
+   241→          <SelectContent><SelectItem value="All">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+   242→        </Select>
+   243→      </FilterBar>
+   244→      <Card><CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-12 w-full"/>)}</div> :
+   245→      <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
+   246→        {filtered.map((u: any) => (<TableRow key={u.id}>
+   247→          <TableCell className="text-sm font-medium">{u.name}</TableCell>
+   248→          <TableCell className="text-xs">{u.email}</TableCell>
+   249→          <TableCell className="text-xs">{u.designation || '—'}</TableCell>
+   250→          <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{u.role?.name}</Badge></TableCell>
+   251→          <TableCell className="text-xs">{u.department?.name || '—'}</TableCell>
+   252→          <TableCell><Badge variant="outline" className={cn('text-[10px]', u.isActive ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200')}>{u.isActive ? 'Active' : 'Inactive'}</Badge></TableCell>
+   253→        </TableRow>))}
+   254→      </TableBody></Table>}</CardContent></Card>
+   255→    </div>
+   256→  )
+   257→}
+   258→
+   259→// DEPARTMENTS
+   260→export function DepartmentsView() {
+   261→  const [data, setData] = useState<any>(null)
+   262→  const [loading, setLoading] = useState(true)
+   263→  useEffect(() => { fetch('/api/users').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+   264→  return (
+   265→    <div className="space-y-4">
+   266→      <div><h1 className="text-2xl font-bold tracking-tight">Departments & Roles</h1><p className="text-sm text-muted-foreground">Manage organizational structure and role-based access</p></div>
+   267→      <div className="grid md:grid-cols-2 gap-4">
+   268→        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className="font-mono text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+   269→        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.roles?.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+   270→      </div>
+   271→    </div>
+   272→  )
+   273→}
+   274→
+   275→// SETTINGS
+   276→export function SettingsView() {
+   277→  const [data, setData] = useState<any>(null)
+   278→  const [loading, setLoading] = useState(true)
+   279→  useEffect(() => { fetch('/api/workflow-config').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+   280→  return (
+   281→    <div className="space-y-4">
+   282→      <div><h1 className="text-2xl font-bold tracking-tight">Admin Settings</h1><p className="text-sm text-muted-foreground">Configure workflow stages, SLA targets, and system settings</p></div>
+   283→      <Tabs defaultValue="workflow"><TabsList><TabsTrigger value="workflow">Workflow Stages</TabsTrigger><TabsTrigger value="sla">SLA Configuration</TabsTrigger><TabsTrigger value="system">System Settings</TabsTrigger></TabsList>
+   284→        <TabsContent value="workflow"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>#</TableHead><TableHead>Stage</TableHead><TableHead>Owner Role</TableHead><TableHead>SLA (days)</TableHead><TableHead>Optional</TableHead><TableHead>Active</TableHead></TableRow></TableHeader><TableBody>
+   285→          {data?.stages?.map((s: any) => (<TableRow key={s.id}>
+   286→            <TableCell className="text-xs tabular-nums">{s.stageOrder}</TableCell>
+   287→            <TableCell className="text-sm font-medium">{s.stageName}</TableCell>
+   288→            <TableCell className="text-xs">{s.ownerRole}</TableCell>
+   289→            <TableCell className="text-xs tabular-nums">{s.slaDays}</TableCell>
+   290→            <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
+   291→            <TableCell>{s.isActive ? <CheckCircle2 className="h-4 w-4 text-emerald-600"/> : <XCircle className="h-4 w-4 text-red-500"/>}</TableCell>
+   292→          </TableRow>))}
+   293→        </TableBody></Table></CardContent></Card></TabsContent>
+   294→        <TabsContent value="sla"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead>SLA (days)</TableHead></TableRow></TableHeader><TableBody>
+   295→          {data?.stages?.map((s: any) => (<TableRow key={s.id}><TableCell className="text-sm">{s.stageName}</TableCell><TableCell className="text-sm font-bold tabular-nums">{s.slaDays} days</TableCell></TableRow>))}
+   296→        </TableBody></Table></CardContent></Card></TabsContent>
+   297→        <TabsContent value="system"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Key</TableHead><TableHead>Value</TableHead><TableHead>Category</TableHead><TableHead>Label</TableHead></TableRow></TableHeader><TableBody>
+   298→          {data?.settings?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.key}</TableCell><TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell><TableCell className="text-xs">{s.label}</TableCell></TableRow>))}
+   299→        </TableBody></Table></CardContent></Card></TabsContent>
+   300→      </Tabs>
+   301→    </div>
+   302→  )
+   303→}
+   304→
+   305→// GIS
+   306→export function GISView() {
+   307→  const [parcels, setParcels] = useState<any[]>([])
+   308→  const [loading, setLoading] = useState(true)
+   309→  const [statusFilter, setStatusFilter] = useState('')
+   310→
+   311→  useEffect(() => { fetch('/api/land-parcels?pageSize=100').then(r=>r.json()).then(j=>j.success&&setParcels(j.data.parcels)).finally(()=>setLoading(false)) }, [])
+   312→
+   313→  const colorMap: Record<string, string> = { Published: '#10b981', Allotted: '#3b82f6', 'Under Application': '#f59e0b', Reserved: '#8b5cf6', 'On Hold': '#f97316', Withdrawn: '#6b7280', Draft: '#d1d5db', 'Under Review': '#fcd34d' }
+   314→
+   315→  const filtered = statusFilter ? parcels.filter(p => p.status === statusFilter) : parcels
+   316→
+   317→  const activeFilters = statusFilter ? 1 : 0
+   318→
+   319→  return (
+   320→    <div className="space-y-4">
+   321→      <div><h1 className="text-2xl font-bold tracking-tight">GIS Land Map</h1><p className="text-sm text-muted-foreground">Interactive map visualization of land parcels (mock layer)</p></div>
+   322→      <FilterBar activeCount={activeFilters} onClear={() => setStatusFilter('')}>
+   323→        <Select value={statusFilter || 'All'} onValueChange={v => setStatusFilter(v === 'All' ? '' : v)}>
+   324→          <SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Status" /></SelectTrigger>
+   325→          <SelectContent>{['All', ...Object.keys(colorMap)].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+   326→        </Select>
+   327→      </FilterBar>
+   328→      <div className="grid md:grid-cols-3 gap-4">
+   329→        <div className="md:col-span-2"><Card className="overflow-hidden"><div className="bg-gradient-to-br from-emerald-50 via-white to-emerald-100 p-6 min-h-[400px]">
+   330→          <div className="text-center text-muted-foreground mb-4"><Map className="h-8 w-8 mx-auto mb-2"/><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
+   331→          <div className="grid grid-cols-5 gap-2">{filtered.map((p) => (
+   332→            <div key={p.id} className="rounded border-2 p-2 hover:shadow-md transition-shadow" style={{ borderColor: colorMap[p.status] || '#9ca3af' }} title={`${p.plotId}\n${p.zone?.name}\n${p.status}`}>
+   333→              <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }}/><p className="text-[7px] font-mono truncate font-medium">{p.plotId.replace('APCRDA-P-','')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
+   334→            </div>))}</div>
+   335→        </div></Card></div>
+   336→        <Card className="p-4 space-y-3">
+   337→          <h3 className="text-sm font-semibold">Legend</h3>
+   338→          {Object.entries(colorMap).map(([status, color]) => (<div key={status} className="flex items-center gap-2"><div className="h-3 w-3 rounded-sm flex-shrink-0" style={{ backgroundColor: color }}/><span className="text-xs">{status} ({parcels.filter(p=>p.status===status).length})</span></div>))}
+   339→          <Separator/><h3 className="text-sm font-semibold">Zone Distribution</h3>
+   340→          {Object.entries(parcels.reduce((acc: any, p: any) => { const z = p.zone?.name || 'Unknown'; acc[z] = (acc[z]||0)+1; return acc }, {})).map(([zone, count]) => (
+   341→            <div key={zone} className="flex items-center justify-between"><span className="text-xs">{zone}</span><Badge variant="secondary" className="text-[10px]">{count as number}</Badge></div>
+   342→          ))}
+   343→        </Card>
+   344→      </div>
+   345→    </div>
+   346→  )
+   347→}
+   348→
+   349→// MY WORK QUEUE
+   350→export function MyWorkQueue() {
+   351→  const [data, setData] = useState<any>(null)
+   352→  const [loading, setLoading] = useState(true)
+   353→  useEffect(() => { fetch('/api/my-work-queue').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+   354→  return (
+   355→    <div className="space-y-4">
+   356→      <div><h1 className="text-2xl font-bold tracking-tight">My Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>
+   357→      <div className="grid md:grid-cols-3 gap-4">
+   358→        <Card className="border-blue-100 bg-blue-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600"/></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
+   359→        <Card className="border-amber-100 bg-amber-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600"/></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
+   360→        <Card className="border-rose-100 bg-rose-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-4 w-4 text-rose-600"/></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
+   361→      </div>
+   362→      <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="p-0">
+   363→        {loading ? <div className="p-4"><Skeleton className="h-12 w-full"/></div> :
+   364→        data?.assignedStages?.length === 0 ? <p className="text-sm text-muted-foreground p-4">No pending actions</p> :
+   365→        <Table><TableHeader><TableRow><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Stage</TableHead></TableRow></TableHeader><TableBody>
+   366→          {data?.assignedStages?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.application?.applicationNumber}</TableCell><TableCell className="text-xs">{s.application?.projectName}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">{s.stageName}</Badge></TableCell></TableRow>))}
+   367→        </TableBody></Table>}
+   368→      </CardContent></Card>
+   369→    </div>
+   370→  )
+   371→}
+   372→
+   373→// RISK ALERTS WITH DRILL-DOWN
+   374→const RISK_ALERTS = [
+   375→  { id: '1', severity: 'Critical', type: 'SLA Breach', description: 'APCRDA-2024-0008 has breached SLA at Economic Review stage', application: 'APCRDA-2024-0008', createdAt: '2024-12-01T10:30:00Z', details: { stage: 'Economic Review', slaDays: 7, daysOverdue: 3, assignedTo: 'K. Padmavathi', actionRequired: 'Immediate escalation to GoM. Applicant has been notified of delay.' }, history: [{ date: '2024-11-24', event: 'SLA timer started' }, { date: '2024-12-01', event: 'SLA breached — auto-escalation triggered' }] },
+   376→  { id: '2', severity: 'High', type: 'Payment Overdue', description: 'Down payment for APCRDA-2024-0004 is overdue by 15 days', application: 'APCRDA-2024-0004', createdAt: '2024-11-28T09:00:00Z', details: { amountDue: '₹5,00,00,000', dueDate: '2024-11-13', daysOverdue: 15, penaltyAccrued: '₹12,50,000', actionRequired: 'Issue final notice. Initiate cancellation proceedings if unpaid within 7 days.' }, history: [{ date: '2024-11-13', event: 'Payment due date' }, { date: '2024-11-20', event: 'First reminder sent' }, { date: '2024-11-28', event: 'Second notice — escalation' }] },
+   377→  { id: '3', severity: 'High', type: 'Construction Delayed', description: 'Amaravati Tech Hub construction is 30% behind schedule', application: 'APCRDA-2024-0002', createdAt: '2024-11-25T14:00:00Z', details: { projectName: 'Amaravati Tech Hub', physicalProgress: 22, expectedProgress: 52, delayDays: 45, contractor: 'L&T Construction', actionRequired: 'Convene site review meeting. Assess penalty clauses in agreement.' }, history: [{ date: '2024-10-01', event: 'Construction commenced' }, { date: '2024-11-10', event: 'First delay detected' }, { date: '2024-11-25', event: '30% threshold breached — flag escalated' }] },
+   378→  { id: '4', severity: 'Medium', type: 'LOI Expiring', description: 'LOI for APCRDA-2024-0005 expires in 15 days', application: 'APCRDA-2024-0005', createdAt: '2024-11-30T08:00:00Z', details: { loiIssueDate: '2024-09-15', loiExpiryDate: '2024-12-15', daysRemaining: 15, paymentStatus: 'Partially Paid', actionRequired: 'Follow up on pending payment. Consider LOI extension if in progress.' }, history: [{ date: '2024-09-15', event: 'LOI issued' }, { date: '2024-11-15', event: 'Payment partial — 60% received' }, { date: '2024-11-30', event: '15-day expiry warning triggered' }] },
+   379→  { id: '5', severity: 'Medium', type: 'Non-Utilisation', description: 'No construction activity on plot APCRDA-P-022 for 6 months', application: 'APCRDA-2024-0013', createdAt: '2024-11-20T11:00:00Z', details: { plotId: 'APCRDA-P-022', lastActivityDate: '2024-05-20', monthsInactive: 6, agreementDate: '2024-01-10', actionRequired: 'Issue show-cause notice. Review non-utilisation clauses.' }, history: [{ date: '2024-01-10', event: 'Land possession handed over' }, { date: '2024-05-20', event: 'Last construction activity recorded' }, { date: '2024-11-20', event: '6-month inactivity alert' }] },
+   380→  { id: '6', severity: 'Low', type: 'DPR Returned', description: 'DPR for Capital City Mall returned 2 times', application: 'APCRDA-2024-0009', createdAt: '2024-11-27T16:00:00Z', details: { returnCount: 2, reviewer: 'M. Suresh Babu', lastReturnReason: 'Insufficient structural analysis. FSI calculations need revision.', actionRequired: 'Notify applicant. Provide detailed feedback for DPR resubmission.' }, history: [{ date: '2024-11-10', event: 'DPR submitted (1st attempt)' }, { date: '2024-11-15', event: 'DPR returned — 1st time' }, { date: '2024-11-22', event: 'DPR resubmitted (2nd attempt)' }, { date: '2024-11-27', event: 'DPR returned — 2nd time' }] },
+   381→]
+   382→
+   383→function AlertDrillDown({ alert, onClose }: { alert: typeof RISK_ALERTS[0]; onClose: () => void }) {
+   384→  const tc = severityTileColor(alert.severity)
+   385→  return (
+   386→    <div className="mt-3 ml-6 border rounded-lg p-4 space-y-4 animate-in slide-in-from-top-2">
+   387→      <div className="flex items-center justify-between">
+   388→        <h4 className="text-sm font-semibold">Alert Details</h4>
+   389→        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={onClose}><X className="h-3 w-3 mr-1" />Collapse</Button>
+   390→      </div>
+   391→
+   392→      {/* Key Details Grid */}
+   393→      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+   394→        {Object.entries(alert.details).filter(([k]) => k !== 'actionRequired').map(([key, val]) => (
+   395→          <div key={key} className="rounded-md bg-muted/50 p-2.5">
+   396→            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+   397→            <p className="text-xs font-medium mt-0.5">{String(val)}</p>
+   398→          </div>
+   399→        ))}
+   400→      </div>
+   401→
+   402→      {/* Action Required */}
+   403→      {alert.details.actionRequired && (
+   404→        <div className={cn('rounded-md p-3', tc.bg, 'border', tc.border)}>
+   405→          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Action Required</p>
+   406→          <p className={cn('text-xs mt-1', tc.text)}>{alert.details.actionRequired}</p>
+   407→        </div>
+   408→      )}
+   409→
+   410→      {/* Timeline */}
+   411→      {alert.history && alert.history.length > 0 && (
+   412→        <div>
+   413→          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Timeline</p>
+   414→          <div className="space-y-1.5">
+   415→            {alert.history.map((h, i) => (
+   416→              <div key={i} className="flex items-start gap-2">
+   417→                <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+   418→                <div>
+   419→                  <p className="text-[11px] text-muted-foreground">{new Date(h.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+   420→                  <p className="text-xs">{h.event}</p>
+   421→                </div>
+   422→              </div>
+   423→            ))}
+   424→          </div>
+   425→        </div>
+   426→      )}
+   427→    </div>
+   428→  )
+   429→}
+   430→
+   431→export function RiskAlertsView() {
+   432→  const [expandedId, setExpandedId] = useState<string | null>(null)
+   433→  const [severityFilter, setSeverityFilter] = useState('')
+   434→  const [typeFilter, setTypeFilter] = useState('')
+   435→
+   436→  const types = useMemo(() => [...new Set(RISK_ALERTS.map(a => a.type))], [])
+   437→
+   438→  const filtered = useMemo(() => {
+   439→    return RISK_ALERTS.filter(a => {
+   440→      if (severityFilter && a.severity !== severityFilter) return false
+   441→      if (typeFilter && a.type !== typeFilter) return false
+   442→      return true
+   443→    })
+   444→  }, [severityFilter, typeFilter])
+   445→
+   446→  const activeFilters = [severityFilter, typeFilter].filter(Boolean).length
+   447→
+   448→  return (
+   449→    <div className="space-y-4">
+   450→      <div><h1 className="text-2xl font-bold tracking-tight">Risk & Alerts</h1><p className="text-sm text-muted-foreground">Automated risk identification and escalation alerts</p></div>
+   451→
+   452→      {/* Severity Tiles */}
+   453→      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+   454→        {(['Critical', 'High', 'Medium', 'Low'] as const).map(sev => {
+   455→          const tc = severityTileColor(sev)
+   456→          const count = RISK_ALERTS.filter(a => a.severity === sev).length
+   457→          return (
+   458→            <Card key={sev} className={cn('border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'ring-2 ring-offset-1 ring-current')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
+   459→              <CardContent className="p-4">
+   460→                <div className="flex items-start justify-between">
+   461→                  <div>
+   462→                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{sev}</p>
+   463→                    <p className={cn('text-2xl font-bold mt-1 tabular-nums', tc.text)}>{count}</p>
+   464→                  </div>
+   465→                  <div className={cn('rounded-lg p-2', tc.iconBg)}>
+   466→                    <AlertCircle className={cn('h-4 w-4', tc.iconText)} />
+   467→                  </div>
+   468→                </div>
+   469→              </CardContent>
+   470→            </Card>
+   471→          )
+   472→        })}
+   473→      </div>
+   474→
+   475→      <FilterBar activeCount={activeFilters} onClear={() => { setSeverityFilter(''); setTypeFilter('') }}>
+   476→        <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}>
+   477→          <SelectTrigger className="w-[130px] h-8"><SelectValue placeholder="Severity" /></SelectTrigger>
+   478→          <SelectContent>{['All','Critical','High','Medium','Low'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+   479→        </Select>
+   480→        <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}>
+   481→          <SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Alert Type" /></SelectTrigger>
+   482→          <SelectContent><SelectItem value="All">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+   483→        </Select>
+   484→      </FilterBar>
+   485→
+   486→      <div className="space-y-2">
+   487→        {filtered.map((alert) => {
+   488→          const tc = severityTileColor(alert.severity)
+   489→          const isExpanded = expandedId === alert.id
+   490→          return (
+   491→            <div key={alert.id}>
+   492→              <Card className={cn('p-4 border-l-4 cursor-pointer transition-all hover:shadow-sm', tc.border, isExpanded && tc.bg)} onClick={() => setExpandedId(isExpanded ? null : alert.id)}>
+   493→                <div className="flex items-start gap-3">
+   494→                  <div className={cn('rounded-lg p-2 mt-0.5 shrink-0', tc.iconBg)}>
+   495→                    <AlertCircle className={cn('h-4 w-4', tc.iconText)} />
+   496→                  </div>
+   497→                  <div className="flex-1 min-w-0">
+   498→                    <div className="flex items-center gap-2 flex-wrap">
+   499→                      <Badge variant="outline" className={cn('text-[10px]', severityColor(alert.severity))}>{alert.severity}</Badge>
+   500→                      <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{alert.type}</Badge>
+   501→                      <span className="font-mono text-[10px] text-muted-foreground">{alert.application}</span>
+   502→                    </div>
+   503→                    <p className="text-sm mt-1.5">{alert.description}</p>
+   504→                    <div className="flex items-center gap-2 mt-2">
+   505→                      <Clock className="h-3 w-3 text-muted-foreground" />
+   506→                      <span className="text-[10px] text-muted-foreground">{new Date(alert.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+   507→                      {isExpanded ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />}
+   508→                    </div>
+   509→                  </div>
+   510→                </div>
+   511→              </Card>
+   512→              {isExpanded && <AlertDrillDown alert={alert} onClose={() => setExpandedId(null)} />}
+   513→            </div>
+   514→          )
+   515→        })}
+   516→      </div>
+   517→    </div>
+   518→  )
+   519→}
+   520→

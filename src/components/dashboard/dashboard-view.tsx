@@ -9,11 +9,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import {
   ChartContainer, ChartTooltip, ChartTooltipContent,
 } from '@/components/ui/chart'
-import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, ResponsiveContainer } from 'recharts'
+import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, AreaChart, Area } from 'recharts'
 import {
   FileText, LandPlot, IndianRupee, HardHat, MessageSquareWarning,
-  TrendingUp, TrendingDown, ArrowUpRight, Clock, CheckCircle2, XCircle,
-  AlertTriangle, Activity, ArrowRight,
+  TrendingUp, TrendingDown, Clock, CheckCircle2,
+  AlertTriangle, ArrowRight, Zap, ChevronRight, AlertCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -35,7 +35,7 @@ interface RecentApplication {
   landParcel: { plotId: string } | null
 }
 
-interface Notification {
+interface DashboardNotification {
   id: string; type: string; title: string; message: string; isRead: boolean; createdAt: string
 }
 
@@ -59,44 +59,122 @@ function StatusBadge({ status }: { status: string }) {
   return <Badge variant="outline" className={cn('text-[11px] font-medium', cls)}>{status}</Badge>
 }
 
-// Colored stat tile component
-function StatTile({ title, value, description, icon: Icon, color, trend }: {
-  title: string; value: string | number; description?: string
-  icon: React.ElementType; color: 'blue' | 'emerald' | 'violet' | 'amber' | 'rose' | 'slate'
-  trend?: 'up' | 'down' | 'neutral'
+// Vibrant colored stat card
+function StatCard({ title, value, subtitle, icon: Icon, gradient, trend, trendValue }: {
+  title: string; value: string | number; subtitle?: string
+  icon: React.ElementType; gradient: string
+  trend?: 'up' | 'down'; trendValue?: string
 }) {
-  const colorMap = {
-    blue: { bg: 'bg-blue-50', iconBg: 'bg-blue-100', iconText: 'text-blue-600', border: 'border-blue-100' },
-    emerald: { bg: 'bg-emerald-50', iconBg: 'bg-emerald-100', iconText: 'text-emerald-600', border: 'border-emerald-100' },
-    violet: { bg: 'bg-violet-50', iconBg: 'bg-violet-100', iconText: 'text-violet-600', border: 'border-violet-100' },
-    amber: { bg: 'bg-amber-50', iconBg: 'bg-amber-100', iconText: 'text-amber-600', border: 'border-amber-100' },
-    rose: { bg: 'bg-rose-50', iconBg: 'bg-rose-100', iconText: 'text-rose-600', border: 'border-rose-100' },
-    slate: { bg: 'bg-slate-50', iconBg: 'bg-slate-100', iconText: 'text-slate-600', border: 'border-slate-100' },
-  }
-  const c = colorMap[color]
   return (
-    <Card className={cn('border', c.border)}>
+    <Card className="overflow-hidden border-0 shadow-sm">
+      <div className={cn('h-1', gradient)} />
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
             <p className="text-2xl font-bold tabular-nums tracking-tight">{value}</p>
-            {description && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                {trend === 'up' && <TrendingUp className="h-3 w-3 text-emerald-600" />}
-                {trend === 'down' && <TrendingDown className="h-3 w-3 text-red-500" />}
-                {description}
-              </p>
-            )}
+            <div className="flex items-center gap-1.5">
+              {trend === 'up' && <TrendingUp className="h-3 w-3 text-emerald-600" />}
+              {trend === 'down' && <TrendingDown className="h-3 w-3 text-red-500" />}
+              {subtitle && <p className="text-[11px] text-muted-foreground">{subtitle}</p>}
+              {trendValue && (
+                <span className={cn('text-[11px] font-medium', trend === 'up' ? 'text-emerald-600' : 'text-red-500')}>
+                  {trendValue}
+                </span>
+              )}
+            </div>
           </div>
-          <div className={cn('rounded-xl p-2.5', c.iconBg)}>
-            <Icon className={cn('h-5 w-5', c.iconText)} />
+          <div className={cn('rounded-xl p-2.5 bg-gradient-to-br shadow-sm', gradient.replace('from-', 'from-/15 ').replace('to-', 'to-/10 '))}>
+            <div className={cn('rounded-lg p-2', gradient.replace('from-', 'bg-').split(' ')[0])}>
+              <Icon className="h-4 w-4 text-white" />
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
   )
 }
+
+// Compact stat pill
+function MiniStat({ label, value, color }: { label: string; value: number | string; color: string }) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border p-3 bg-card">
+      <div className={cn('h-2 w-2 rounded-full', color)} />
+      <div>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm font-semibold tabular-nums">{value}</p>
+      </div>
+    </div>
+  )
+}
+
+// Alert summary card (drill-down)
+const MOCK_ALERTS = [
+  { id: '1', severity: 'Critical', type: 'SLA Breach', description: 'APCRDA-2024-0008 breached SLA at Economic Review', application: 'APCRDA-2024-0008', details: { stage: 'Economic Review', slaDays: 7, daysOverdue: 3, assignedTo: 'K. Padmavathi' } },
+  { id: '2', severity: 'High', type: 'Payment Overdue', description: 'Down payment for APCRDA-2024-0004 overdue by 15 days', application: 'APCRDA-2024-0004', details: { amountDue: '₹5,00,00,000', daysOverdue: 15, penaltyAccrued: '₹12,50,000' } },
+  { id: '3', severity: 'High', type: 'Construction Delayed', description: 'Amaravati Tech Hub 30% behind schedule', application: 'APCRDA-2024-0002', details: { physicalProgress: '22%', expectedProgress: '52%', delayDays: 45 } },
+]
+
+function severityStyle(s: string) {
+  if (s === 'Critical') return { bg: 'bg-red-50', border: 'border-l-red-500', badge: 'bg-red-100 text-red-700 border-red-200', icon: 'text-red-500' }
+  if (s === 'High') return { bg: 'bg-orange-50', border: 'border-l-orange-500', badge: 'bg-orange-100 text-orange-700 border-orange-200', icon: 'text-orange-500' }
+  if (s === 'Medium') return { bg: 'bg-amber-50', border: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-700 border-amber-200', icon: 'text-amber-500' }
+  return { bg: 'bg-blue-50', border: 'border-l-blue-400', badge: 'bg-blue-100 text-blue-700 border-blue-200', icon: 'text-blue-500' }
+}
+
+function AlertSummaryCard({ alert, onDrillDown }: { alert: typeof MOCK_ALERTS[0]; onDrillDown: () => void }) {
+  const s = severityStyle(alert.severity)
+  return (
+    <div className={cn('rounded-lg border border-l-4 p-3 cursor-pointer transition-all hover:shadow-sm', s.bg, s.border)} onClick={onDrillDown}>
+      <div className="flex items-start gap-2.5">
+        <AlertCircle className={cn('h-4 w-4 mt-0.5 shrink-0', s.icon)} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Badge variant="outline" className={cn('text-[10px]', s.badge)}>{alert.severity}</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono">{alert.application}</span>
+          </div>
+          <p className="text-xs mt-1 line-clamp-1">{alert.description}</p>
+          <div className="flex items-center gap-1 mt-1.5 text-[10px] text-primary font-medium">
+            View details <ChevronRight className="h-3 w-3" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const statusChartConfig = {
+  approved: { label: 'Approved', color: 'oklch(0.62 0.17 160)' },
+  pending: { label: 'Pending', color: 'oklch(0.72 0.16 75)' },
+  rejected: { label: 'Rejected', color: 'oklch(0.60 0.20 25)' },
+  other: { label: 'Other', color: 'oklch(0.85 0.01 260)' },
+}
+
+const pieConfig = {
+  available: { label: 'Available', color: 'oklch(0.62 0.17 160)' },
+  allotted: { label: 'Allotted', color: 'oklch(0.45 0.12 180)' },
+}
+
+// Mock revenue trend data
+const revenueTrend = [
+  { month: 'Jul', revenue: 45 },
+  { month: 'Aug', revenue: 62 },
+  { month: 'Sep', revenue: 58 },
+  { month: 'Oct', revenue: 89 },
+  { month: 'Nov', revenue: 78 },
+  { month: 'Dec', revenue: 95 },
+]
+
+const revenueConfig = {
+  revenue: { label: 'Revenue (₹ Cr)', color: 'oklch(0.45 0.12 180)' },
+}
+
+const quickActions = [
+  { label: 'New Application', icon: FileText, color: 'from-teal-500 to-emerald-600', view: 'applications' as View },
+  { label: 'Land Inventory', icon: LandPlot, color: 'from-emerald-500 to-green-600', view: 'land-parcels' as View },
+  { label: 'Workflow Board', icon: Activity, color: 'from-violet-500 to-purple-600', view: 'workflow-kanban' as View },
+  { label: 'My Work Queue', icon: Clock, color: 'from-amber-500 to-orange-600', view: 'my-work-queue' as View },
+]
 
 function PlaceholderView({ title, description }: { title: string; description: string }) {
   return (
@@ -110,19 +188,13 @@ function PlaceholderView({ title, description }: { title: string; description: s
   )
 }
 
-const statusChartConfig = {
-  approved: { label: 'Approved', color: 'oklch(0.62 0.17 160)' },
-  pending: { label: 'Pending', color: 'oklch(0.72 0.16 75)' },
-  rejected: { label: 'Rejected', color: 'oklch(0.60 0.20 25)' },
-  other: { label: 'Other', color: 'oklch(0.70 0.01 250)' },
-}
-
 export function DashboardView() {
   const { view, navigateTo } = useAppLayout()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentApps, setRecentApps] = useState<RecentApplication[]>([])
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<DashboardNotification[]>([])
   const [loading, setLoading] = useState(true)
+  const [expandedAlert, setExpandedAlert] = useState<string | null>(null)
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -158,23 +230,18 @@ export function DashboardView() {
     { name: 'Approved', value: stats.applications.approved, fill: 'oklch(0.62 0.17 160)' },
     { name: 'Pending', value: stats.applications.pending, fill: 'oklch(0.72 0.16 75)' },
     { name: 'Rejected', value: stats.applications.rejected, fill: 'oklch(0.60 0.20 25)' },
-    { name: 'Others', value: Math.max(0, stats.applications.total - stats.applications.approved - stats.applications.pending - stats.applications.rejected), fill: 'oklch(0.85 0.01 250)' },
+    { name: 'Others', value: Math.max(0, stats.applications.total - stats.applications.approved - stats.applications.pending - stats.applications.rejected), fill: 'oklch(0.85 0.03 260)' },
   ] : []
 
   const pieData = stats ? [
     { name: 'Available', value: stats.landParcels.available, fill: 'oklch(0.62 0.17 160)' },
-    { name: 'Allotted', value: stats.landParcels.total - stats.landParcels.available, fill: 'oklch(0.55 0.18 250)' },
+    { name: 'Allotted', value: stats.landParcels.total - stats.landParcels.available, fill: 'oklch(0.45 0.12 180)' },
   ] : []
-
-  const pieConfig = {
-    available: { label: 'Available', color: 'oklch(0.62 0.17 160)' },
-    allotted: { label: 'Allotted', color: 'oklch(0.55 0.18 250)' },
-  }
 
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <div><Skeleton className="h-8 w-48 mb-2" /><Skeleton className="h-4 w-72" /></div>
+        <div className="flex items-center gap-4"><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-72" /></div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}><CardContent className="p-4"><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-8 w-16" /></CardContent></Card>
@@ -184,41 +251,120 @@ export function DashboardView() {
     )
   }
 
+  const alertCounts = { critical: 1, high: 2, medium: 2, low: 1 }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Overview of Land Quantum management system</p>
+      {/* Welcome Banner */}
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 p-5 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Welcome to Land Quantum</h1>
+            <p className="text-sm text-teal-100 mt-0.5">Monitor applications, land assets, revenue and alerts in real-time</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm gap-1.5" onClick={() => navigateTo('my-work-queue')}>
+              <Zap className="h-3.5 w-3.5" /> My Queue
+            </Button>
+            <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm gap-1.5" onClick={() => navigateTo('risk-alerts')}>
+              <AlertTriangle className="h-3.5 w-3.5" /> Alerts ({Object.values(alertCounts).reduce((a,b)=>a+b,0)})
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Stat Tiles */}
+      {/* Primary Stat Cards - Vibrant Gradient Top Border */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile title="Total Applications" value={stats?.applications.total ?? 0}
-          description={`${stats?.applications.pending ?? 0} pending review`} icon={FileText} color="blue" />
-        <StatTile title="Land Parcels" value={stats?.landParcels.total ?? 0}
-          description={`${stats?.landParcels.available ?? 0} available`} icon={LandPlot} color="emerald" />
-        <StatTile title="Revenue Collected" value={formatCurrency(stats?.payments.totalRevenue ?? 0)}
-          description={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} overdue` : 'All on track'}
-          icon={IndianRupee} color="violet" trend={stats?.payments.overdueCount > 0 ? 'down' : 'up'} />
-        <StatTile title="Active Projects" value={stats?.constructions.active ?? 0}
-          description={stats?.grievances.open > 0 ? `${stats.grievances.open} grievances` : 'No grievances'}
-          icon={HardHat} color="amber" trend={stats?.grievances.open > 0 ? 'down' : 'up'} />
+        <StatCard
+          title="Total Applications"
+          value={stats?.applications.total ?? 0}
+          subtitle={`${stats?.applications.pending ?? 0} pending review`}
+          icon={FileText}
+          gradient="from-teal-500 to-teal-600"
+          trend="up"
+          trendValue="+12%"
+        />
+        <StatCard
+          title="Land Parcels"
+          value={stats?.landParcels.total ?? 0}
+          subtitle={`${stats?.landParcels.available ?? 0} available`}
+          icon={LandPlot}
+          gradient="from-emerald-500 to-green-600"
+        />
+        <StatCard
+          title="Revenue Collected"
+          value={formatCurrency(stats?.payments.totalRevenue ?? 0)}
+          subtitle={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} overdue` : 'All on track'}
+          icon={IndianRupee}
+          gradient="from-violet-500 to-purple-600"
+          trend={stats?.payments.overdueCount > 0 ? 'down' : 'up'}
+          trendValue={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} late` : '+8%'}
+        />
+        <StatCard
+          title="Active Projects"
+          value={stats?.constructions.active ?? 0}
+          subtitle={stats?.grievances.open > 0 ? `${stats.grievances.open} open grievances` : 'No grievances'}
+          icon={HardHat}
+          gradient="from-amber-500 to-orange-600"
+          trend={stats?.grievances.open > 0 ? 'down' : 'up'}
+        />
       </div>
 
-      {/* Secondary Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatTile title="Approved" value={stats?.applications.approved ?? 0}
-          icon={CheckCircle2} color="emerald" trend="up" />
-        <StatTile title="Pending Review" value={stats?.applications.pending ?? 0}
-          icon={Clock} color="amber" />
-        <StatTile title="Open Grievances" value={stats?.grievances.open ?? 0}
-          icon={MessageSquareWarning} color="rose" trend={stats?.grievances.open > 0 ? 'down' : 'up'} />
+      {/* Quick Actions + Mini Stats Row */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <div className="md:col-span-1 grid grid-cols-2 md:grid-cols-1 gap-3">
+          {quickActions.map((action) => (
+            <Button
+              key={action.view}
+              variant="outline"
+              className="h-auto w-full justify-start gap-2.5 p-3 hover:bg-muted/50"
+              onClick={() => navigateTo(action.view)}
+            >
+              <div className={cn('rounded-lg p-1.5 bg-gradient-to-br text-white', action.color)}>
+                <action.icon className="h-3.5 w-3.5" />
+              </div>
+              <span className="text-xs font-medium">{action.label}</span>
+              <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto" />
+            </Button>
+          ))}
+        </div>
+
+        {/* Revenue Trend Chart */}
+        <Card className="md:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">Revenue Trend</CardTitle>
+            <CardDescription>Monthly collection overview (₹ Crores)</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ChartContainer config={revenueConfig} className="h-[160px] w-full">
+              <AreaChart data={revenueTrend} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <defs>
+                  <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="oklch(0.45 0.12 180)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="oklch(0.45 0.12 180)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area type="monotone" dataKey="revenue" stroke="oklch(0.45 0.12 180)" fill="url(#revenueGrad)" strokeWidth={2} />
+              </AreaChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Mini KPIs */}
+        <div className="grid grid-cols-2 gap-3">
+          <MiniStat label="Approved" value={stats?.applications.approved ?? 0} color="bg-emerald-500" />
+          <MiniStat label="Pending" value={stats?.applications.pending ?? 0} color="bg-amber-500" />
+          <MiniStat label="Rejected" value={stats?.applications.rejected ?? 0} color="bg-red-500" />
+          <MiniStat label="Grievances" value={stats?.grievances.open ?? 0} color="bg-rose-500" />
+        </div>
       </div>
 
       {/* Charts Row */}
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Applications by Status Bar Chart */}
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Applications by Status</CardTitle>
@@ -240,7 +386,6 @@ export function DashboardView() {
           </CardContent>
         </Card>
 
-        {/* Land Parcels Donut */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Land Availability</CardTitle>
@@ -271,7 +416,7 @@ export function DashboardView() {
         </Card>
       </div>
 
-      {/* Recent Applications & Activity */}
+      {/* Bottom Row: Recent Apps + Alert Summary */}
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
@@ -310,30 +455,68 @@ export function DashboardView() {
           </CardContent>
         </Card>
 
-        {/* Activity Feed */}
+        {/* Alert Summary — replaces Activity Feed */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold">Activity Feed</CardTitle>
-            <CardDescription>Recent system notifications</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-semibold">Risk Alerts</CardTitle>
+                <CardDescription>Critical items needing attention</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => navigateTo('risk-alerts')}>
+                View all <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 max-h-[280px] overflow-y-auto">
-              {notifications.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No activity yet</p>
-              ) : (
-                notifications.map((notif) => (
-                  <div key={notif.id} className={`flex items-start gap-3 rounded-lg border p-3 transition-colors ${!notif.isRead ? 'bg-primary/[0.03] border-primary/15' : ''}`}>
-                    <div className="mt-0.5 rounded-full bg-muted p-1.5 shrink-0">
-                      <Activity className="h-3 w-3 text-muted-foreground" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className={`text-xs leading-snug ${!notif.isRead ? 'font-medium' : 'text-muted-foreground'}`}>{notif.title}</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{notif.message}</p>
-                      <p className="text-[10px] text-muted-foreground/70 mt-1">{formatDate(notif.createdAt)}</p>
-                    </div>
+            {/* Severity counts */}
+            <div className="flex gap-2 mb-3">
+              {(['Critical', 'High', 'Medium', 'Low'] as const).map(sev => {
+                const counts: Record<string, number> = { Critical: 1, High: 2, Medium: 2, Low: 1 }
+                const styles: Record<string, string> = {
+                  Critical: 'bg-red-100 text-red-700',
+                  High: 'bg-orange-100 text-orange-700',
+                  Medium: 'bg-amber-100 text-amber-700',
+                  Low: 'bg-blue-100 text-blue-700',
+                }
+                return (
+                  <div key={sev} className={cn('flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium', styles[sev])}>
+                    {counts[sev]} {sev}
                   </div>
-                ))
-              )}
+                )
+              })}
+            </div>
+
+            {/* Alert cards */}
+            <div className="space-y-2 max-h-[240px] overflow-y-auto">
+              {MOCK_ALERTS.map((alert) => (
+                <div key={alert.id}>
+                  <AlertSummaryCard
+                    alert={alert}
+                    onDrillDown={() => setExpandedAlert(expandedAlert === alert.id ? null : alert.id)}
+                  />
+                  {expandedAlert === alert.id && (
+                    <div className="mt-2 ml-4 rounded-lg bg-muted/50 border p-3 space-y-2 animate-in slide-in-from-top-1 duration-200">
+                      <div className="grid grid-cols-2 gap-2">
+                        {Object.entries(alert.details).map(([key, val]) => (
+                          <div key={key} className="rounded-md bg-background p-2">
+                            <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                            <p className="text-xs font-medium mt-0.5">{String(val)}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-7 text-[11px] gap-1"
+                        onClick={(e) => { e.stopPropagation(); navigateTo('risk-alerts') }}
+                      >
+                        Open in Risk & Alerts <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

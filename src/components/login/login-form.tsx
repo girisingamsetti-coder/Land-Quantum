@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Eye, EyeOff, Atom, UserCircle } from 'lucide-react'
+import { Loader2, Eye, EyeOff, Atom, UserCircle, Shield } from 'lucide-react'
 
 const DEMO_ACCOUNTS = [
   {
@@ -91,12 +91,17 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 py-12">
+    <>
+    <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-white to-emerald-50" />
+    <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl" />
+    <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl" />
+
+    <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-3">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
-            <Atom className="h-7 w-7 text-primary-foreground" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/20">
+            <Atom className="h-7 w-7 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Land Quantum</h1>
@@ -105,7 +110,7 @@ export function LoginForm() {
         </div>
 
         {/* Login Card */}
-        <Card className="shadow-lg shadow-slate-200/50 border-slate-200/60">
+        <Card className="shadow-xl shadow-slate-200/50 border-slate-200/60">
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">Sign in to your account</CardTitle>
             <CardDescription>Select a demo role or enter credentials manually</CardDescription>
@@ -203,7 +208,7 @@ export function LoginForm() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
               </Button>
@@ -211,10 +216,12 @@ export function LoginForm() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground">
- Demo environment — No real data is stored or transmitted
-        </p>
+        <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+          <Shield className="h-3 w-3" />
+          Demo environment — No real data is stored or transmitted
+        </div>
       </div>
     </div>
+    </>
   )
 }
