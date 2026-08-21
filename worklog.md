@@ -107,3 +107,23 @@ Stage Summary:
 - Dark mode: toggles between light/dark via next-themes class strategy
 - Zero vertical scrolling confirmed (935/935 scrollHeight/clientHeight)
 - Profile dropdown shows Edit Profile, Calendar, Log out as requested
+---
+Task ID: 3
+Agent: Main
+Task: Move utility icons to sidebar bottom, remove DEMO badge, move demo account below password, change logo color
+
+Work Log:
+- Moved notification bell, dark mode toggle, and profile dropdown from right-side utility toolbar into SidebarFooter
+- Removed DEMO badge/text from sidebar footer
+- Slimmed utility toolbar to only contain SidebarTrigger button
+- Moved demo account role selector below the password field in login-form.tsx
+- Regenerated /public/logo.png with navy blue (#1e3a5f) and amber/gold (#d4a843) color scheme, replacing the previous green
+- Committed all changes to git
+
+Stage Summary:
+- All 4 requested changes applied:
+  1. Notification/dark-mode/profile now in sidebar bottom (icon-only visible when collapsed)
+  2. DEMO badge removed from sidebar footer
+  3. Demo account selector now appears after password field on login page
+  4. Logo regenerated with navy/amber color scheme (no green)
+- Working tree clean, all changes committed
