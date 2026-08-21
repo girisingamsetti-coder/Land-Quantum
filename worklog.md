@@ -68,3 +68,20 @@ Stage Summary:
 - Bug fix: Missing Activity import in dashboard-view.tsx replaced with KanbanSquare
 - All 7 feature requests implemented and verified
 - Project name confirmed as Land Quantum throughout
+---
+Task ID: 1
+Agent: main
+Task: Make dashboard cards and charts fit in single screen
+
+Work Log:
+- Read current dashboard-view.tsx (526 lines, 5 vertically stacked sections)
+- Read app-layout.tsx to understand content area constraints (h-14 header, footer, p-4/p-6 padding)
+- Redesigned dashboard layout: removed large welcome banner, merged 3 charts into single row, made bottom section flex-fill with internal scroll
+- Used h-[calc(100vh-10.5rem)] outer container with flexbox and min-h-0 for proper flex child shrinking
+- Fixed JSX comment syntax error (missing closing `}` on line 231)
+- Verified with agent-browser: scrollHeight === clientHeight at 1440x900, 1280x768, and 1024x600 — no overflow at any viewport
+
+Stage Summary:
+- Dashboard now fits entirely in a single screen with no scrolling needed
+- Layout: compact header row (title + 3 action buttons) → 4 stat cards → 3 charts in one row (revenue, bar, pie) → 2-column bottom (recent apps + alerts with internal scroll)
+- Verified at 3 viewport sizes (900px, 768px, 600px heights) — zero overflow

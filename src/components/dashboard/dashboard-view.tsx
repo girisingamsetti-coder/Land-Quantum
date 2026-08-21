@@ -56,55 +56,39 @@ function StatusBadge({ status }: { status: string }) {
       default: return 'bg-slate-100 text-slate-600 border-slate-200'
     }
   })()
-  return <Badge variant="outline" className={cn('text-[11px] font-medium', cls)}>{status}</Badge>
+  return <Badge variant="outline" className={cn('text-[10px] font-medium', cls)}>{status}</Badge>
 }
 
-// Vibrant colored stat card
-function StatCard({ title, value, subtitle, icon: Icon, gradient, trend, trendValue }: {
+// Compact stat card
+function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue }: {
   title: string; value: string | number; subtitle?: string
-  icon: React.ElementType; gradient: string
+  icon: React.ElementType; color: string
   trend?: 'up' | 'down'; trendValue?: string
 }) {
   return (
     <Card className="overflow-hidden border-0 shadow-sm">
-      <div className={cn('h-1', gradient)} />
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
-            <p className="text-2xl font-bold tabular-nums tracking-tight">{value}</p>
-            <div className="flex items-center gap-1.5">
-              {trend === 'up' && <TrendingUp className="h-3 w-3 text-emerald-600" />}
-              {trend === 'down' && <TrendingDown className="h-3 w-3 text-red-500" />}
-              {subtitle && <p className="text-[11px] text-muted-foreground">{subtitle}</p>}
+      <CardContent className="p-3 pb-2.5">
+        <div className="flex items-center gap-3">
+          <div className={cn('rounded-lg p-2 shrink-0', color)}>
+            <Icon className="h-3.5 w-3.5 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider leading-none">{title}</p>
+            <p className="text-lg font-bold tabular-nums tracking-tight mt-1 leading-none">{value}</p>
+            <div className="flex items-center gap-1 mt-1">
+              {trend === 'up' && <TrendingUp className="h-2.5 w-2.5 text-emerald-600" />}
+              {trend === 'down' && <TrendingDown className="h-2.5 w-2.5 text-red-500" />}
+              {subtitle && <p className="text-[10px] text-muted-foreground truncate">{subtitle}</p>}
               {trendValue && (
-                <span className={cn('text-[11px] font-medium', trend === 'up' ? 'text-emerald-600' : 'text-red-500')}>
+                <span className={cn('text-[10px] font-medium', trend === 'up' ? 'text-emerald-600' : 'text-red-500')}>
                   {trendValue}
                 </span>
               )}
             </div>
           </div>
-          <div className={cn('rounded-xl p-2.5 bg-gradient-to-br shadow-sm', gradient.replace('from-', 'from-/15 ').replace('to-', 'to-/10 '))}>
-            <div className={cn('rounded-lg p-2', gradient.replace('from-', 'bg-').split(' ')[0])}>
-              <Icon className="h-4 w-4 text-white" />
-            </div>
-          </div>
         </div>
       </CardContent>
     </Card>
-  )
-}
-
-// Compact stat pill
-function MiniStat({ label, value, color }: { label: string; value: number | string; color: string }) {
-  return (
-    <div className="flex items-center gap-2 rounded-lg border p-3 bg-card">
-      <div className={cn('h-2 w-2 rounded-full', color)} />
-      <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-semibold tabular-nums">{value}</p>
-      </div>
-    </div>
   )
 }
 
@@ -125,19 +109,17 @@ function severityStyle(s: string) {
 function AlertSummaryCard({ alert, onDrillDown }: { alert: typeof MOCK_ALERTS[0]; onDrillDown: () => void }) {
   const s = severityStyle(alert.severity)
   return (
-    <div className={cn('rounded-lg border border-l-4 p-3 cursor-pointer transition-all hover:shadow-sm', s.bg, s.border)} onClick={onDrillDown}>
-      <div className="flex items-start gap-2.5">
-        <AlertCircle className={cn('h-4 w-4 mt-0.5 shrink-0', s.icon)} />
+    <div className={cn('rounded-md border border-l-3 p-2 cursor-pointer transition-all hover:shadow-sm', s.bg, s.border)} onClick={onDrillDown}>
+      <div className="flex items-start gap-2">
+        <AlertCircle className={cn('h-3.5 w-3.5 mt-0.5 shrink-0', s.icon)} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge variant="outline" className={cn('text-[10px]', s.badge)}>{alert.severity}</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono">{alert.application}</span>
+            <Badge variant="outline" className={cn('text-[9px] py-0', s.badge)}>{alert.severity}</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono">{alert.application}</span>
           </div>
-          <p className="text-xs mt-1 line-clamp-1">{alert.description}</p>
-          <div className="flex items-center gap-1 mt-1.5 text-[10px] text-primary font-medium">
-            View details <ChevronRight className="h-3 w-3" />
-          </div>
+          <p className="text-[11px] mt-0.5 line-clamp-1">{alert.description}</p>
         </div>
+        <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
       </div>
     </div>
   )
@@ -155,7 +137,6 @@ const pieConfig = {
   allotted: { label: 'Allotted', color: 'oklch(0.45 0.12 180)' },
 }
 
-// Mock revenue trend data
 const revenueTrend = [
   { month: 'Jul', revenue: 45 },
   { month: 'Aug', revenue: 62 },
@@ -168,13 +149,6 @@ const revenueTrend = [
 const revenueConfig = {
   revenue: { label: 'Revenue (₹ Cr)', color: 'oklch(0.45 0.12 180)' },
 }
-
-const quickActions = [
-  { label: 'New Application', icon: FileText, color: 'from-teal-500 to-emerald-600', view: 'applications' as View },
-  { label: 'Land Inventory', icon: LandPlot, color: 'from-emerald-500 to-green-600', view: 'land-parcels' as View },
-  { label: 'Workflow Board', icon: KanbanSquare, color: 'from-violet-500 to-purple-600', view: 'workflow-kanban' as View },
-  { label: 'My Work Queue', icon: Clock, color: 'from-amber-500 to-orange-600', view: 'my-work-queue' as View },
-]
 
 function PlaceholderView({ title, description }: { title: string; description: string }) {
   return (
@@ -225,7 +199,6 @@ export function DashboardView() {
     return <PlaceholderView title={p.title} description={p.description} />
   }
 
-  // Chart data
   const barData = stats ? [
     { name: 'Approved', value: stats.applications.approved, fill: 'oklch(0.62 0.17 160)' },
     { name: 'Pending', value: stats.applications.pending, fill: 'oklch(0.72 0.16 75)' },
@@ -240,11 +213,11 @@ export function DashboardView() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
-        <div className="flex items-center gap-4"><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-72" /></div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="p-4 space-y-3">
+        <div className="flex items-center gap-4"><Skeleton className="h-6 w-40" /></div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i}><CardContent className="p-4"><Skeleton className="h-4 w-24 mb-2" /><Skeleton className="h-8 w-16" /></CardContent></Card>
+            <Card key={i}><CardContent className="p-3"><Skeleton className="h-3 w-20 mb-1.5" /><Skeleton className="h-6 w-14" /></CardContent></Card>
           ))}
         </div>
       </div>
@@ -254,34 +227,37 @@ export function DashboardView() {
   const alertCounts = { critical: 1, high: 2, medium: 2, low: 1 }
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 p-5 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Welcome to Land Quantum</h1>
-            <p className="text-sm text-teal-100 mt-0.5">Monitor applications, land assets, revenue and alerts in real-time</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm gap-1.5" onClick={() => navigateTo('my-work-queue')}>
-              <Zap className="h-3.5 w-3.5" /> My Queue
-            </Button>
-            <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm gap-1.5" onClick={() => navigateTo('risk-alerts')}>
-              <AlertTriangle className="h-3.5 w-3.5" /> Alerts ({Object.values(alertCounts).reduce((a,b)=>a+b,0)})
-            </Button>
-          </div>
+    <div className="flex flex-col gap-3 h-[calc(100vh-10.5rem)] min-h-0">
+      {/* Compact Header Row with Quick Actions */}
+      <div className="flex items-center justify-between shrink-0">
+        <div>
+          <h1 className="text-base font-bold tracking-tight">Dashboard</h1>
+          <p className="text-[11px] text-muted-foreground -mt-0.5">Real-time overview of applications, land, revenue and alerts</p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Button variant="outline" size="sm" className="h-7 text-[11px] gap-1.5" onClick={() => navigateTo('my-work-queue')}>
+            <Clock className="h-3 w-3" /> My Queue
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-[11px] gap-1.5" onClick={() => navigateTo('applications')}>
+            <FileText className="h-3 w-3" /> New App
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-[11px] gap-1.5" onClick={() => navigateTo('risk-alerts')}>
+            <AlertTriangle className="h-3 w-3" />
+            <Badge variant="destructive" className="h-4 min-w-4 px-1 text-[9px] rounded-full">
+              {Object.values(alertCounts).reduce((a, b) => a + b, 0)}
+            </Badge>
+          </Button>
         </div>
       </div>
 
-      {/* Primary Stat Cards - Vibrant Gradient Top Border */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Stat Cards Row */}
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 shrink-0">
         <StatCard
           title="Total Applications"
           value={stats?.applications.total ?? 0}
-          subtitle={`${stats?.applications.pending ?? 0} pending review`}
+          subtitle={`${stats?.applications.pending ?? 0} pending`}
           icon={FileText}
-          gradient="from-teal-500 to-teal-600"
+          color="bg-gradient-to-br from-teal-500 to-teal-600"
           trend="up"
           trendValue="+12%"
         />
@@ -290,63 +266,44 @@ export function DashboardView() {
           value={stats?.landParcels.total ?? 0}
           subtitle={`${stats?.landParcels.available ?? 0} available`}
           icon={LandPlot}
-          gradient="from-emerald-500 to-green-600"
+          color="bg-gradient-to-br from-emerald-500 to-green-600"
         />
         <StatCard
-          title="Revenue Collected"
+          title="Revenue"
           value={formatCurrency(stats?.payments.totalRevenue ?? 0)}
-          subtitle={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} overdue` : 'All on track'}
+          subtitle={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} overdue` : 'On track'}
           icon={IndianRupee}
-          gradient="from-violet-500 to-purple-600"
+          color="bg-gradient-to-br from-violet-500 to-purple-600"
           trend={stats?.payments.overdueCount > 0 ? 'down' : 'up'}
-          trendValue={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} late` : '+8%'}
         />
         <StatCard
           title="Active Projects"
           value={stats?.constructions.active ?? 0}
-          subtitle={stats?.grievances.open > 0 ? `${stats.grievances.open} open grievances` : 'No grievances'}
+          subtitle={stats?.grievances.open > 0 ? `${stats.grievances.open} grievances` : 'No grievances'}
           icon={HardHat}
-          gradient="from-amber-500 to-orange-600"
-          trend={stats?.grievances.open > 0 ? 'down' : 'up'}
+          color="bg-gradient-to-br from-amber-500 to-orange-600"
         />
       </div>
 
-      {/* Quick Actions + Mini Stats Row */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <div className="md:col-span-1 grid grid-cols-2 md:grid-cols-1 gap-3">
-          {quickActions.map((action) => (
-            <Button
-              key={action.view}
-              variant="outline"
-              className="h-auto w-full justify-start gap-2.5 p-3 hover:bg-muted/50"
-              onClick={() => navigateTo(action.view)}
-            >
-              <div className={cn('rounded-lg p-1.5 bg-gradient-to-br text-white', action.color)}>
-                <action.icon className="h-3.5 w-3.5" />
-              </div>
-              <span className="text-xs font-medium">{action.label}</span>
-              <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto" />
-            </Button>
-          ))}
-        </div>
-
-        {/* Revenue Trend Chart */}
-        <Card className="md:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Revenue Trend</CardTitle>
-            <CardDescription>Monthly collection overview (₹ Crores)</CardDescription>
+      {/* Charts Row — 3 charts in one row */}
+      <div className="grid gap-3 lg:grid-cols-3 shrink-0">
+        {/* Revenue Trend */}
+        <Card>
+          <CardHeader className="pb-1 pt-3 px-3">
+            <CardTitle className="text-xs font-semibold">Revenue Trend</CardTitle>
+            <CardDescription className="text-[10px]">₹ Crores</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <ChartContainer config={revenueConfig} className="h-[160px] w-full">
-              <AreaChart data={revenueTrend} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          <CardContent className="pt-0 pb-3 px-3">
+            <ChartContainer config={revenueConfig} className="h-[120px] w-full">
+              <AreaChart data={revenueTrend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                 <defs>
                   <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="oklch(0.45 0.12 180)" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="oklch(0.45 0.12 180)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area type="monotone" dataKey="revenue" stroke="oklch(0.45 0.12 180)" fill="url(#revenueGrad)" strokeWidth={2} />
               </AreaChart>
@@ -354,29 +311,19 @@ export function DashboardView() {
           </CardContent>
         </Card>
 
-        {/* Mini KPIs */}
-        <div className="grid grid-cols-2 gap-3">
-          <MiniStat label="Approved" value={stats?.applications.approved ?? 0} color="bg-emerald-500" />
-          <MiniStat label="Pending" value={stats?.applications.pending ?? 0} color="bg-amber-500" />
-          <MiniStat label="Rejected" value={stats?.applications.rejected ?? 0} color="bg-red-500" />
-          <MiniStat label="Grievances" value={stats?.grievances.open ?? 0} color="bg-rose-500" />
-        </div>
-      </div>
-
-      {/* Charts Row */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Applications by Status</CardTitle>
-            <CardDescription>Distribution of application statuses</CardDescription>
+        {/* Applications by Status */}
+        <Card>
+          <CardHeader className="pb-1 pt-3 px-3">
+            <CardTitle className="text-xs font-semibold">Applications by Status</CardTitle>
+            <CardDescription className="text-[10px]">Distribution</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <ChartContainer config={statusChartConfig} className="h-[220px] w-full">
-              <BarChart data={barData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+          <CardContent className="pt-0 pb-3 px-3">
+            <ChartContainer config={statusChartConfig} className="h-[120px] w-full">
+              <BarChart data={barData} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {barData.map((entry, index) => (
                     <Cell key={index} fill={entry.fill} />
                   ))}
@@ -386,13 +333,14 @@ export function DashboardView() {
           </CardContent>
         </Card>
 
+        {/* Land Availability Pie */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Land Availability</CardTitle>
-            <CardDescription>Parcels by status</CardDescription>
+          <CardHeader className="pb-1 pt-3 px-3">
+            <CardTitle className="text-xs font-semibold">Land Availability</CardTitle>
+            <CardDescription className="text-[10px]">Parcels by status</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0 flex items-center justify-center">
-            <ChartContainer config={pieConfig} className="h-[220px] w-full">
+          <CardContent className="pt-0 pb-3 px-3 flex items-center justify-center">
+            <ChartContainer config={pieConfig} className="h-[120px] w-full">
               <PieChart>
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Pie
@@ -401,9 +349,9 @@ export function DashboardView() {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={55}
-                  outerRadius={85}
-                  strokeWidth={3}
+                  innerRadius={30}
+                  outerRadius={48}
+                  strokeWidth={2}
                   stroke="white"
                 >
                   {pieData.map((entry, index) => (
@@ -416,37 +364,35 @@ export function DashboardView() {
         </Card>
       </div>
 
-      {/* Bottom Row: Recent Apps + Alert Summary */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-3">
+      {/* Bottom Row: Recent Apps + Risk Alerts — fills remaining space */}
+      <div className="grid gap-3 lg:grid-cols-2 min-h-0 flex-1">
+        {/* Recent Applications */}
+        <Card className="flex flex-col min-h-0">
+          <CardHeader className="pb-2 pt-3 px-3 shrink-0">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-semibold">Recent Applications</CardTitle>
-                <CardDescription>Latest land allotment applications</CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => navigateTo('applications')}>
-                View all <ArrowRight className="h-3 w-3" />
+              <CardTitle className="text-xs font-semibold">Recent Applications</CardTitle>
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('applications')}>
+                View all <ArrowRight className="h-2.5 w-2.5" />
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          <CardContent className="px-3 pb-3 flex-1 min-h-0 overflow-y-auto">
+            <div className="space-y-1.5">
               {recentApps.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No applications yet</p>
+                <p className="text-xs text-muted-foreground text-center py-6">No applications yet</p>
               ) : (
                 recentApps.map((app) => (
-                  <div key={app.id} className="flex items-center justify-between gap-4 rounded-lg border p-3 hover:bg-muted/30 transition-colors cursor-pointer"
+                  <div key={app.id} className="flex items-center justify-between gap-2 rounded-md border p-2 hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => navigateTo('application-detail', { id: app.id })}>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{app.projectName || app.applicationNumber}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {app.applicant?.organizationName}{app.landParcel ? ` · Plot ${app.landParcel.plotId}` : ''}
+                      <p className="text-[11px] font-medium truncate">{app.projectName || app.applicationNumber}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">
+                        {app.applicant?.organizationName}{app.landParcel ? ` · ${app.landParcel.plotId}` : ''}
                       </p>
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
+                    <div className="flex flex-col items-end gap-0.5 shrink-0">
                       <StatusBadge status={app.status} />
-                      <span className="text-[10px] text-muted-foreground">{formatDate(app.createdAt)}</span>
+                      <span className="text-[9px] text-muted-foreground">{formatDate(app.createdAt)}</span>
                     </div>
                   </div>
                 ))
@@ -455,22 +401,17 @@ export function DashboardView() {
           </CardContent>
         </Card>
 
-        {/* Alert Summary — replaces Activity Feed */}
-        <Card>
-          <CardHeader className="pb-3">
+        {/* Risk Alerts */}
+        <Card className="flex flex-col min-h-0">
+          <CardHeader className="pb-2 pt-3 px-3 shrink-0">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-semibold">Risk Alerts</CardTitle>
-                <CardDescription>Critical items needing attention</CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => navigateTo('risk-alerts')}>
-                View all <ArrowRight className="h-3 w-3" />
+              <CardTitle className="text-xs font-semibold">Risk Alerts</CardTitle>
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('risk-alerts')}>
+                View all <ArrowRight className="h-2.5 w-2.5" />
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
             {/* Severity counts */}
-            <div className="flex gap-2 mb-3">
+            <div className="flex gap-1.5 mt-1">
               {(['Critical', 'High', 'Medium', 'Low'] as const).map(sev => {
                 const counts: Record<string, number> = { Critical: 1, High: 2, Medium: 2, Low: 1 }
                 const styles: Record<string, string> = {
@@ -480,15 +421,15 @@ export function DashboardView() {
                   Low: 'bg-blue-100 text-blue-700',
                 }
                 return (
-                  <div key={sev} className={cn('flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium', styles[sev])}>
+                  <div key={sev} className={cn('flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-medium', styles[sev])}>
                     {counts[sev]} {sev}
                   </div>
                 )
               })}
             </div>
-
-            {/* Alert cards */}
-            <div className="space-y-2 max-h-[240px] overflow-y-auto">
+          </CardHeader>
+          <CardContent className="px-3 pb-3 flex-1 min-h-0 overflow-y-auto">
+            <div className="space-y-1.5">
               {MOCK_ALERTS.map((alert) => (
                 <div key={alert.id}>
                   <AlertSummaryCard
@@ -496,22 +437,22 @@ export function DashboardView() {
                     onDrillDown={() => setExpandedAlert(expandedAlert === alert.id ? null : alert.id)}
                   />
                   {expandedAlert === alert.id && (
-                    <div className="mt-2 ml-4 rounded-lg bg-muted/50 border p-3 space-y-2 animate-in slide-in-from-top-1 duration-200">
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="mt-1.5 ml-3 rounded-md bg-muted/50 border p-2 space-y-1.5 animate-in slide-in-from-top-1 duration-200">
+                      <div className="grid grid-cols-2 gap-1.5">
                         {Object.entries(alert.details).map(([key, val]) => (
-                          <div key={key} className="rounded-md bg-background p-2">
-                            <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                            <p className="text-xs font-medium mt-0.5">{String(val)}</p>
+                          <div key={key} className="rounded bg-background p-1.5">
+                            <p className="text-[8px] font-medium text-muted-foreground uppercase tracking-wider leading-none">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                            <p className="text-[11px] font-medium mt-0.5">{String(val)}</p>
                           </div>
                         ))}
                       </div>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-full h-7 text-[11px] gap-1"
+                        className="w-full h-6 text-[10px] gap-1"
                         onClick={(e) => { e.stopPropagation(); navigateTo('risk-alerts') }}
                       >
-                        Open in Risk & Alerts <ArrowRight className="h-3 w-3" />
+                        Open in Risk & Alerts <ArrowRight className="h-2.5 w-2.5" />
                       </Button>
                     </div>
                   )}
