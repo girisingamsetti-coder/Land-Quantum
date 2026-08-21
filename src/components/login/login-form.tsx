@@ -123,43 +123,6 @@ export function LoginForm() {
                 </div>
               )}
 
-              {/* Demo Role Selector */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1.5">
-                  <UserCircle className="h-3.5 w-3.5" />
-                  Demo Account
-                </Label>
-                <Select value={selectedRole} onValueChange={handleRoleSelect}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a role to auto-fill credentials" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Internal Officers</SelectLabel>
-                      {DEMO_ACCOUNTS.slice(0, 6).map((account) => (
-                        <SelectItem key={account.label} value={account.label}>
-                          <span className="font-medium">{account.label}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            {account.description}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>External</SelectLabel>
-                      {DEMO_ACCOUNTS.slice(6).map((account) => (
-                        <SelectItem key={account.label} value={account.label}>
-                          <span className="font-medium">{account.label}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            {account.description}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -207,6 +170,43 @@ export function LoginForm() {
                     )}
                   </button>
                 </div>
+              </div>
+
+              {/* Demo Role Selector */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1.5">
+                  <UserCircle className="h-3.5 w-3.5" />
+                  Demo Account
+                </Label>
+                <Select value={selectedRole} onValueChange={handleRoleSelect}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a role to auto-fill credentials" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Internal Officers</SelectLabel>
+                      {DEMO_ACCOUNTS.slice(0, 6).map((account) => (
+                        <SelectItem key={account.label} value={account.label}>
+                          <span className="font-medium">{account.label}</span>
+                          <span className="ml-2 text-xs text-muted-foreground">
+                            {account.description}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel>External</SelectLabel>
+                      {DEMO_ACCOUNTS.slice(6).map((account) => (
+                        <SelectItem key={account.label} value={account.label}>
+                          <span className="font-medium">{account.label}</span>
+                          <span className="ml-2 text-xs text-muted-foreground">
+                            {account.description}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit" className="w-full bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

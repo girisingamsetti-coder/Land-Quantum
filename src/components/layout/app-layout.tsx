@@ -17,7 +17,6 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
@@ -316,24 +315,119 @@ export function AppLayout({ children }: AppLayoutProps) {
             </SidebarMenu>
           </SidebarContent>
 
-          {/* Footer - User Info Display */}
-          <SidebarFooter className="gap-1.5">
-            <div className="mx-2 group-data-[collapsible=icon]:hidden">
-              <Badge variant="outline" className="w-full justify-center text-[10px] font-medium border-primary/20 text-primary/70 bg-primary/5 hover:bg-primary/5">
-                DEMO
-              </Badge>
-            </div>
+          {/* Footer - Notification, Dark Mode, Profile */}
+          <SidebarFooter className="gap-0.5">
+            <SidebarSeparator />
             <SidebarMenu>
+              {/* Notification Bell */}
               <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="gap-3 rounded-lg" tooltip={`${user?.name} · ${user?.role.name}`}>
-                  <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col gap-0.5 leading-none overflow-hidden">
-                    <span className="text-sm font-medium truncate max-w-[140px]">{user?.name}</span>
-                    <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">{user?.role.name}</span>
-                  </div>
-                </SidebarMenuButton>
+                <Popover open={notifOpen} onOpenChange={setNotifOpen}>
+                  <PopoverTrigger asChild>
+                    <SidebarMenuButton tooltip="Notifications">
+                      <div className="relative">
+                        <Bell className="size-4" />
+                        {unreadNotifications > 0 && (
+                          <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-primary-foreground">
+                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                          </span>
+                        )}
+                      </div>
+                      <span>Notifications</span>
+                    </SidebarMenuButton>
+                  </PopoverTrigger>
+                  <PopoverContent side="right" align="start" className="w-80 p-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-b">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-semibold">Notifications</h3>
+                        {unreadNotifications > 0 && (
+                          <Badge className="text-[10px] h-5 px-1.5">{unreadNotifications} new</Badge>
+                        )}
+                      </div>
+                      {unreadNotifications > 0 && (
+                        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={markAllRead}>
+                          Mark all read
+                        </Button>
+                      )}
+                    </div>
+                    <ScrollArea className="max-h-[320px]">
+                      {notifications.length === 0 ? (
+                        <div className="py-8 text-center">
+                          <Bell className="h-6 w-6 mx-auto text-muted-foreground/50" />
+                          <p className="text-xs text-muted-foreground mt-2">No notifications</p>
+                        </div>
+                      ) : (
+                        <div className="divide-y">
+                          {notifications.map((n) => (
+                            <div
+                              key={n.id}
+                              className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer ${!n.isRead ? 'bg-primary/[0.03]' : ''}`}
+                            >
+                              <div className="mt-0.5 rounded-full bg-muted p-1.5 shrink-0">
+                                {notifIcon(n.type)}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className={`text-xs leading-snug ${!n.isRead ? 'font-medium' : 'text-muted-foreground'}`}>{n.title}</p>
+                                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
+                                <p className="text-[10px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</p>
+                              </div>
+                              {!n.isRead && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0" />}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </ScrollArea>
+                  </PopoverContent>
+                </Popover>
+              </SidebarMenuItem>
+
+              {/* Dark Mode Toggle */}
+              {mounted && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  >
+                    {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+                    <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
+              {/* Profile Dropdown */}
+              <SidebarMenuItem>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton tooltip="Profile">
+                      <UserCircle className="size-4" />
+                      <span>{user?.name}</span>
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="right" align="start" className="w-52">
+                    <div className="px-2.5 py-2 flex items-center gap-3">
+                      <Avatar className="h-9 w-9 shrink-0">
+                        <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        {user?.designation && (
+                          <Badge variant="secondary" className="mt-1 text-[10px] font-medium">{user.designation}</Badge>
+                        )}
+                      </div>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="cursor-pointer">
+                      <UserCircle className="mr-2 h-4 w-4" /> Edit Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Calendar className="mr-2 h-4 w-4" /> Calendar
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" /> Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
@@ -341,122 +435,9 @@ export function AppLayout({ children }: AppLayoutProps) {
         </Sidebar>
 
         <SidebarInset>
-          {/* Slim Utility Toolbar - replaces old header */}
-          <div className="flex h-10 shrink-0 items-center justify-between border-b px-3 bg-card/80 backdrop-blur-sm">
-            {/* Left: Sidebar Collapse Toggle */}
-            <SidebarTrigger className="-ml-1" />
-
-            {/* Right: Notification, Dark Mode, Profile */}
-            <div className="flex items-center gap-0.5">
-              {/* Notification Bell */}
-              <Popover open={notifOpen} onOpenChange={setNotifOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative h-8 w-8 text-muted-foreground hover:text-foreground"
-                  >
-                    <Bell className="h-4 w-4" />
-                    {unreadNotifications > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-white ring-2 ring-card">
-                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                      </span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-80 p-0">
-                  <div className="flex items-center justify-between px-4 py-3 border-b">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold">Notifications</h3>
-                      {unreadNotifications > 0 && (
-                        <Badge className="text-[10px] h-5 px-1.5">{unreadNotifications} new</Badge>
-                      )}
-                    </div>
-                    {unreadNotifications > 0 && (
-                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={markAllRead}>
-                        Mark all read
-                      </Button>
-                    )}
-                  </div>
-                  <ScrollArea className="max-h-[320px]">
-                    {notifications.length === 0 ? (
-                      <div className="py-8 text-center">
-                        <Bell className="h-6 w-6 mx-auto text-muted-foreground/50" />
-                        <p className="text-xs text-muted-foreground mt-2">No notifications</p>
-                      </div>
-                    ) : (
-                      <div className="divide-y">
-                        {notifications.map((n) => (
-                          <div
-                            key={n.id}
-                            className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer ${!n.isRead ? 'bg-primary/[0.03]' : ''}`}
-                          >
-                            <div className="mt-0.5 rounded-full bg-muted p-1.5 shrink-0">
-                              {notifIcon(n.type)}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className={`text-xs leading-snug ${!n.isRead ? 'font-medium' : 'text-muted-foreground'}`}>{n.title}</p>
-                              <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
-                              <p className="text-[10px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</p>
-                            </div>
-                            {!n.isRead && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0" />}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </ScrollArea>
-                </PopoverContent>
-              </Popover>
-
-              <Separator orientation="vertical" className="h-4 mx-1" />
-
-              {/* Dark Mode Toggle */}
-              {mounted && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                >
-                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              )}
-
-              <Separator orientation="vertical" className="h-4 mx-1" />
-
-              {/* Profile Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2 h-8 px-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-[10px] font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
-                    </Avatar>
-                    <span className="hidden sm:inline text-xs max-w-[100px] truncate">{user?.name}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52">
-                  <div className="px-2.5 py-2">
-                    <p className="text-sm font-medium">{user?.name}</p>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
-                    {user?.designation && (
-                      <Badge variant="secondary" className="mt-1.5 text-[10px] font-medium">{user.designation}</Badge>
-                    )}
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
-                    <UserCircle className="mr-2 h-4 w-4" /> Edit Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Calendar className="mr-2 h-4 w-4" /> Calendar
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" /> Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          {/* Sidebar Collapse Toggle - minimal toolbar */}
+          <div className="flex h-9 shrink-0 items-center px-2 border-b bg-card/60">
+            <SidebarTrigger className="-ml-0.5" />
           </div>
 
           {/* Global Filter Bar */}
@@ -468,7 +449,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
 
           <footer className="shrink-0 border-t px-4 py-2 bg-card text-center text-[11px] text-muted-foreground">
-            Land Quantum — Land Allotment & Development Management Portal · Demo Environment
+            Land Quantum — Land Allotment & Development Management Portal
           </footer>
         </SidebarInset>
       </SidebarProvider>
