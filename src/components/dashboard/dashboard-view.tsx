@@ -13,7 +13,7 @@ import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, AreaChart, Area } fro
 import {
   FileText, LandPlot, IndianRupee, HardHat, MessageSquareWarning,
   TrendingUp, TrendingDown, Clock, CheckCircle2,
-  AlertTriangle, ArrowRight, Zap, ChevronRight, AlertCircle,
+  AlertTriangle, ArrowRight, Zap, ChevronRight, AlertCircle, KanbanSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -172,7 +172,7 @@ const revenueConfig = {
 const quickActions = [
   { label: 'New Application', icon: FileText, color: 'from-teal-500 to-emerald-600', view: 'applications' as View },
   { label: 'Land Inventory', icon: LandPlot, color: 'from-emerald-500 to-green-600', view: 'land-parcels' as View },
-  { label: 'Workflow Board', icon: Activity, color: 'from-violet-500 to-purple-600', view: 'workflow-kanban' as View },
+  { label: 'Workflow Board', icon: KanbanSquare, color: 'from-violet-500 to-purple-600', view: 'workflow-kanban' as View },
   { label: 'My Work Queue', icon: Clock, color: 'from-amber-500 to-orange-600', view: 'my-work-queue' as View },
 ]
 
