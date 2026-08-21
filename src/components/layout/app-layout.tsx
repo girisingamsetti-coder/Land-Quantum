@@ -1,11 +1,14 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
 import { useAuthStore } from '@/stores/auth-store'
 import {
   Sidebar, SidebarContent, SidebarFooter,
   SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton,
   SidebarMenuItem, SidebarProvider, SidebarRail, SidebarSeparator,
+  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -19,9 +22,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   LayoutDashboard, FileText, MapPin, CreditCard, HardHat, AlertTriangle,
-  Users, Building2, LogOut, Bell, ChevronDown, KanbanSquare, BarChart3,
+  Users, Building2, LogOut, Bell, BarChart3, KanbanSquare,
   Shield, Settings, ScrollText, Map, ClipboardList, MessageSquare,
-  Atom, Check, Circle, Clock, X, SlidersHorizontal,
+  Check, Circle, Clock, X, SlidersHorizontal,
+  Moon, Sun, UserCircle, Calendar,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -83,7 +87,6 @@ const navItems: NavItem[] = [
   { view: 'settings', label: 'Settings', icon: Settings },
 ]
 
-// Breadcrumb config for each view
 const viewDescriptions: Record<string, string> = {
   dashboard: 'Overview of key metrics and alerts',
   applications: 'View and manage all land allotment applications',
@@ -125,12 +128,10 @@ function GlobalFilterBar({ view, filters, setFilters }: {
   const [showFilters, setShowFilters] = useState(false)
   const activeCount = [filters.zone, filters.status, filters.dateRange].filter(Boolean).length
 
-  // Hide on dashboard and system views
   const hideOnViews: View[] = ['dashboard', 'settings', 'reports', 'audit-log', 'users', 'departments', 'gis', 'application-detail', 'workflow-kanban']
   if (hideOnViews.includes(view)) return null
 
   const currentStatuses = STATUS_OPTIONS[view] || []
-
   const clearFilters = () => setFilters({ zone: '', status: '', dateRange: '' })
 
   return (
@@ -173,7 +174,6 @@ function GlobalFilterBar({ view, filters, setFilters }: {
         )}
       </div>
 
-      {/* Expanded filter panel */}
       {showFilters && (
         <div className="px-5 pb-3 flex flex-wrap items-center gap-2 animate-in slide-in-from-top-1 duration-150">
           <Select value={filters.zone || ZONES[0]} onValueChange={v => setFilters(p => ({...p, zone: v === ZONES[0] ? '' : v}))}>
@@ -206,6 +206,8 @@ function GlobalFilterBar({ view, filters, setFilters }: {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { user, logout, meta } = useAuthStore()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [view, setView] = useState<View>('dashboard')
   const [viewParams, setViewParams] = useState<Record<string, string>>({})
   const [unreadNotifications, setUnreadNotifications] = useState(meta?.unreadNotifications ?? 0)
@@ -222,12 +224,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
     : 'U'
 
-  const viewLabel = view
-    .replace(/-/g, ' ')
-    .replace(/\w/g, c => c.toUpperCase())
-
-  const viewDescription = viewDescriptions[view] || ''
-
   const fetchNotifications = async () => {
     try {
       const res = await fetch('/api/notifications')
@@ -239,6 +235,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     } catch { /* silent */ }
   }
 
+  useEffect(() => { setMounted(true) }, [])
   useEffect(() => { fetchNotifications() }, [])
 
   const markAllRead = async () => {
@@ -273,14 +270,19 @@ export function AppLayout({ children }: AppLayoutProps) {
     <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications, globalFilters, setGlobalFilters }}>
       <SidebarProvider>
         <Sidebar collapsible="icon">
+          {/* Logo Header */}
           <SidebarHeader className="px-3 pt-4 pb-2">
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-sm">
-                    <Atom className="size-4" />
-                  </div>
-                  <div className="flex flex-col gap-0.5 leading-none">
+                  <Image
+                    src="/logo.png"
+                    alt="Land Quantum"
+                    width={32}
+                    height={32}
+                    className="rounded-md shrink-0"
+                  />
+                  <div className="flex flex-col gap-0.5 leading-none overflow-hidden">
                     <span className="text-sm font-semibold tracking-tight">Land Quantum</span>
                     <span className="text-[11px] text-muted-foreground font-normal">Management Portal</span>
                   </div>
@@ -289,11 +291,14 @@ export function AppLayout({ children }: AppLayoutProps) {
             </SidebarMenu>
           </SidebarHeader>
           <SidebarSeparator className="mx-3" />
+
+          {/* Flat Nav List */}
           <SidebarContent className="px-2 py-1">
             <SidebarMenu>
               {navItems.map((item) => {
                 const isActive = view === item.view ||
                   (view === 'application-detail' && item.view === 'applications')
+                const IconComp = item.icon
                 return (
                   <SidebarMenuItem key={item.view}>
                     <SidebarMenuButton
@@ -302,7 +307,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       onClick={() => setView(item.view)}
                       className="rounded-md"
                     >
-                      <item.icon className="size-4" />
+                      {IconComp && <IconComp className="size-4" />}
                       <span>{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -310,19 +315,21 @@ export function AppLayout({ children }: AppLayoutProps) {
               })}
             </SidebarMenu>
           </SidebarContent>
+
+          {/* Footer - User Info Display */}
           <SidebarFooter className="gap-1.5">
-            <div className="mx-2">
+            <div className="mx-2 group-data-[collapsible=icon]:hidden">
               <Badge variant="outline" className="w-full justify-center text-[10px] font-medium border-primary/20 text-primary/70 bg-primary/5 hover:bg-primary/5">
                 DEMO
               </Badge>
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
-                  <Avatar className="h-8 w-8">
+                <SidebarMenuButton size="lg" className="gap-3 rounded-lg" tooltip={`${user?.name} · ${user?.role.name}`}>
+                  <Avatar className="h-8 w-8 shrink-0">
                     <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col gap-0.5 leading-none">
+                  <div className="flex flex-col gap-0.5 leading-none overflow-hidden">
                     <span className="text-sm font-medium truncate max-w-[140px]">{user?.name}</span>
                     <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">{user?.role.name}</span>
                   </div>
@@ -332,25 +339,22 @@ export function AppLayout({ children }: AppLayoutProps) {
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
+
         <SidebarInset>
-          {/* Header */}
-          <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card/80 backdrop-blur-sm px-5">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold tracking-tight truncate">{viewLabel}</h2>
-                {viewDescription && view !== 'dashboard' && (
-                  <span className="hidden md:inline text-xs text-muted-foreground">— {viewDescription}</span>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
+          {/* Slim Utility Toolbar - replaces old header */}
+          <div className="flex h-10 shrink-0 items-center justify-between border-b px-3 bg-card/80 backdrop-blur-sm">
+            {/* Left: Sidebar Collapse Toggle */}
+            <SidebarTrigger className="-ml-1" />
+
+            {/* Right: Notification, Dark Mode, Profile */}
+            <div className="flex items-center gap-0.5">
               {/* Notification Bell */}
               <Popover open={notifOpen} onOpenChange={setNotifOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
+                    className="relative h-8 w-8 text-muted-foreground hover:text-foreground"
                   >
                     <Bell className="h-4 w-4" />
                     {unreadNotifications > 0 && (
@@ -404,18 +408,34 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </PopoverContent>
               </Popover>
 
-              <Separator orientation="vertical" className="h-5" />
+              <Separator orientation="vertical" className="h-4 mx-1" />
+
+              {/* Dark Mode Toggle */}
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              )}
+
+              <Separator orientation="vertical" className="h-4 mx-1" />
+
+              {/* Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2 h-9 px-2">
-                    <Avatar className="h-7 w-7">
-                      <AvatarFallback className="text-[11px] font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
+                  <Button variant="ghost" className="gap-2 h-8 px-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback className="text-[10px] font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
                     </Avatar>
-                    <span className="hidden sm:inline text-sm max-w-[120px] truncate">{user?.name}</span>
-                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="hidden sm:inline text-xs max-w-[100px] truncate">{user?.name}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-52">
                   <div className="px-2.5 py-2">
                     <p className="text-sm font-medium">{user?.name}</p>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{user?.email}</p>
@@ -424,25 +444,30 @@ export function AppLayout({ children }: AppLayoutProps) {
                     )}
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setView('settings')} className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" /> Settings
+                  <DropdownMenuItem className="cursor-pointer">
+                    <UserCircle className="mr-2 h-4 w-4" /> Edit Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Calendar className="mr-2 h-4 w-4" /> Calendar
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" /> Sign out
+                    <LogOut className="mr-2 h-4 w-4" /> Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          </header>
+          </div>
 
           {/* Global Filter Bar */}
           <GlobalFilterBar view={view} filters={globalFilters} setFilters={setGlobalFilters} />
 
-          <main className="flex-1 overflow-auto p-4 md:p-6 bg-muted/30">
+          {/* Main Content - no vertical scrolling */}
+          <div className="flex-1 min-h-0 overflow-hidden p-4 md:p-6 bg-muted/30">
             {children}
-          </main>
-          <footer className="border-t px-4 py-2.5 bg-card text-center text-[11px] text-muted-foreground">
+          </div>
+
+          <footer className="shrink-0 border-t px-4 py-2 bg-card text-center text-[11px] text-muted-foreground">
             Land Quantum — Land Allotment & Development Management Portal · Demo Environment
           </footer>
         </SidebarInset>

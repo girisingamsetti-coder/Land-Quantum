@@ -227,7 +227,7 @@ export function DashboardView() {
   const alertCounts = { critical: 1, high: 2, medium: 2, low: 1 }
 
   return (
-    <div className="flex flex-col gap-3 h-[calc(100vh-10.5rem)] min-h-0">
+    <div className="flex flex-col gap-3 h-full min-h-0">
       {/* Compact Header Row with Quick Actions */}
       <div className="flex items-center justify-between shrink-0">
         <div>

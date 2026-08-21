@@ -85,3 +85,25 @@ Stage Summary:
 - Dashboard now fits entirely in a single screen with no scrolling needed
 - Layout: compact header row (title + 3 action buttons) → 4 stat cards → 3 charts in one row (revenue, bar, pie) → 2-column bottom (recent apps + alerts with internal scroll)
 - Verified at 3 viewport sizes (900px, 768px, 600px heights) — zero overflow
+---
+Task ID: 2
+Agent: main
+Task: 5 UI improvements - logo, remove header, utility toolbar, sidebar collapse, no scrolling
+
+Work Log:
+- Generated Land Quantum logo via AI image generation, saved to /public/logo.png
+- Added ThemeProvider (next-themes) to root layout.tsx
+- Rewrote app-layout.tsx: removed header, added slim utility toolbar (h-10)
+- Utility toolbar: SidebarTrigger (collapse), notification bell popover, dark mode toggle (Sun/Moon), profile dropdown
+- Profile dropdown: Edit Profile, Calendar, Log out
+- Sidebar header: replaced Atom icon with AI-generated logo image (32x32)
+- Sidebar uses collapsible="icon" with SidebarRail (hover zone) + SidebarTrigger (visible button)
+- Changed content area from overflow-auto to overflow-hidden, removed main element nesting
+- Updated dashboard from h-[calc(100vh-10.5rem)] to h-full for flexible height
+
+Stage Summary:
+- All 5 features implemented and browser-verified
+- Sidebar collapse: gap shrinks to 48px, content area expands to fill (1232px on 1280 viewport)
+- Dark mode: toggles between light/dark via next-themes class strategy
+- Zero vertical scrolling confirmed (935/935 scrollHeight/clientHeight)
+- Profile dropdown shows Edit Profile, Calendar, Log out as requested
