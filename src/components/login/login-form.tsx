@@ -5,14 +5,85 @@ import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Eye, EyeOff, Building2 } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Loader2, Eye, EyeOff, Building2, UserCircle } from 'lucide-react'
+
+const DEMO_ACCOUNTS = [
+  {
+    label: 'Super Admin',
+    description: 'R. Venkateshwara Rao · Commissioner',
+    email: 'admin@amaravati-demo.gov.in',
+    password: 'Admin@12345',
+  },
+  {
+    label: 'APCRDA Lands Officer',
+    description: 'S. Lakshmi Devi · Deputy Commissioner',
+    email: 'lands@amaravati-demo.gov.in',
+    password: 'Admin@12345',
+  },
+  {
+    label: 'Technical Reviewer',
+    description: 'M. Suresh Babu · Chief Engineer',
+    email: 'technical@amaravati-demo.gov.in',
+    password: 'Admin@12345',
+  },
+  {
+    label: 'Finance Officer',
+    description: 'K. Padmavathi · Finance Controller',
+    email: 'finance@amaravati-demo.gov.in',
+    password: 'Admin@12345',
+  },
+  {
+    label: 'Monitoring Officer',
+    description: 'P. Ravi Kumar · Director',
+    email: 'monitoring@amaravati-demo.gov.in',
+    password: 'Admin@12345',
+  },
+  {
+    label: 'Grievance Officer',
+    description: 'A. Nagendra · Grievance Officer',
+    email: 'grievance@amaravati-demo.gov.in',
+    password: 'Admin@12345',
+  },
+  {
+    label: 'Investor',
+    description: 'D. Ramachandra Reddy · Director',
+    email: 'investor@amaravati-demo.in',
+    password: 'Admin@12345',
+  },
+] as const
 
 export function LoginForm() {
   const { login, isLoading, error, clearError } = useAuthStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [selectedRole, setSelectedRole] = useState<string>('')
+
+  const handleRoleSelect = (value: string) => {
+    setSelectedRole(value)
+    const account = DEMO_ACCOUNTS.find((a) => a.label === value)
+    if (account) {
+      setEmail(account.email)
+      setPassword(account.password)
+      clearError()
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,6 +109,44 @@ export function LoginForm() {
                 {error}
               </div>
             )}
+
+            {/* Demo Role Selector */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5">
+                <UserCircle className="h-3.5 w-3.5" />
+                Demo Account
+              </Label>
+              <Select value={selectedRole} onValueChange={handleRoleSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a role to auto-fill credentials" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Internal Officers</SelectLabel>
+                    {DEMO_ACCOUNTS.slice(0, 6).map((account) => (
+                      <SelectItem key={account.label} value={account.label}>
+                        <span className="font-medium">{account.label}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          {account.description}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>External</SelectLabel>
+                    {DEMO_ACCOUNTS.slice(6).map((account) => (
+                      <SelectItem key={account.label} value={account.label}>
+                        <span className="font-medium">{account.label}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          {account.description}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -45,7 +154,11 @@ export function LoginForm() {
                 type="email"
                 placeholder="admin@amaravati-demo.gov.in"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); clearError() }}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  setSelectedRole('')
+                  clearError()
+                }}
                 required
                 autoComplete="email"
                 disabled={isLoading}
@@ -59,7 +172,11 @@ export function LoginForm() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); clearError() }}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setSelectedRole('')
+                    clearError()
+                  }}
                   required
                   autoComplete="current-password"
                   disabled={isLoading}
@@ -70,7 +187,11 @@ export function LoginForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -78,9 +199,6 @@ export function LoginForm() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>
-            <p className="text-center text-xs text-muted-foreground">
-              Demo: admin@amaravati-demo.gov.in / Admin@12345
-            </p>
           </form>
         </CardContent>
       </Card>

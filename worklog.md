@@ -45,3 +45,23 @@ Stage Summary:
 - Root cause: sandbox process lifecycle management, not code bugs
 - FIFO pipe technique ensures server survives across Bash tool invocations
 - All previous code fixes (circular import, lazy loading) remain intact
+---
+Task ID: 2
+Agent: Main Agent
+Task: Add role-based demo credentials dropdown to login page
+
+Work Log:
+- Read seed data to extract all 7 demo user accounts with roles, names, designations, emails
+- Added DEMO_ACCOUNTS constant array with label, description, email, password for each role
+- Replaced static demo hint text with shadcn/ui Select dropdown above the email field
+- Dropdown groups accounts: "Internal Officers" (6 roles) and "External" (Investor)
+- Each option shows role name + full name + designation
+- Selecting a role auto-fills email and password fields
+- Manual editing of email/password clears the dropdown selection (bidirectional sync)
+- Removed the old static demo hint text at the bottom
+- Verified via agent-browser: opened dropdown, selected Finance Officer, fields auto-filled, clicked Sign In, dashboard loaded as K. Padmavathi (Finance Officer)
+
+Stage Summary:
+- Login page now has a "Demo Account" dropdown with 7 role-based accounts
+- Auto-fills credentials on selection — user just hits Sign In
+- Tested end-to-end: dropdown → select Finance Officer → auto-fill → login → dashboard
