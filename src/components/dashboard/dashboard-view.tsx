@@ -67,7 +67,7 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
   trend?: 'up' | 'down'; trendValue?: string
 }) {
   return (
-    <Card className="overflow-hidden border-0 shadow-sm">
+    <Card className="overflow-hidden border border-transparent hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 shadow-sm hover:shadow-md transition-all cursor-pointer">
       <CardContent className="px-3 py-0">
         <div className="flex items-center gap-3">
           <div className={cn('rounded-lg p-2 shrink-0', color)}>
@@ -177,17 +177,17 @@ const PIPELINE_STAGES: PipelineStage[] = [
 function PipelineCard({ stage }: { stage: PipelineStage }) {
   const Icon = stage.icon
   return (
-    <Card className="border shadow-sm hover:shadow-md transition-shadow">
-      <CardContent className="px-3 pb-3 pt-1.5">
+    <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all py-2 gap-0 cursor-pointer">
+      <CardContent className="px-2 pt-2 pb-2">
         {/* Top Section */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-4 mt-1">
           <div className="flex items-center gap-2.5">
             <div className="rounded-xl bg-emerald-50 p-2">
               <Icon className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 leading-tight">{stage.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{stage.total}</p>
+              <h3 className="text-sm font-bold text-slate-900 leading-tight m-0">{stage.title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5 m-0 leading-none">{stage.total}</p>
             </div>
           </div>
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-100">
@@ -196,7 +196,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
         </div>
 
         {/* Segmented Progress Bar */}
-        <div className="flex h-2 w-full gap-1 mb-3">
+        <div className="flex h-2 w-full gap-1 mb-3 mt-1">
           <div className="bg-indigo-500 w-[25%] rounded-full" />
           <div className="bg-cyan-500 w-[40%] rounded-full" />
           <div className="bg-amber-500 w-[25%] rounded-full" />
@@ -206,7 +206,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
         {/* 2x2 Grid */}
         <div className="grid grid-cols-2 gap-3">
           {/* Top Left - In Progress */}
-          <div className="rounded-lg bg-slate-50 px-3 py-1.5 flex flex-col items-center justify-center text-center">
+          <div className="rounded-lg bg-slate-50 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-white border border-transparent hover:border-slate-200 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">In Progress</span>
               <span className="text-[10px] font-bold text-slate-500">{stage.inProgress.pct}%</span>
@@ -215,7 +215,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
           </div>
 
           {/* Top Right - Revision */}
-          <div className="rounded-lg bg-slate-50 px-3 py-1.5 flex flex-col items-center justify-center text-center">
+          <div className="rounded-lg bg-slate-50 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-white border border-transparent hover:border-slate-200 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Revision</span>
               <span className="text-[10px] font-bold text-slate-500">{stage.revision.pct}%</span>
@@ -224,7 +224,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
           </div>
 
           {/* Bottom Left - Approved */}
-          <div className="rounded-lg bg-emerald-50/50 border border-emerald-100 px-3 py-1.5 flex flex-col items-center justify-center text-center">
+          <div className="rounded-lg bg-emerald-50/50 border border-emerald-100 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-emerald-50 hover:border-emerald-200 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Approved</span>
               <span className="text-[10px] font-bold text-emerald-600">{stage.approved.pct}%</span>
@@ -233,7 +233,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
           </div>
 
           {/* Bottom Right - Rejected */}
-          <div className="rounded-lg bg-orange-50/50 border border-orange-100 px-3 py-1.5 flex flex-col items-center justify-center text-center">
+          <div className="rounded-lg bg-orange-50/50 border border-orange-100 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-orange-50 hover:border-orange-200 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">Rejected</span>
               <span className="text-[10px] font-bold text-orange-600">{stage.rejected.pct}%</span>
@@ -269,6 +269,12 @@ const decisionsData = [
   { month: 'May', passed: 17, sentBack: 0, refused: 0 }, { month: 'Jun', passed: 15, sentBack: 0, refused: 0 },
   { month: 'Jul', passed: 20, sentBack: 1, refused: 0 }, { month: 'Aug', passed: 18, sentBack: 0, refused: 1 },
 ]
+const decisionsDataWeekly = [
+  { week: 'W1', passed: 4, sentBack: 0, refused: 0 },
+  { week: 'W2', passed: 5, sentBack: 1, refused: 0 },
+  { week: 'W3', passed: 3, sentBack: 0, refused: 0 },
+  { week: 'W4', passed: 6, sentBack: 0, refused: 1 },
+]
 const moneyConfig = { billed: { label: 'Billed (â‚¹ Cr)', color: '#6366f1' }, collected: { label: 'Collected (â‚¹ Cr)', color: '#22c55e' } }
 const moneyData = [
   { month: 'Sep', billed: 120, collected: 100 }, { month: 'Oct', billed: 150, collected: 130 },
@@ -278,6 +284,7 @@ const moneyData = [
   { month: 'May', billed: 190, collected: 170 }, { month: 'Jun', billed: 140, collected: 135 },
   { month: 'Jul', billed: 250, collected: 210 }, { month: 'Aug', billed: 180, collected: 165 },
 ]
+const INVESTMENT_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#6366f1']
 const investmentConfig = { amount: { label: 'Investment (â‚¹ Cr)', color: 'oklch(0.45 0.12 180)' } }
 const investmentData = [
   { sector: 'IT & Electronics', amount: 4800 }, { sector: 'Manufacturing', amount: 3600 },
@@ -1001,6 +1008,7 @@ export function DashboardView() {
   const [loading, setLoading] = useState(true)
   const [expandedAlert, setExpandedAlert] = useState<string | null>(null)
   const [trendWindow, setTrendWindow] = useState('12M')
+  const [decisionsView, setDecisionsView] = useState<'month' | 'week'>('month')
   const [filters, setFilters] = useState({ date: '', parcel: '', app: '', stage: '', project: '' })
 
   const hasFilters = Object.values(filters).some(Boolean)
@@ -1149,18 +1157,18 @@ export function DashboardView() {
         />
         <StatCard
           title="Active Projects"
-          value={stats?.constructions.active ?? 0}
-          subtitle={stats?.grievances.open > 0 ? `${stats.grievances.open} grievances` : 'No grievances'}
+          value={stats?.constructions?.active ?? 0}
+          subtitle={(stats?.grievances?.open ?? 0) > 0 ? `${stats?.grievances?.open} grievances` : 'No grievances'}
           icon={HardHat}
           color="bg-gradient-to-br from-amber-500 to-orange-600"
         />
         <StatCard
           title="Revenue"
-          value={formatCurrency(stats?.payments.totalRevenue ?? 0)}
-          subtitle={stats?.payments.overdueCount > 0 ? `${stats.payments.overdueCount} overdue` : 'On track'}
+          value={formatCurrency(stats?.payments?.totalRevenue ?? 0)}
+          subtitle={(stats?.payments?.overdueCount ?? 0) > 0 ? `${stats?.payments?.overdueCount} overdue` : 'On track'}
           icon={IndianRupee}
           color="bg-gradient-to-br from-violet-500 to-purple-600"
-          trend={stats?.payments.overdueCount > 0 ? 'down' : 'up'}
+          trend={(stats?.payments?.overdueCount ?? 0) > 0 ? 'down' : 'up'}
         />
         <StatCard
           title="Jobs Generated"
@@ -1192,7 +1200,7 @@ export function DashboardView() {
       {/* Analytics Charts */}
       <div className="grid gap-1 lg:grid-cols-4">
         {/* Revenue Trend */}
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Revenue Trend</CardTitle>
           </CardHeader>
@@ -1215,7 +1223,7 @@ export function DashboardView() {
         </Card>
 
         {/* Applications by Status */}
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Applications by Status</CardTitle>
           </CardHeader>
@@ -1236,7 +1244,7 @@ export function DashboardView() {
         </Card>
 
         {/* Land Availability Pie */}
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Land Availability</CardTitle>
           </CardHeader>
@@ -1267,7 +1275,7 @@ export function DashboardView() {
         </Card>
 
         {/* How far cases get */}
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">How far cases get</CardTitle>
           </CardHeader>
@@ -1279,49 +1287,31 @@ export function DashboardView() {
         </Card>
       </div>
 
-      {/* Trends and Bottlenecks */}
-      <div>
-        <div className="grid gap-1 lg:grid-cols-2">
-          <Card>
-            <CardHeader className="px-3 py-0">
-              <CardTitle className="text-xs font-bold">Case approval trend</CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 py-0">
-              <ChartContainer config={liveCasesConfig} className="h-[200px] w-full">
-                <BarChart data={liveCasesData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }} barCategoryGap="20%">
-                  <XAxis dataKey="step" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
-                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 9 }} allowDecimals={false} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Legend iconType="square" iconSize={8} wrapperStyle={{ fontSize: '10px', paddingTop: '4px' }} formatter={(v) => v === 'approved' ? 'Approved' : 'Delayed'} />
-                  <Bar dataKey="approved" stackId="a" fill="#22c55e" />
-                  <Bar dataKey="delayed" stackId="a" fill="#ef4444" radius={[2, 2, 0, 0]} />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
 
       {/* Decisions / Money / Investment */}
       <div className="grid gap-1 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="px-3 py-0">
-            <CardTitle className="text-xs font-bold">Decisions recorded</CardTitle>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+          <CardHeader className="px-3 py-2 flex flex-row items-center justify-between border-b pb-2 mb-2">
+            <CardTitle className="text-xs font-bold mt-1">Decisions recorded</CardTitle>
+            <div className="flex bg-muted/50 p-0.5 rounded-md border mt-0">
+              <button onClick={() => setDecisionsView('week')} className={cn("text-[9px] px-2 py-0.5 rounded-sm transition-colors font-medium", decisionsView === 'week' ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-slate-700")}>Week</button>
+              <button onClick={() => setDecisionsView('month')} className={cn("text-[9px] px-2 py-0.5 rounded-sm transition-colors font-medium", decisionsView === 'month' ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-slate-700")}>Month</button>
+            </div>
           </CardHeader>
           <CardContent className="px-3 py-0">
-            <ChartContainer config={decisionsConfig} className="h-[160px] w-full">
-              <BarChart data={decisionsData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }} barSize={6}>
-                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
+            <ChartContainer config={decisionsConfig} className="h-[145px] w-full">
+              <BarChart data={decisionsView === 'month' ? decisionsData : decisionsDataWeekly} margin={{ top: 5, right: 5, bottom: 0, left: -20 }} barSize={10}>
+                <XAxis dataKey={decisionsView === 'month' ? 'month' : 'week'} tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 9 }} allowDecimals={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="passed" stackId="a" fill="#22c55e" />
-                <Bar dataKey="sentBack" stackId="a" fill="#f59e0b" />
-                <Bar dataKey="refused" stackId="a" fill="#ef4444" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="passed" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="sentBack" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="refused" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Money in each month</CardTitle>
           </CardHeader>
@@ -1338,18 +1328,22 @@ export function DashboardView() {
             </ChartContainer>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-semibold">Investment by sector</CardTitle>
             <CardDescription className="text-[10px]">Committed rupees, largest first (â‚¹ Cr)</CardDescription>
           </CardHeader>
           <CardContent className="px-3 py-0">
             <ChartContainer config={investmentConfig} className="h-[160px] w-full">
-              <BarChart data={investmentData} layout="vertical" margin={{ top: 0, right: 10, bottom: 0, left: 4 }} barSize={8}>
-                <XAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
-                <YAxis type="category" dataKey="sector" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} width={88} />
+              <BarChart data={investmentData} margin={{ top: 10, right: 10, bottom: 40, left: 4 }} barSize={12}>
+                <XAxis type="category" dataKey="sector" tickLine={false} axisLine={false} tick={{ fontSize: 8 }} angle={-45} textAnchor="end" interval={0} height={40} />
+                <YAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} width={30} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="amount" fill="oklch(0.45 0.12 180)" radius={[0, 3, 3, 0]} />
+                <Bar dataKey="amount" radius={[10, 10, 0, 0]}>
+                  {investmentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={INVESTMENT_COLORS[index % INVESTMENT_COLORS.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -1359,7 +1353,7 @@ export function DashboardView() {
       {/* Recent Apps + Risk Alerts */}
       <div className="grid gap-1 lg:grid-cols-2">
         {/* Recent Applications */}
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xs font-bold">Recent Applications</CardTitle>
@@ -1394,7 +1388,7 @@ export function DashboardView() {
         </Card>
 
         {/* Risk Alerts */}
-        <Card>
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xs font-bold">Risk Alerts</CardTitle>
@@ -1461,3 +1455,4 @@ export function DashboardView() {
     </div>
   )
 }
+
