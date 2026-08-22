@@ -24,7 +24,7 @@ import {
   Users, Building2, LogOut, Bell, BarChart3, KanbanSquare,
   Shield, Settings, ScrollText, Map, ClipboardList, MessageSquare,
   Check, Circle, Clock, X, SlidersHorizontal,
-  Moon, Sun, UserCircle, Calendar,
+  Moon, Sun, UserCircle, Calendar, ChevronLeft, ChevronRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -56,9 +56,9 @@ interface LayoutContextType {
 }
 
 export const LayoutContext = React.createContext<LayoutContextType>({
-  view: 'dashboard', setView: () => {}, viewParams: {}, setViewParams: () => {},
-  navigateTo: () => {}, unreadNotifications: 0, setUnreadNotifications: () => {},
-  globalFilters: { zone: '', status: '', dateRange: '' }, setGlobalFilters: () => {},
+  view: 'dashboard', setView: () => { }, viewParams: {}, setViewParams: () => { },
+  navigateTo: () => { }, unreadNotifications: 0, setUnreadNotifications: () => { },
+  globalFilters: { zone: '', status: '', dateRange: '' }, setGlobalFilters: () => { },
 })
 
 export { type View }
@@ -149,17 +149,17 @@ function GlobalFilterBar({ view, filters, setFilters }: {
           <div className="flex items-center gap-1.5 overflow-hidden">
             {filters.zone && (
               <Badge variant="secondary" className="text-[10px] gap-1 pr-1 shrink-0">
-                {filters.zone} <button onClick={() => setFilters(p => ({...p, zone: ''}))}><X className="h-2.5 w-2.5" /></button>
+                {filters.zone} <button onClick={() => setFilters(p => ({ ...p, zone: '' }))}><X className="h-2.5 w-2.5" /></button>
               </Badge>
             )}
             {filters.status && (
               <Badge variant="secondary" className="text-[10px] gap-1 pr-1 shrink-0">
-                {filters.status} <button onClick={() => setFilters(p => ({...p, status: ''}))}><X className="h-2.5 w-2.5" /></button>
+                {filters.status} <button onClick={() => setFilters(p => ({ ...p, status: '' }))}><X className="h-2.5 w-2.5" /></button>
               </Badge>
             )}
             {filters.dateRange && (
               <Badge variant="secondary" className="text-[10px] gap-1 pr-1 shrink-0">
-                {filters.dateRange} <button onClick={() => setFilters(p => ({...p, dateRange: ''}))}><X className="h-2.5 w-2.5" /></button>
+                {filters.dateRange} <button onClick={() => setFilters(p => ({ ...p, dateRange: '' }))}><X className="h-2.5 w-2.5" /></button>
               </Badge>
             )}
             <Button variant="ghost" size="sm" className="h-6 text-[10px] text-muted-foreground hover:text-destructive shrink-0" onClick={clearFilters}>
@@ -171,19 +171,19 @@ function GlobalFilterBar({ view, filters, setFilters }: {
 
       {showFilters && (
         <div className="px-5 pb-3 flex flex-wrap items-center gap-2 animate-in slide-in-from-top-1 duration-150">
-          <Select value={filters.zone || ZONES[0]} onValueChange={v => setFilters(p => ({...p, zone: v === ZONES[0] ? '' : v}))}>
+          <Select value={filters.zone || ZONES[0]} onValueChange={v => setFilters(p => ({ ...p, zone: v === ZONES[0] ? '' : v }))}>
             <SelectTrigger className="w-[180px] h-8 text-xs"><SelectValue placeholder="Zone" /></SelectTrigger>
             <SelectContent>{ZONES.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}</SelectContent>
           </Select>
 
           {currentStatuses.length > 0 && (
-            <Select value={filters.status || STATUS_OPTIONS[view][0]} onValueChange={v => setFilters(p => ({...p, status: v === STATUS_OPTIONS[view][0] ? '' : v}))}>
+            <Select value={filters.status || STATUS_OPTIONS[view][0]} onValueChange={v => setFilters(p => ({ ...p, status: v === STATUS_OPTIONS[view][0] ? '' : v }))}>
               <SelectTrigger className="w-[160px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>{currentStatuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
             </Select>
           )}
 
-          <Select value={filters.dateRange || DATE_RANGES[0]} onValueChange={v => setFilters(p => ({...p, dateRange: v === DATE_RANGES[0] ? '' : v}))}>
+          <Select value={filters.dateRange || DATE_RANGES[0]} onValueChange={v => setFilters(p => ({ ...p, dateRange: v === DATE_RANGES[0] ? '' : v }))}>
             <SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue placeholder="Date Range" /></SelectTrigger>
             <SelectContent>{DATE_RANGES.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
           </Select>
@@ -201,7 +201,7 @@ function GlobalFilterBar({ view, filters, setFilters }: {
 
 // Custom rail that embeds the collapse toggle on the sidebar/content separator
 function SidebarRailWithTrigger() {
-  const { state } = useSidebar()
+  const { state, toggleSidebar } = useSidebar()
   return (
     <>
       <SidebarRail />
@@ -214,14 +214,18 @@ function SidebarRailWithTrigger() {
         )}
         style={{ right: '-14px' }}
       >
-        <SidebarTrigger
+        <button
+          onClick={toggleSidebar}
           className={cn(
             'h-7 w-7 rounded-full border bg-background shadow-md',
             'hover:bg-accent hover:text-accent-foreground',
             'flex items-center justify-center',
             'transition-all duration-200',
           )}
-        />
+        >
+          {state === 'expanded' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          <span className="sr-only">Toggle Sidebar</span>
+        </button>
       </div>
     </>
   )
@@ -293,7 +297,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications, globalFilters, setGlobalFilters }}>
       <SidebarProvider>
-        <Sidebar collapsible="icon">
+        <Sidebar collapsible="icon" variant="floating">
           {/* Logo Header */}
           <SidebarHeader className="px-3 pt-4 pb-2">
             <SidebarMenu>
@@ -460,9 +464,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           <SidebarRailWithTrigger />
         </Sidebar>
 
-        <SidebarInset>
+        <SidebarInset className="min-w-0 w-full">
           {/* Main Content */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-6 md:p-8 bg-muted/30">
+          <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pt-0 pb-6 md:pb-8 px-4 sm:px-6 lg:px-8 bg-muted/30">
             {children}
           </div>
         </SidebarInset>

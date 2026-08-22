@@ -242,7 +242,7 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
 
       {/* Table */}
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {loading ? (
             <div className="p-4 space-y-3">
               <Skeleton className="h-9 w-full" />

@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import {
-  FileText, Clock, AlertCircle, CheckCircle2, Circle, Loader2, RefreshCw,
+  FileText, Clock, AlertCircle, CheckCircle2, Circle, Loader2, RefreshCw, ChevronLeft, ChevronRight
 } from 'lucide-react'
 
 const DEFAULT_STAGES = [
@@ -107,6 +107,49 @@ function AppCard({ app, onNavigate }: { app: AppItem; onNavigate: (id: string) =
   )
 }
 
+function StageSection({ stage, items, navigateTo }: { stage: string, items: AppItem[], navigateTo: (id: string) => void }) {
+  const [startIndex, setStartIndex] = useState(0)
+  const visibleItems = items.slice(startIndex, startIndex + 4)
+  const hasNext = startIndex + 4 < items.length
+  const hasPrev = startIndex > 0
+
+  return (
+    <div className="w-full flex flex-col">
+      <div className={`rounded-md border px-4 py-3 mb-4 flex items-center justify-between shadow-sm border-l-4 ${getStageColor(stage)}`}>
+        <div className="flex items-center gap-3">
+          <h3 className="text-base font-bold text-slate-800">{stage}</h3>
+          <Badge variant="secondary" className="text-xs">
+            {items.length} {items.length === 1 ? 'Application' : 'Applications'}
+          </Badge>
+        </div>
+        {items.length > 4 && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] text-muted-foreground mr-2">Showing {startIndex + 1}-{Math.min(startIndex + 4, items.length)} of {items.length}</span>
+            <Button variant="outline" size="icon" className="h-7 w-7 bg-white" disabled={!hasPrev} onClick={() => setStartIndex(s => s - 4)}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="h-7 w-7 bg-white" disabled={!hasNext} onClick={() => setStartIndex(s => s + 4)}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+      
+      {items.length === 0 ? (
+        <div className="rounded-lg border border-dashed p-8 text-center bg-muted/10">
+          <p className="text-sm text-muted-foreground">No applications currently in this stage.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {visibleItems.map(app => (
+            <AppCard key={app.id} app={app} onNavigate={navigateTo} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
   const { navigateTo } = useAppLayout()
   const [stages, setStages] = useState<string[]>(DEFAULT_STAGES)
@@ -140,7 +183,7 @@ export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
   const grouped = stages.map(stage => ({
     stage,
     items: apps.filter(a => a.currentStage === stage),
-  })).filter(g => g.items.length > 0)
+  }))
 
   if (loading) {
     return (
@@ -177,7 +220,7 @@ export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
   const activeStages = grouped.length > 0 ? grouped : stages.slice(0, 6).map(s => ({ stage: s, items: [] }))
 
   return (
-    <div className="space-y-4 h-[calc(100vh-140px)] flex flex-col">
+    <div className="space-y-4 h-full flex flex-col pb-4">
       {!hideHeader && (
       <div className="flex items-center justify-between shrink-0">
         <div>
@@ -192,33 +235,11 @@ export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
       </div>
       )}
 
-      <ScrollArea className="w-full">
-        <div className="flex gap-4 pb-4 min-h-[500px]">
-          {activeStages.map(({ stage, items }) => (
-            <div key={stage} className="min-w-[280px] w-[280px] shrink-0">
-              <div className={`rounded-lg border p-2.5 mb-3 ${getStageColor(stage)}`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold truncate">{stage}</h3>
-                  <Badge variant="secondary" className="text-[10px] h-5 min-w-[20px] justify-center">
-                    {items.length}
-                  </Badge>
-                </div>
-              </div>
-              <ScrollArea className="max-h-[calc(100vh-280px)]">
-                <div className="space-y-0">
-                  {items.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-6">No applications</p>
-                  ) : (
-                    items.map(app => (
-                      <AppCard key={app.id} app={app} onNavigate={(id) => navigateTo('application-detail', { id })} />
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="w-full flex-1 min-w-0 overflow-y-auto pr-4 space-y-8 pb-8 pt-2">
+        {activeStages.map(({ stage, items }) => (
+          <StageSection key={stage} stage={stage} items={items} navigateTo={(id) => navigateTo('application-detail', { id })} />
+        ))}
+      </div>
     </div>
   )
 }
