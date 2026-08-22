@@ -81,7 +81,7 @@ export function LandParcelsView() {
         </TableRow></TableHeader><TableBody>
           {filtered.map((p: any) => (
             <TableRow key={p.id}>
-              <TableCell className="font-mono text-xs font-medium">{p.plotId}</TableCell>
+              <TableCell className=" text-xs font-medium">{p.plotId}</TableCell>
               <TableCell className="text-xs">{p.surveyNumber}</TableCell>
               <TableCell className="text-xs">{p.zone?.name}</TableCell>
               <TableCell className="text-xs">{p.landUse?.name}</TableCell>

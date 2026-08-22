@@ -465,10 +465,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           <div className="flex-1 min-h-0 overflow-y-auto p-6 md:p-8 bg-muted/30">
             {children}
           </div>
-
-          <footer className="shrink-0 border-t px-4 py-2 bg-card text-center text-[11px] text-muted-foreground">
-            Land Quantum — Land Allotment & Development Management Portal
-          </footer>
         </SidebarInset>
       </SidebarProvider>
     </LayoutContext.Provider>

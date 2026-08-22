@@ -119,8 +119,8 @@ export function CancellationsView({ hideHeader }: { hideHeader?: boolean } = {})
         <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
           {filtered.map((c: any) => (
             <TableRow key={c.id}>
-              <TableCell className="font-mono text-xs font-medium">{c.caseNumber}</TableCell>
-              <TableCell className="font-mono text-[11px]">{c.application?.applicationNumber}</TableCell>
+              <TableCell className=" text-xs font-medium">{c.caseNumber}</TableCell>
+              <TableCell className=" text-[11px]">{c.application?.applicationNumber}</TableCell>
               <TableCell className="text-xs">{c.application?.projectName}</TableCell>
               <TableCell><Badge variant="outline" className={cn('text-[10px]', c.initiatedBy === 'APCRDA' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200')}>{c.initiatedBy}</Badge></TableCell>
               <TableCell className="text-xs max-w-[200px] truncate">{c.reason}</TableCell>
@@ -441,7 +441,7 @@ export function DepartmentsView({ hideHeader }: { hideHeader?: boolean } = {}) {
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Departments & Roles</h1><p className="text-sm text-muted-foreground">Manage organizational structure and role-based access</p></div>}
       <div className="grid md:grid-cols-2 gap-4">
-        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className="font-mono text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className=" text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
         <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.roles?.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
       </div>
     </div>
@@ -471,7 +471,7 @@ export function SettingsView() {
           {data?.stages?.map((s: any) => (<TableRow key={s.id}><TableCell className="text-sm">{s.stageName}</TableCell><TableCell className="text-sm font-bold tabular-nums">{s.slaDays} days</TableCell></TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
         <TabsContent value="system"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Key</TableHead><TableHead>Value</TableHead><TableHead>Category</TableHead><TableHead>Label</TableHead></TableRow></TableHeader><TableBody>
-          {data?.settings?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.key}</TableCell><TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell><TableCell className="text-xs">{s.label}</TableCell></TableRow>))}
+          {data?.settings?.map((s: any) => (<TableRow key={s.id}><TableCell className=" text-xs">{s.key}</TableCell><TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell><TableCell className="text-xs">{s.label}</TableCell></TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
         <TabsContent value="users"><UsersView hideHeader /></TabsContent>
         <TabsContent value="departments"><DepartmentsView hideHeader /></TabsContent>
@@ -504,7 +504,7 @@ export function GISView() {
           <div className="text-center text-muted-foreground mb-4"><Map className="h-8 w-8 mx-auto mb-2" /><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
           <div className="grid grid-cols-5 gap-2">{filtered.map((p) => (
             <div key={p.id} className="rounded border-2 p-2 hover:shadow-md transition-shadow" style={{ borderColor: colorMap[p.status] || '#9ca3af' }} title={`${p.plotId}\n${p.zone?.name}\n${p.status}`}>
-              <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }} /><p className="text-[7px] font-mono truncate font-medium">{p.plotId.replace('APCRDA-P-', '')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
+              <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }} /><p className="text-[7px]  truncate font-medium">{p.plotId.replace('APCRDA-P-', '')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
             </div>))}</div>
         </div></Card></div>
         <Card className="p-4 space-y-3">
@@ -537,7 +537,7 @@ export function MyWorkQueue({ hideHeader }: { hideHeader?: boolean } = {}) {
         {loading ? <div className="p-4"><Skeleton className="h-12 w-full" /></div> :
           data?.assignedStages?.length === 0 ? <p className="text-sm text-muted-foreground p-4">No pending actions</p> :
             <Table><TableHeader><TableRow><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Stage</TableHead></TableRow></TableHeader><TableBody>
-              {data?.assignedStages?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.application?.applicationNumber}</TableCell><TableCell className="text-xs">{s.application?.projectName}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">{s.stageName}</Badge></TableCell></TableRow>))}
+              {data?.assignedStages?.map((s: any) => (<TableRow key={s.id}><TableCell className=" text-xs">{s.application?.applicationNumber}</TableCell><TableCell className="text-xs">{s.application?.projectName}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">{s.stageName}</Badge></TableCell></TableRow>))}
             </TableBody></Table>}
       </CardContent></Card>
     </div>
@@ -670,7 +670,7 @@ export function RiskAlertsView() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge variant="outline" className={cn('text-[10px]', severityColor(alert.severity))}>{alert.severity}</Badge>
                       <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{alert.type}</Badge>
-                      <span className="font-mono text-[10px] text-muted-foreground">{alert.application}</span>
+                      <span className=" text-[10px] text-muted-foreground">{alert.application}</span>
                     </div>
                     <p className="text-sm mt-1.5">{alert.description}</p>
                     <div className="flex items-center gap-2 mt-2">

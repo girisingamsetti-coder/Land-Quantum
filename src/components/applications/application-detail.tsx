@@ -378,7 +378,7 @@ export function ApplicationDetail() {
           </Button>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold tracking-tight font-mono">{app.applicationNumber}</h1>
+              <h1 className="text-xl font-bold tracking-tight ">{app.applicationNumber}</h1>
               <Badge className={`${statusColor(app.status)} hover:${statusColor(app.status)}`}>{app.status}</Badge>
               <Badge className={`${priorityColor(app.priority)} hover:${priorityColor(app.priority)}`}>{app.priority}</Badge>
             </div>
@@ -528,7 +528,7 @@ export function ApplicationDetail() {
         <TabsContent value="applicant">
           <div className="grid md:grid-cols-2 gap-4">
             <DetailCard title="Applicant Details" icon={User}>
-              <InfoRow label="Applicant ID" value={<span className="font-mono text-xs">{app.applicant.applicantId}</span>} />
+              <InfoRow label="Applicant ID" value={<span className=" text-xs">{app.applicant.applicantId}</span>} />
               <InfoRow label="Organization" value={app.applicant.organizationName} />
               <InfoRow label="Entity Type" value={app.applicant.entityType} />
               <InfoRow label="Registration No." value={app.applicant.registrationNumber} />
@@ -552,7 +552,7 @@ export function ApplicationDetail() {
           {app.landParcel ? (
             <div className="grid md:grid-cols-2 gap-4">
               <DetailCard title="Parcel Details" icon={MapPin}>
-                <InfoRow label="Plot ID" value={<span className="font-mono text-xs">{app.landParcel.plotId}</span>} />
+                <InfoRow label="Plot ID" value={<span className=" text-xs">{app.landParcel.plotId}</span>} />
                 <InfoRow label="Survey Number" value={app.landParcel.surveyNumber} />
                 <InfoRow label="Extent" value={`${app.landParcel.extentAcres} acres`} />
                 <InfoRow label="Theme City" value={app.landParcel.themeCity} />
@@ -565,7 +565,7 @@ export function ApplicationDetail() {
                 <InfoRow label="Land Use" value={app.landParcel.landUse?.name} />
                 <InfoRow label="Allotment Mode" value={app.landParcel.allotmentMode?.name} />
                 <InfoRow label="GIS Reference" value={app.landParcel.gisReference} />
-                <InfoRow label="GIS Coordinates" value={app.landParcel.gisCoordinates ? <span className="font-mono text-xs break-all">{app.landParcel.gisCoordinates}</span> : '—'} />
+                <InfoRow label="GIS Coordinates" value={app.landParcel.gisCoordinates ? <span className=" text-xs break-all">{app.landParcel.gisCoordinates}</span> : '—'} />
                 <InfoRow label="Encumbrance" value={<Badge className={`${app.landParcel.encumbranceStatus === 'Clear' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} hover:opacity-100`}>{app.landParcel.encumbranceStatus}</Badge>} />
                 <InfoRow label="LPS Dispute" value={app.landParcel.lpsDisputeStatus} />
                 <InfoRow label="Litigation" value={app.landParcel.litigationStatus} />
@@ -811,7 +811,7 @@ export function ApplicationDetail() {
                         <TableCell className="text-right text-sm tabular-nums">{formatINR(p.amountPaid)}</TableCell>
                         <TableCell className="text-sm">{formatDate(p.dueDate)}</TableCell>
                         <TableCell className="text-sm">{formatDate(p.paidDate)}</TableCell>
-                        <TableCell className="text-sm font-mono text-xs">{p.receiptNumber ?? '—'}</TableCell>
+                        <TableCell className="text-sm  text-xs">{p.receiptNumber ?? '—'}</TableCell>
                         <TableCell><Badge className={`${statusColor(p.status)} hover:${statusColor(p.status)} text-[11px]`}>{p.status}</Badge></TableCell>
                       </TableRow>
                     ))}

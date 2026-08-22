@@ -77,9 +77,9 @@ export function GrievancesView() {
         </TableRow></TableHeader><TableBody>
           {filtered.map((g: any) => (
             <TableRow key={g.id}>
-              <TableCell className="font-mono text-xs font-medium">{g.grievanceNumber}</TableCell>
+              <TableCell className=" text-xs font-medium">{g.grievanceNumber}</TableCell>
               <TableCell className="text-xs">{g.applicant?.organizationName || String.fromCharCode(8212)}</TableCell>
-              <TableCell className="font-mono text-[11px]">{g.application?.applicationNumber || String.fromCharCode(8212)}</TableCell>
+              <TableCell className=" text-[11px]">{g.application?.applicationNumber || String.fromCharCode(8212)}</TableCell>
               <TableCell className="text-xs">{g.category}</TableCell>
               <TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(g.status))}>{g.status}</Badge></TableCell>
               <TableCell className="text-xs">{g.assignedTo?.name || String.fromCharCode(8212)}</TableCell>

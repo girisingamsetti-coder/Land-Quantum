@@ -66,7 +66,7 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
 }) {
   return (
     <Card className="overflow-hidden border-0 shadow-sm">
-      <CardContent className="p-3 pb-2.5">
+      <CardContent className="px-3 py-0">
         <div className="flex items-center gap-3">
           <div className={cn('rounded-lg p-2 shrink-0', color)}>
             <Icon className="h-3.5 w-3.5 text-white" />
@@ -114,7 +114,7 @@ function AlertSummaryCard({ alert, onDrillDown }: { alert: typeof MOCK_ALERTS[0]
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
             <Badge variant="outline" className={cn('text-[9px] py-0', s.badge)}>{alert.severity}</Badge>
-            <span className="text-[9px] text-muted-foreground font-mono">{alert.application}</span>
+            <span className="text-[9px] text-muted-foreground ">{alert.application}</span>
           </div>
           <p className="text-[11px] mt-0.5 line-clamp-1">{alert.description}</p>
         </div>
@@ -174,49 +174,69 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
   return (
     <Card className="border shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-3">
-        <div className="flex items-start gap-2 mb-4.5">
-          <div className="mt-0.5 rounded-md bg-primary/10 p-1.5 shrink-0"><Icon className="h-3.5 w-3.5 text-primary" /></div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-1">
-              <p className="text-[11px] font-semibold leading-tight truncate">{stage.title}</p>
-              <div className="flex items-center gap-1 shrink-0">
-                <span className="text-base font-bold tabular-nums text-primary">{stage.total}</span>
-                <span className="text-[9px] text-muted-foreground leading-tight">stage<br />records</span>
-              </div>
+        {/* Top Section */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="rounded-xl bg-emerald-50 p-2">
+              <Icon className="h-5 w-5 text-emerald-600" />
             </div>
-            <p className="text-[10px] text-muted-foreground leading-tight">{stage.description}</p>
-          </div>
-        </div>
-        {/* Segmented progress bar */}
-        <div className="flex h-1.5 w-full rounded-full overflow-hidden gap-px mt-2 mb-4">
-          {stage.inProgress.pct > 0 && <div className="bg-blue-500"    style={{ width: `${stage.inProgress.pct}%` }} />}
-          {stage.approved.pct > 0   && <div className="bg-emerald-500" style={{ width: `${stage.approved.pct}%`   }} />}
-          {stage.revision.pct > 0   && <div className="bg-amber-400"   style={{ width: `${stage.revision.pct}%`   }} />}
-          {stage.rejected.pct > 0   && <div className="bg-red-500"     style={{ width: `${stage.rejected.pct}%`   }} />}
-        </div>
-        <div className="flex flex-wrap gap-x-3 gap-y-1">
-          <div>
-            <p className="text-[11px] font-semibold tabular-nums">{stage.inProgress.count}</p>
-            <p className="text-[9px] text-muted-foreground leading-tight"><span className="text-blue-600 font-medium">({stage.inProgress.pct}%)</span><br />In progress{stage.inProgress.steps ? ` across ${stage.inProgress.steps} steps` : ''}</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold tabular-nums text-emerald-600">{stage.approved.count}</p>
-            <p className="text-[9px] text-muted-foreground leading-tight"><span className="text-emerald-600 font-medium">({stage.approved.pct}%)</span><br />Approved / completed</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold tabular-nums">{stage.revision.count}</p>
-            <p className="text-[9px] text-muted-foreground leading-tight">Sent for<br />revision</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold tabular-nums text-red-600">{stage.rejected.count}</p>
-            <p className="text-[9px] text-muted-foreground leading-tight">Rejected</p>
-          </div>
-          {stage.extra && (
             <div>
-              <p className="text-[11px] font-semibold tabular-nums text-orange-600">{stage.extra.count}</p>
-              <p className="text-[9px] text-muted-foreground leading-tight">{stage.extra.label}</p>
+              <h3 className="text-sm font-bold text-slate-900 leading-tight">{stage.title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{stage.total} Records</p>
             </div>
-          )}
+          </div>
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-100">
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px w-full bg-slate-100 mb-3" />
+
+        {/* 2x2 Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Top Left - In Progress */}
+          <div className="rounded-lg bg-slate-50 px-3 py-1.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">In Progress</span>
+            </div>
+            <div className="flex items-end gap-1">
+              <p className="text-sm font-bold text-slate-900">{stage.inProgress.count} records</p>
+            </div>
+          </div>
+
+          {/* Top Right - Revision */}
+          <div className="rounded-lg bg-slate-50 px-3 py-1.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Revision</span>
+              <span className="text-[11px] font-bold text-slate-700">{stage.revision.pct}%</span>
+            </div>
+            <div className="flex items-end gap-1">
+              <p className="text-sm font-bold text-slate-900">{stage.revision.count} records</p>
+            </div>
+          </div>
+
+          {/* Bottom Left - Approved */}
+          <div className="rounded-lg bg-emerald-50/50 border border-emerald-100 px-3 py-1.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Approved</span>
+              <span className="text-[11px] font-bold text-emerald-600">{stage.approved.pct}%</span>
+            </div>
+            <div className="flex items-end gap-1">
+              <p className="text-sm font-bold text-slate-900">{stage.approved.count} records</p>
+            </div>
+          </div>
+
+          {/* Bottom Right - Rejected */}
+          <div className="rounded-lg bg-orange-50/50 border border-orange-100 px-3 py-1.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">Rejected</span>
+              <span className="text-[11px] font-bold text-orange-600">{stage.rejected.pct}%</span>
+            </div>
+            <div className="flex items-end gap-1">
+              <p className="text-sm font-bold text-slate-900">{stage.rejected.count} records</p>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -544,7 +564,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
 
   const th = (label: string, key: SortKey, extra = '') => (
     <th
-      className={cn('px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-foreground transition-colors', extra)}
+      className={cn('px-2 py-2 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-foreground transition-colors', extra)}
       onClick={() => handleSort(key)}
     >
       <div className="flex items-center gap-1">
@@ -558,7 +578,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
     <div>
       {/* Section Header */}
       <div className="mb-4">
-        <h2 className="text-sm font-bold tracking-tight">The records behind the numbers</h2>
+        <h2 className="text-sm font-bold tracking-tight">Summary Table</h2>
         <p className="text-[11px] text-muted-foreground mt-0.5">Sort any column, search across all of them, or take the whole view away as a spreadsheet.</p>
       </div>
 
@@ -571,7 +591,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
                 key={tab.id}
                 onClick={() => { setActiveTab(tab.id); setSearch(''); setPage(1) }}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-2.5 text-[11px] font-medium whitespace-nowrap border-b-2 transition-colors',
+                  'flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold whitespace-nowrap border-b-2 transition-colors',
                   activeTab === tab.id
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30',
@@ -636,14 +656,14 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
                   ) : pageData.map((row) => (
                     <tr key={row.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => onNavigateToApp(row.id)}>
                       <td className="px-2 py-2">
-                        <span className="font-mono text-[10px] text-primary font-semibold hover:underline">{row.id}</span>
+                        <span className=" text-[10px] text-primary font-semibold hover:underline">{row.id}</span>
                       </td>
                       <td className="px-2 py-2 text-[11px] max-w-[200px]">
                         <span className="truncate block">{row.applicant}</span>
                       </td>
                       <td className="px-2 py-2 text-[11px] text-muted-foreground">{row.sector}</td>
                       <td className="px-2 py-2 text-[11px]">{row.themeCity}</td>
-                      <td className="px-2 py-2 font-mono text-[10px] text-muted-foreground">{row.plot}</td>
+                      <td className="px-2 py-2  text-[10px] text-muted-foreground">{row.plot}</td>
                       <td className="px-2 py-2 text-[11px] text-muted-foreground max-w-[200px]">
                         <span className="truncate block">{row.step}</span>
                       </td>
@@ -699,7 +719,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
               <tbody className="divide-y">
                 {DATES_DATA.sort((a,b) => a.daysAway - b.daysAway).map(row => (
                   <tr key={row.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2 font-mono text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
+                    <td className="px-2 py-2  text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
                     <td className="px-2 py-2 max-w-[180px]"><span className="truncate block">{row.applicant}</span></td>
                     <td className="px-2 py-2">{row.event}</td>
                     <td className="px-2 py-2 whitespace-nowrap">{row.date}</td>
@@ -738,7 +758,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
               <tbody className="divide-y">
                 {MONEY_DATA.sort((a,b) => a.daysNum - b.daysNum).map(row => (
                   <tr key={row.id} className={cn('hover:bg-muted/30 transition-colors', row.isOverdue && 'bg-red-50/40 dark:bg-red-950/10')}>
-                    <td className="px-2 py-2 font-mono text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
+                    <td className="px-2 py-2  text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
                     <td className="px-2 py-2 max-w-[180px]"><span className="truncate block">{row.applicant}</span></td>
                     <td className="px-2 py-2">{row.type}</td>
                     <td className="px-2 py-2 text-right font-semibold tabular-nums">{row.amount}</td>
@@ -891,7 +911,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
               <tbody className="divide-y">
                 {PLOTS_DATA.map(row => (
                   <tr key={row.plotId} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2 font-mono text-[10px] font-semibold text-primary">{row.plotId}</td>
+                    <td className="px-2 py-2  text-[10px] font-semibold text-primary">{row.plotId}</td>
                     <td className="px-2 py-2">{row.city}</td>
                     <td className="px-2 py-2 text-right tabular-nums">{row.acres}</td>
                     <td className="px-2 py-2">
@@ -1094,11 +1114,10 @@ export function DashboardView() {
       <div className="grid gap-3 lg:grid-cols-3">
         {/* Revenue Trend */}
         <Card>
-          <CardHeader className="pb-1 pt-3 px-3">
-            <CardTitle className="text-xs font-semibold">Revenue Trend</CardTitle>
-            <CardDescription className="text-[10px]">â‚¹ Crores</CardDescription>
+          <CardHeader className="px-3 py-0">
+            <CardTitle className="text-xs font-bold">Revenue Trend</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 px-3">
+          <CardContent className="px-3 py-0">
             <ChartContainer config={revenueConfig} className="h-[160px] w-full">
               <AreaChart data={revenueTrend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                 <defs>
@@ -1118,11 +1137,10 @@ export function DashboardView() {
 
         {/* Applications by Status */}
         <Card>
-          <CardHeader className="pb-1 pt-3 px-3">
-            <CardTitle className="text-xs font-semibold">Applications by Status</CardTitle>
-            <CardDescription className="text-[10px]">Distribution</CardDescription>
+          <CardHeader className="px-3 py-0">
+            <CardTitle className="text-xs font-bold">Applications by Status</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 px-3">
+          <CardContent className="px-3 py-0">
             <ChartContainer config={statusChartConfig} className="h-[160px] w-full">
               <BarChart data={barData} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
@@ -1140,11 +1158,10 @@ export function DashboardView() {
 
         {/* Land Availability Pie */}
         <Card>
-          <CardHeader className="pb-1 pt-3 px-3">
-            <CardTitle className="text-xs font-semibold">Land Availability</CardTitle>
-            <CardDescription className="text-[10px]">Parcels by status</CardDescription>
+          <CardHeader className="px-3 py-0">
+            <CardTitle className="text-xs font-bold">Land Availability</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 px-3 flex items-center justify-center">
+          <CardContent className="px-3 py-0 flex items-center justify-center">
             <ChartContainer config={pieConfig} className="h-[160px] w-full">
               <PieChart>
                 <ChartTooltip content={<ChartTooltipContent />} />
@@ -1180,11 +1197,10 @@ export function DashboardView() {
         </div>
         <div className="grid gap-3 lg:grid-cols-2">
           <Card>
-            <CardHeader className="pb-1 pt-3 px-3">
-              <CardTitle className="text-xs font-semibold">Where live cases are waiting</CardTitle>
-              <CardDescription className="text-[10px]">Cases at each step, split by whether they are still inside their SLA</CardDescription>
+            <CardHeader className="px-3 py-0">
+              <CardTitle className="text-xs font-bold">Where live cases are waiting</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-3 px-3">
+            <CardContent className="px-3 py-0">
               <ChartContainer config={liveCasesConfig} className="h-[200px] w-full">
                 <BarChart data={liveCasesData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }} barCategoryGap="20%">
                   <XAxis dataKey="step" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
@@ -1198,11 +1214,10 @@ export function DashboardView() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-1 pt-3 px-3">
-              <CardTitle className="text-xs font-semibold">How far cases get</CardTitle>
-              <CardDescription className="text-[10px]">Every case that reached this step or went beyond it</CardDescription>
+            <CardHeader className="px-3 py-0">
+              <CardTitle className="text-xs font-bold">How far cases get</CardTitle>
             </CardHeader>
-            <CardContent className="pt-2 pb-4 px-4">
+            <CardContent className="px-4 py-0">
               <div className="space-y-5 mt-2">
                 {funnelData.map((item) => <FunnelBar key={item.stage} stage={item.stage} count={item.count} pct={item.pct} />)}
               </div>
@@ -1214,11 +1229,10 @@ export function DashboardView() {
       {/* Decisions / Money / Investment */}
       <div className="grid gap-3 lg:grid-cols-3">
         <Card>
-          <CardHeader className="pb-1 pt-3 px-3">
-            <CardTitle className="text-xs font-semibold">Decisions recorded</CardTitle>
-            <CardDescription className="text-[10px]">Passed, sent back, and refused â€” last 12 months</CardDescription>
+          <CardHeader className="px-3 py-0">
+            <CardTitle className="text-xs font-bold">Decisions recorded</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 px-3">
+          <CardContent className="px-3 py-0">
             <ChartContainer config={decisionsConfig} className="h-[160px] w-full">
               <BarChart data={decisionsData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }} barSize={6}>
                 <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
@@ -1232,11 +1246,10 @@ export function DashboardView() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-1 pt-3 px-3">
-            <CardTitle className="text-xs font-semibold">Money in each month</CardTitle>
-            <CardDescription className="text-[10px]">Collected against billed â€” last 12 months (â‚¹ Cr)</CardDescription>
+          <CardHeader className="px-3 py-0">
+            <CardTitle className="text-xs font-bold">Money in each month</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 px-3">
+          <CardContent className="px-3 py-0">
             <ChartContainer config={moneyConfig} className="h-[160px] w-full">
               <ComposedChart data={moneyData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
                 <defs><linearGradient id="billedGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} /><stop offset="95%" stopColor="#6366f1" stopOpacity={0} /></linearGradient></defs>
@@ -1250,11 +1263,11 @@ export function DashboardView() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-1 pt-3 px-3">
+          <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-semibold">Investment by sector</CardTitle>
             <CardDescription className="text-[10px]">Committed rupees, largest first (â‚¹ Cr)</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 px-3">
+          <CardContent className="px-3 py-0">
             <ChartContainer config={investmentConfig} className="h-[160px] w-full">
               <BarChart data={investmentData} layout="vertical" margin={{ top: 0, right: 10, bottom: 0, left: 4 }} barSize={8}>
                 <XAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
@@ -1271,15 +1284,15 @@ export function DashboardView() {
       <div className="grid gap-3 lg:grid-cols-2 pb-4">
         {/* Recent Applications */}
         <Card>
-          <CardHeader className="pb-2 pt-3 px-3">
+          <CardHeader className="px-3 py-0">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xs font-semibold">Recent Applications</CardTitle>
+              <CardTitle className="text-xs font-bold">Recent Applications</CardTitle>
               <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('applications')}>
                 View all <ArrowRight className="h-2.5 w-2.5" />
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="px-3 pb-3">
+          <CardContent className="px-3 py-0">
             <div className="space-y-1.5">
               {recentApps.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-6">No applications yet</p>
@@ -1306,9 +1319,9 @@ export function DashboardView() {
 
         {/* Risk Alerts */}
         <Card>
-          <CardHeader className="pb-2 pt-3 px-3">
+          <CardHeader className="px-3 py-0">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xs font-semibold">Risk Alerts</CardTitle>
+              <CardTitle className="text-xs font-bold">Risk Alerts</CardTitle>
               <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('risk-alerts')}>
                 View all <ArrowRight className="h-2.5 w-2.5" />
               </Button>
@@ -1331,7 +1344,7 @@ export function DashboardView() {
               })}
             </div>
           </CardHeader>
-          <CardContent className="px-3 pb-3">
+          <CardContent className="px-3 py-0">
             <div className="space-y-1.5">
               {MOCK_ALERTS.map((alert) => (
                 <div key={alert.id}>

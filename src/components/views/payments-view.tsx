@@ -75,7 +75,7 @@ export function PaymentsView() {
           {filtered.map((p: any, i: number) => (
             <TableRow key={i}>
               <TableCell className="text-xs font-medium">{p.paymentType}</TableCell>
-              <TableCell className="font-mono text-[11px]">{p.application?.applicationNumber}</TableCell>
+              <TableCell className=" text-[11px]">{p.application?.applicationNumber}</TableCell>
               <TableCell className="text-xs">{p.application?.applicant?.organizationName}</TableCell>
               <TableCell className="text-right text-xs tabular-nums">{formatINR(p.amountDue)}</TableCell>
               <TableCell className="text-right text-xs tabular-nums text-emerald-700">{formatINR(p.amountPaid)}</TableCell>

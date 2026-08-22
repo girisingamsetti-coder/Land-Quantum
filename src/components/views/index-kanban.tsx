@@ -88,7 +88,7 @@ function AppCard({ app, onNavigate }: { app: AppItem; onNavigate: (id: string) =
         <div className="flex items-start justify-between gap-1">
           <div className="flex items-center gap-1.5 min-w-0">
             <PriorityIndicator priority={app.priority} />
-            <span className="text-xs font-mono text-muted-foreground truncate">
+            <span className="text-xs  text-muted-foreground truncate">
               {app.applicationNumber}
             </span>
           </div>

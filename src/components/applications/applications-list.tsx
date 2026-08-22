@@ -282,7 +282,7 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
                 <TableBody>
                   {data.applications.map((app) => (
                     <TableRow key={app.id}>
-                      <TableCell className="font-mono text-xs font-medium">{app.applicationNumber}</TableCell>
+                      <TableCell className=" text-xs font-medium">{app.applicationNumber}</TableCell>
                       <TableCell>
                         <div className="max-w-[180px] truncate" title={app.applicant?.organizationName}>
                           <p className="font-medium text-sm truncate">{app.applicant?.organizationName}</p>
@@ -294,7 +294,7 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
                       </TableCell>
                       <TableCell className="text-sm">
                         {app.landParcel?.plotId ? (
-                          <span className="font-mono text-xs">{app.landParcel.plotId}</span>
+                          <span className=" text-xs">{app.landParcel.plotId}</span>
                         ) : '—'}
                       </TableCell>
                       <TableCell className="text-xs">{app.sector || '—'}</TableCell>
