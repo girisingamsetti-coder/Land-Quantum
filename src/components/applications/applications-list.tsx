@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import {
   Search, Eye, Download, FileSpreadsheet, FileText, ChevronLeft, ChevronRight,
-  Inbox, RefreshCw,
+  Inbox, RefreshCw, Filter, X,
 } from 'lucide-react'
 
 // ---- Types ----
@@ -145,7 +145,7 @@ function slaBadge(slaRemaining: number | null) {
 
 // ---- Component ----
 
-export function ApplicationsList() {
+export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) {
   const { navigateTo } = useAppLayout()
 
   const [data, setData] = useState<ApplicationsResponse | null>(null)
@@ -207,6 +207,7 @@ export function ApplicationsList() {
   return (
     <div className="space-y-4">
       {/* Header */}
+      {!hideHeader && (
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
@@ -226,71 +227,18 @@ export function ApplicationsList() {
           </Button>
         </div>
       </div>
-
-      {/* Search + Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-3">
-            {/* Search */}
-            <div className="flex gap-2 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by app #, applicant, project..."
-                  className="pl-9 h-9"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
-              </div>
-              <Button className="h-9" onClick={handleSearch}>Search</Button>
-            </div>
-
-            {/* Filters */}
-            <div className="flex flex-wrap gap-2">
-              <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1) }}>
-                <SelectTrigger className="w-[150px] h-9"><SelectValue placeholder="Status" /></SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={stage} onValueChange={(v) => { setStage(v); setPage(1) }}>
-                <SelectTrigger className="w-[170px] h-9"><SelectValue placeholder="Stage" /></SelectTrigger>
-                <SelectContent>
-                  {STAGE_OPTIONS.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={sector} onValueChange={(v) => { setSector(v); setPage(1) }}>
-                <SelectTrigger className="w-[160px] h-9"><SelectValue placeholder="Sector" /></SelectTrigger>
-                <SelectContent>
-                  {SECTOR_OPTIONS.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={mode} onValueChange={(v) => { setMode(v); setPage(1) }}>
-                <SelectTrigger className="w-[180px] h-9"><SelectValue placeholder="Allotment Mode" /></SelectTrigger>
-                <SelectContent>
-                  {MODE_OPTIONS.map((m) => (
-                    <SelectItem key={m} value={m}>{m}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Button variant="ghost" size="sm" className="h-9 text-muted-foreground" onClick={resetFilters}>
-                Reset
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      )}
+      {/* Filters (No Card, No Padding) */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search..." className="pl-8 h-8 text-xs" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} /></div>
+          <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1) }}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={stage} onValueChange={(v) => { setStage(v); setPage(1) }}><SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={sector} onValueChange={(v) => { setSector(v); setPage(1) }}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
+        </div>
+      </div>
 
       {/* Table */}
       <Card>

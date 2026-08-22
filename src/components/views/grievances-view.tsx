@@ -60,15 +60,17 @@ export function GrievancesView() {
         <Card className="border-emerald-100 bg-emerald-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><div><p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Resolved</p><p className="text-xl font-bold mt-1 text-emerald-700 tabular-nums">{summaryStats.resolved}</p></div><div className="rounded-lg bg-emerald-100 p-2"><CheckCircle2 className="h-4 w-4 text-emerald-600"/></div></div></CardContent></Card>
       </div>}
 
-      <Card><CardContent className="p-3 flex flex-wrap gap-2 items-center">
-        <div className="flex items-center gap-1.5 text-muted-foreground mr-1"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-medium">Filters</span></div>
-        <div className="relative flex-1 max-w-sm"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search GRV #, applicant, or app #..." className="pl-8 h-8 text-sm" value={search} onChange={e => setSearch(e.target.value)} /></div>
-        <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[130px] h-8"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All','Open','In Progress','Resolved','Closed','Rejected'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>
-        <Select value={category || 'All'} onValueChange={v => setCategory(v === 'All' ? '' : v)}><SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Category" /></SelectTrigger><SelectContent><SelectItem value="All">All Categories</SelectItem>{categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
-        {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground hover:text-foreground" onClick={() => { setStatus(''); setCategory(''); setSearch('') }}><X className="h-3 w-3" /> Clear ({activeFilters})</Button>}
-      </CardContent></Card>
-
-      <Card><CardContent className="p-0">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search GRV #, app..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
+          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All','Open','In Progress','Resolved','Closed','Rejected'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={category || 'All'} onValueChange={v => setCategory(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Category" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Categories</SelectItem>{categories.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setCategory(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
+      <Card>
+        <CardContent className="p-0">
         {loading ? <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-16 w-full"/>)}</div> :
         <Table><TableHeader><TableRow>
           <TableHead>GRV #</TableHead><TableHead>Applicant</TableHead><TableHead>Application</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead><TableHead>Assigned To</TableHead><TableHead>Submitted</TableHead>

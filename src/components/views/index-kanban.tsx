@@ -107,7 +107,7 @@ function AppCard({ app, onNavigate }: { app: AppItem; onNavigate: (id: string) =
   )
 }
 
-export function WorkflowKanban() {
+export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
   const { navigateTo } = useAppLayout()
   const [stages, setStages] = useState<string[]>(DEFAULT_STAGES)
   const [apps, setApps] = useState<AppItem[]>([])
@@ -177,8 +177,9 @@ export function WorkflowKanban() {
   const activeStages = grouped.length > 0 ? grouped : stages.slice(0, 6).map(s => ({ stage: s, items: [] }))
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 h-[calc(100vh-140px)] flex flex-col">
+      {!hideHeader && (
+      <div className="flex items-center justify-between shrink-0">
         <div>
           <h2 className="text-lg font-semibold">Workflow Board</h2>
           <p className="text-sm text-muted-foreground">
@@ -189,6 +190,7 @@ export function WorkflowKanban() {
           <RefreshCw className="h-4 w-4 mr-2" /> Refresh
         </Button>
       </div>
+      )}
 
       <ScrollArea className="w-full">
         <div className="flex gap-4 pb-4 min-h-[500px]">

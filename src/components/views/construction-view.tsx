@@ -52,9 +52,15 @@ export function ConstructionView() {
           </Card>
         ))}
       </div>}
-      {activeFilters > 0 && (
-        <div className="flex items-center gap-2"><Filter className="h-3.5 w-3.5 text-muted-foreground"/><span className="text-xs text-muted-foreground">Filtered by: <Badge variant="outline" className="text-[10px] mx-1">{status}</Badge></span><Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => setStatus('')}><X className="h-3 w-3"/> Clear</Button></div>
-      )}
+
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'In Progress', 'Delayed', 'Not Started', 'Completed'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => setStatus('')}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-4">
         {filtered.map((c: any) => (
           <Card key={c.id} className="hover:shadow-sm transition-shadow">

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,17 +15,17 @@ import {
   ScrollText, Users, Building2, Settings, Map, ClipboardList,
   AlertTriangle, AlertCircle, CheckCircle2, XCircle, Shield, BarChart3,
   Search, Filter, X, ChevronDown, ChevronUp, Clock, ArrowRight, FileWarning,
-  IndianRupee,
+  IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 function formatINR(amount: number) { return `\u20B9${amount.toLocaleString('en-IN')}` }
 
 function statusColor(s: string) {
-  if (['Approved','Completed','Paid','Compliant','Resolved','Issued','Executed','Registered'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-  if (['Under Review','In Progress','Pending','Open','Draft','Submitted','Notice Issued','Decision Made','Scheduled','Under Scrutiny'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
-  if (['Rejected','Failed','Non-Compliant','Overdue','Cancelled'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
-  if (['Deferred','On Hold','Delayed','At Risk','Partially Paid'].includes(s)) return 'bg-orange-100 text-orange-700 border-orange-200'
+  if (['Approved', 'Completed', 'Paid', 'Compliant', 'Resolved', 'Issued', 'Executed', 'Registered'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
+  if (['Under Review', 'In Progress', 'Pending', 'Open', 'Draft', 'Submitted', 'Notice Issued', 'Decision Made', 'Scheduled', 'Under Scrutiny'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
+  if (['Rejected', 'Failed', 'Non-Compliant', 'Overdue', 'Cancelled'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
+  if (['Deferred', 'On Hold', 'Delayed', 'At Risk', 'Partially Paid'].includes(s)) return 'bg-orange-100 text-orange-700 border-orange-200'
   return 'bg-slate-100 text-slate-600 border-slate-200'
 }
 
@@ -80,13 +81,13 @@ function SearchInput({ value, onChange, onSearch, placeholder }: {
 }
 
 // CANCELLATIONS
-export function CancellationsView() {
+export function CancellationsView({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
 
-  useEffect(() => { fetch('/api/cancellations').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/cancellations').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
   const filtered = useMemo(() => {
     if (!data?.cases) return []
@@ -104,66 +105,240 @@ export function CancellationsView() {
 
   return (
     <div className="space-y-4">
-      <div><h1 className="text-2xl font-bold tracking-tight">Cancellation & Resumption</h1><p className="text-sm text-muted-foreground">Track cancellation cases, notices, and resumption proceedings</p></div>
-      <FilterBar activeCount={activeFilters} onClear={() => { setStatus(''); setSearch('') }}>
-        <SearchInput value={search} onChange={setSearch} onSearch={() => {}} placeholder="Search cases..." />
-        <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[140px] h-8"><SelectValue placeholder="Status" /></SelectTrigger>
-          <SelectContent>{['All','Open','Notice Issued','Decision Made','Completed','Cancelled'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-        </Select>
-      </FilterBar>
-      <Card><CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({length:3}).map((_,i)=><Skeleton key={i} className="h-14 w-full"/>)}</div> :
-      <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
-        {filtered.map((c: any) => (
-          <TableRow key={c.id}>
-            <TableCell className="font-mono text-xs font-medium">{c.caseNumber}</TableCell>
-            <TableCell className="font-mono text-[11px]">{c.application?.applicationNumber}</TableCell>
-            <TableCell className="text-xs">{c.application?.projectName}</TableCell>
-            <TableCell><Badge variant="outline" className={cn('text-[10px]', c.initiatedBy === 'APCRDA' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200')}>{c.initiatedBy}</Badge></TableCell>
-            <TableCell className="text-xs max-w-[200px] truncate">{c.reason}</TableCell>
-            <TableCell className="text-xs">{c.decision || '—'}</TableCell>
-            <TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(c.status))}>{c.status}</Badge></TableCell>
-          </TableRow>))}
-      </TableBody></Table>}</CardContent></Card>
+      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Cancellation & Resumption</h1><p className="text-sm text-muted-foreground">Track cancellation cases, notices, and resumption proceedings</p></div>}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search cases..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
+          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
+      <Card>
+        <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div> :
+        <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
+          {filtered.map((c: any) => (
+            <TableRow key={c.id}>
+              <TableCell className="font-mono text-xs font-medium">{c.caseNumber}</TableCell>
+              <TableCell className="font-mono text-[11px]">{c.application?.applicationNumber}</TableCell>
+              <TableCell className="text-xs">{c.application?.projectName}</TableCell>
+              <TableCell><Badge variant="outline" className={cn('text-[10px]', c.initiatedBy === 'APCRDA' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200')}>{c.initiatedBy}</Badge></TableCell>
+              <TableCell className="text-xs max-w-[200px] truncate">{c.reason}</TableCell>
+              <TableCell className="text-xs">{c.decision || '—'}</TableCell>
+              <TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(c.status))}>{c.status}</Badge></TableCell>
+            </TableRow>))}
+        </TableBody></Table>}</CardContent></Card>
     </div>
   )
 }
 
 // REPORTS
 export function ReportsView() {
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  useEffect(() => { fetch('/api/reports?type=overview').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  const [reportId, setReportId] = useState('case-pipeline');
+  const [filters, setFilters] = useState({ from: '', to: '', phase: 'ALL', status: 'ALL' });
+  const [exporting, setExporting] = useState<string | null>(null);
+
+  const catalogue = useMemo(() => [
+    { id: 'case-pipeline', title: 'Case Pipeline', description: 'Overview of all cases across phases' },
+    { id: 'financial-summary', title: 'Financial Summary', description: 'Payments, dues and revenue' },
+    { id: 'land-allocation', title: 'Land Allocation', description: 'Plot status and sector distribution' },
+    { id: 'stage-aging', title: 'Stage Aging & Bottlenecks', description: 'Time spent in each workflow stage' },
+    { id: 'approval-log', title: 'Approval Log', description: 'Detailed log of all case approvals' },
+    { id: 'dormant-at-risk', title: 'Dormant / At-Risk Allotment', description: 'Inactive cases and pending cancellations' },
+    { id: 'grievances-summary', title: 'Grievances Summary', description: 'Complaints, categories, and resolution SLA' },
+    { id: 'allotment-summary', title: 'Allotment Summary', description: 'Breakdown by sector, objectives, and mode' },
+  ], []);
+
+  const [report, setReport] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    // Simulating the user's API fetch since the backend doesn't exist yet
+    const timer = setTimeout(() => {
+      let data: any = null;
+      if (reportId === 'stage-aging') {
+        data = {
+          summary: [{ label: 'Avg Cycle Time', value: '42 days' }, { label: 'Stalled Cases', value: '38' }, { label: 'Worst Bottleneck', value: 'Document Verification' }],
+          columns: [{ key: 'id', label: 'App ID', align: 'left' }, { key: 'stage', label: 'Current Stage', align: 'left' }, { key: 'daysInStage', label: 'Days in Stage', align: 'right' }, { key: 'slaStatus', label: 'SLA Status', align: 'left' }],
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${2000 + i}`, stage: ['Initial Scrutiny', 'Document Verification', 'Board Approval'][i % 3], daysInStage: (i * 3 + 5).toString(), slaStatus: i % 4 === 0 ? 'Breached' : 'On Track' }))
+        };
+      } else if (reportId === 'approval-log') {
+        data = {
+          summary: [{ label: 'Approvals this Month', value: '145' }, { label: 'Avg Approval Time', value: '12 days' }],
+          columns: [{ key: 'id', label: 'App ID', align: 'left' }, { key: 'applicant', label: 'Applicant', align: 'left' }, { key: 'approvedBy', label: 'Approved By', align: 'left' }, { key: 'date', label: 'Approval Date', align: 'left' }],
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${3000 + i}`, applicant: `Applicant ${i}`, approvedBy: 'Board Committee', date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10) }))
+        };
+      } else if (reportId === 'dormant-at-risk') {
+        data = {
+          summary: [{ label: 'Dormant Cases', value: '24' }, { label: 'At-Risk Revenue', value: '₹145 Cr' }, { label: 'Pending Cancellations', value: '8' }],
+          columns: [{ key: 'id', label: 'App ID', align: 'left' }, { key: 'lastActivity', label: 'Last Activity', align: 'left' }, { key: 'riskLevel', label: 'Risk Level', align: 'left' }, { key: 'pendingDues', label: 'Pending Dues (₹)', align: 'right' }],
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${4000 + i}`, lastActivity: `${60 + i * 5} days ago`, riskLevel: i % 3 === 0 ? 'High (Cancellation Pending)' : 'Medium (Dormant)', pendingDues: (500000 * i).toLocaleString('en-IN') }))
+        };
+      } else if (reportId === 'grievances-summary') {
+        data = {
+          summary: [{ label: 'Open Grievances', value: '42' }, { label: 'Resolution Rate', value: '89%' }, { label: 'Avg Resolution Time', value: '4 days' }],
+          columns: [{ key: 'id', label: 'Ticket ID', align: 'left' }, { key: 'category', label: 'Category', align: 'left' }, { key: 'status', label: 'Status', align: 'left' }, { key: 'priority', label: 'Priority', align: 'left' }],
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `TKT-2024-${5000 + i}`, category: ['Payment Issue', 'Document Upload', 'Plot Handover'][i % 3], status: ['Open', 'In Progress', 'Resolved'][i % 3], priority: ['High', 'Medium', 'Low'][i % 3] }))
+        };
+      } else if (reportId === 'allotment-summary') {
+        data = {
+          summary: [{ label: 'Total Allotted Area', value: '1,450 Acres' }, { label: 'Top Sector', value: 'Manufacturing' }, { label: 'Total Allotments', value: '312' }],
+          columns: [{ key: 'sector', label: 'Sector/Objective', align: 'left' }, { key: 'mode', label: 'Allotment Mode', align: 'left' }, { key: 'count', label: 'Allotments', align: 'right' }, { key: 'acres', label: 'Total Area (Acres)', align: 'right' }],
+          rows: Array.from({ length: 10 }).map((_, i) => ({ sector: ['Manufacturing', 'IT/ITES', 'Healthcare', 'Logistics'][i % 4], mode: ['Direct Allotment', 'Auction', 'Tender'][i % 3], count: (10 + i * 2).toString(), acres: (50 + i * 15).toString() }))
+        };
+      } else {
+        // Default Case Pipeline & others
+        data = {
+          summary: [{ label: 'Total Cases', value: '1,245' }, { label: 'Value', value: '₹4,500 Cr' }, { label: 'Avg Processing', value: '45 days' }],
+          columns: [{ key: 'id', label: 'ID', align: 'left' }, { key: 'applicant', label: 'Applicant', align: 'left' }, { key: 'status', label: 'Status', align: 'left' }, { key: 'date', label: 'Date', align: 'left' }, { key: 'value', label: 'Value (₹)', align: 'right' }],
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${1000 + i}`, applicant: `Company ${String.fromCharCode(65 + (i % 26))} Pvt Ltd`, status: ['Under Review', 'Approved', 'Pending Payment'][i % 3], date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), value: (1000000 * (i + 1)).toLocaleString('en-IN') }))
+        };
+      }
+      setReport(data);
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [reportId, filters]);
+
+  async function exportAs(format: 'csv' | 'pdf') {
+    setExporting(format);
+    setTimeout(() => {
+      setExporting(null);
+      toast.success(`${format.toUpperCase()} downloaded.`);
+    }, 1000);
+  }
+
+  const active = catalogue.find((r: any) => r.id === reportId);
+  const meta = { phases: [{ value: 'P1', label: 'Phase 1' }], caseStatuses: ['UNDER_REVIEW', 'APPROVED'] };
+
   return (
-    <div className="space-y-4">
-      <div><h1 className="text-2xl font-bold tracking-tight">Reports & Analytics</h1><p className="text-sm text-muted-foreground">Comprehensive reports on applications, land, finance, and compliance</p></div>
-      <Tabs defaultValue="status"><TabsList><TabsTrigger value="status">By Status</TabsTrigger><TabsTrigger value="stage">By Stage</TabsTrigger><TabsTrigger value="sector">By Sector</TabsTrigger><TabsTrigger value="finance">Finance</TabsTrigger></TabsList>
-        <TabsContent value="status"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Status</TableHead><TableHead className="text-right">Count</TableHead><TableHead>Share</TableHead></TableRow></TableHeader><TableBody>
-          {data?.byStatus?.map((s: any) => (<TableRow key={s.status}><TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(s.status))}>{s.status}</Badge></TableCell><TableCell className="text-right font-bold">{s._count}</TableCell><TableCell><div className="flex items-center gap-2"><Progress value={(s._count/(data?.totalApps||1))*100} className="h-2 flex-1"/><span className="text-xs tabular-nums">{((s._count/(data?.totalApps||1))*100).toFixed(1)}%</span></div></TableCell></TableRow>))}
-        </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="stage"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead className="text-right">Applications</TableHead></TableRow></TableHeader><TableBody>
-          {data?.byStage?.map((s: any) => (<TableRow key={s.currentStage}><TableCell className="text-sm">{s.currentStage}</TableCell><TableCell className="text-right font-bold">{s._count}</TableCell></TableRow>))}
-        </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="sector"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Sector</TableHead><TableHead className="text-right">Applications</TableHead></TableRow></TableHeader><TableBody>
-          {data?.bySector?.filter((s:any)=>s.sector).map((s: any) => (<TableRow key={s.sector}><TableCell className="text-sm">{s.sector}</TableCell><TableCell className="text-right font-bold">{s._count}</TableCell></TableRow>))}
-        </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="finance"><div className="grid md:grid-cols-2 gap-4">
-          <Card className="p-6"><p className="text-sm text-muted-foreground">Total Committed Investment</p><p className="text-3xl font-bold mt-2">{formatINR(data?.totalInvestment || 0)}</p></Card>
-          <Card className="p-6"><p className="text-sm text-muted-foreground">Total Payments Received</p><p className="text-3xl font-bold text-emerald-700 mt-2">{formatINR(data?.payments?._sum?.amountPaid || 0)}</p></Card>
-        </div></TabsContent>
-      </Tabs>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+          <p className="text-sm text-muted-foreground">Date-range and filter driven. Every report exports to CSV and PDF.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => window.print()}>
+            <Printer className="h-4 w-4 mr-2" /> Print
+          </Button>
+          <Button variant="outline" size="sm" disabled={exporting === 'csv'} onClick={() => exportAs('csv')}>
+            {exporting === 'csv' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileSpreadsheet className="h-4 w-4 mr-2" />}
+            CSV
+          </Button>
+          <Button size="sm" disabled={exporting === 'pdf'} onClick={() => exportAs('pdf')}>
+            {exporting === 'pdf' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileDown className="h-4 w-4 mr-2" />}
+            PDF
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h2 className="text-sm font-semibold text-muted-foreground">STANDARD REPORTS</h2>
+        <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-none">
+          {catalogue.map((r: any) => (
+            <Button
+              key={r.id}
+              variant={reportId === r.id ? "default" : "outline"}
+              onClick={() => setReportId(r.id)}
+              className="whitespace-nowrap h-9 px-4 text-xs font-medium shadow-sm transition-all"
+            >
+              {r.title}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <Input type="date" className="h-8 text-xs w-32" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
+          <Input type="date" className="h-8 text-xs w-32" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
+          <Select value={filters.phase} onValueChange={(v) => setFilters({ ...filters, phase: v })}>
+            <SelectTrigger className="h-8 text-xs w-[130px]"><SelectValue placeholder="Phase" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All phases</SelectItem>
+              {meta?.phases?.map((p: any) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
+            <SelectTrigger className="h-8 text-xs w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Any status</SelectItem>
+              {meta?.caseStatuses?.map((s: any) => <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => setFilters({ from: '', to: '', phase: 'ALL', status: 'ALL' })}>
+            <X className="h-3.5 w-3.5" /> Clear
+          </Button>
+        </div>
+      </div>
+      <Card className="shadow-md overflow-hidden">
+
+          {isLoading ? (
+            <div className="p-8 flex justify-center items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : !report ? (
+            <div className="p-8 flex flex-col items-center justify-center text-muted-foreground">
+              <BarChart3 className="h-8 w-8 mb-2" />
+              <p>Select a report</p>
+            </div>
+          ) : (
+            <>
+
+              {report.rows.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground">No records match the selected filters</div>
+              ) : (
+                <div className="max-h-[65vh] overflow-auto">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
+                      <TableRow>
+                        {report.columns.map((c: any) => (
+                          <TableHead key={c.key} className={c.align === 'right' ? 'text-right' : ''}>
+                            {c.label}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {report.rows.map((row: any, i: number) => (
+                        <TableRow key={i} className="hover:bg-muted/50">
+                          {report.columns.map((c: any) => (
+                            <TableCell key={c.key} className={cn("whitespace-nowrap text-xs", c.align === 'right' && 'text-right')}>
+                              {c.key === 'remarks' || c.key === 'note' ? (
+                                <span className="block max-w-[22rem] whitespace-normal">{row[c.key]}</span>
+                              ) : (
+                                row[c.key]
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+              <div className="border-t px-4 py-2 text-[11px] text-muted-foreground">
+                {report.rows.length.toLocaleString('en-IN')} row{report.rows.length === 1 ? '' : 's'} · generated{' '}
+                {new Date().toLocaleString('en-GB')}
+              </div>
+            </>
+          )}
+        </Card>
     </div>
   )
 }
 
 // AUDIT LOG
-export function AuditLogView() {
+export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [action, setAction] = useState('')
   const [module, setModule] = useState('')
 
-  useEffect(() => { fetch('/api/audit-logs?pageSize=50').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/audit-logs?pageSize=50').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
   const actions = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.action))].sort() }, [data])
   const modules = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.module).filter(Boolean))] }, [data])
@@ -181,39 +356,38 @@ export function AuditLogView() {
 
   return (
     <div className="space-y-4">
-      <div><h1 className="text-2xl font-bold tracking-tight">Audit Trail</h1><p className="text-sm text-muted-foreground">Immutable record of all system actions and changes</p></div>
-      <FilterBar activeCount={activeFilters} onClear={() => { setAction(''); setModule('') }}>
-        <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[150px] h-8"><SelectValue placeholder="Action" /></SelectTrigger>
-          <SelectContent><SelectItem value="All">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
-        </Select>
-        <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[150px] h-8"><SelectValue placeholder="Module" /></SelectTrigger>
-          <SelectContent><SelectItem value="All">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
-        </Select>
-      </FilterBar>
-      <Card><CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-10 w-full"/>)}</div> :
-      <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
-        {filtered.map((l: any) => (<TableRow key={l.id}>
-          <TableCell className="text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">{new Date(l.createdAt).toLocaleString('en-IN')}</TableCell>
-          <TableCell className="text-xs">{l.userName || 'System'}</TableCell>
-          <TableCell className="text-xs">{l.role || '—'}</TableCell>
-          <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{l.action}</Badge></TableCell>
-          <TableCell className="text-xs">{l.module || '—'}</TableCell>
-        </TableRow>))}
-      </TableBody></Table>}</CardContent></Card>
+      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Audit Trail</h1><p className="text-sm text-muted-foreground">Immutable record of all system actions and changes</p></div>}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Action" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>)}</SelectContent></Select>
+          <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Module" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setAction(''); setModule('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
+      <Card>
+        <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div> :
+        <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
+          {filtered.map((l: any) => (<TableRow key={l.id}>
+            <TableCell className="text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">{new Date(l.createdAt).toLocaleString('en-IN')}</TableCell>
+            <TableCell className="text-xs">{l.userName || 'System'}</TableCell>
+            <TableCell className="text-xs">{l.role || '—'}</TableCell>
+            <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{l.action}</Badge></TableCell>
+            <TableCell className="text-xs">{l.module || '—'}</TableCell>
+          </TableRow>))}
+        </TableBody></Table>}</CardContent></Card>
     </div>
   )
 }
 
 // USERS
-export function UsersView() {
+export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [role, setRole] = useState('')
   const [search, setSearch] = useState('')
 
-  useEffect(() => { fetch('/api/users').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/users').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
   const roles = useMemo(() => { if (!data?.users) return []; return [...new Set(data.users.map((u: any) => u.role?.name).filter(Boolean))] }, [data])
 
@@ -233,37 +407,39 @@ export function UsersView() {
 
   return (
     <div className="space-y-4">
-      <div><h1 className="text-2xl font-bold tracking-tight">User Management</h1><p className="text-sm text-muted-foreground">Manage system users, roles, and department assignments</p></div>
-      <FilterBar activeCount={activeFilters} onClear={() => { setRole(''); setSearch('') }}>
-        <SearchInput value={search} onChange={setSearch} onSearch={() => {}} placeholder="Search users..." />
-        <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Role" /></SelectTrigger>
-          <SelectContent><SelectItem value="All">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
-        </Select>
-      </FilterBar>
-      <Card><CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({length:5}).map((_,i)=><Skeleton key={i} className="h-12 w-full"/>)}</div> :
-      <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
-        {filtered.map((u: any) => (<TableRow key={u.id}>
-          <TableCell className="text-sm font-medium">{u.name}</TableCell>
-          <TableCell className="text-xs">{u.email}</TableCell>
-          <TableCell className="text-xs">{u.designation || '—'}</TableCell>
-          <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{u.role?.name}</Badge></TableCell>
-          <TableCell className="text-xs">{u.department?.name || '—'}</TableCell>
-          <TableCell><Badge variant="outline" className={cn('text-[10px]', u.isActive ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200')}>{u.isActive ? 'Active' : 'Inactive'}</Badge></TableCell>
-        </TableRow>))}
-      </TableBody></Table>}</CardContent></Card>
+      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">User Management</h1><p className="text-sm text-muted-foreground">Manage system users, roles, and department assignments</p></div>}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search users..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
+          <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Role" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setRole(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
+      <Card>
+        <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div> :
+        <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
+          {filtered.map((u: any) => (<TableRow key={u.id}>
+            <TableCell className="text-sm font-medium">{u.name}</TableCell>
+            <TableCell className="text-xs">{u.email}</TableCell>
+            <TableCell className="text-xs">{u.designation || '—'}</TableCell>
+            <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{u.role?.name}</Badge></TableCell>
+            <TableCell className="text-xs">{u.department?.name || '—'}</TableCell>
+            <TableCell><Badge variant="outline" className={cn('text-[10px]', u.isActive ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200')}>{u.isActive ? 'Active' : 'Inactive'}</Badge></TableCell>
+          </TableRow>))}
+        </TableBody></Table>}</CardContent></Card>
     </div>
   )
 }
 
 // DEPARTMENTS
-export function DepartmentsView() {
+export function DepartmentsView({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  useEffect(() => { fetch('/api/users').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/users').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
   return (
     <div className="space-y-4">
-      <div><h1 className="text-2xl font-bold tracking-tight">Departments & Roles</h1><p className="text-sm text-muted-foreground">Manage organizational structure and role-based access</p></div>
+      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Departments & Roles</h1><p className="text-sm text-muted-foreground">Manage organizational structure and role-based access</p></div>}
       <div className="grid md:grid-cols-2 gap-4">
         <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className="font-mono text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
         <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.roles?.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
@@ -276,11 +452,11 @@ export function DepartmentsView() {
 export function SettingsView() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  useEffect(() => { fetch('/api/workflow-config').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/workflow-config').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
   return (
     <div className="space-y-4">
       <div><h1 className="text-2xl font-bold tracking-tight">Admin Settings</h1><p className="text-sm text-muted-foreground">Configure workflow stages, SLA targets, and system settings</p></div>
-      <Tabs defaultValue="workflow"><TabsList><TabsTrigger value="workflow">Workflow Stages</TabsTrigger><TabsTrigger value="sla">SLA Configuration</TabsTrigger><TabsTrigger value="system">System Settings</TabsTrigger></TabsList>
+      <Tabs defaultValue="workflow" className="flex flex-col h-full"><TabsList className="flex-wrap h-auto"><TabsTrigger value="workflow">Workflow Stages</TabsTrigger><TabsTrigger value="sla">SLA Configuration</TabsTrigger><TabsTrigger value="system">System Settings</TabsTrigger><TabsTrigger value="users">Users</TabsTrigger><TabsTrigger value="departments">Departments & Roles</TabsTrigger><TabsTrigger value="audit">Audit Trail</TabsTrigger></TabsList>
         <TabsContent value="workflow"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>#</TableHead><TableHead>Stage</TableHead><TableHead>Owner Role</TableHead><TableHead>SLA (days)</TableHead><TableHead>Optional</TableHead><TableHead>Active</TableHead></TableRow></TableHeader><TableBody>
           {data?.stages?.map((s: any) => (<TableRow key={s.id}>
             <TableCell className="text-xs tabular-nums">{s.stageOrder}</TableCell>
@@ -288,7 +464,7 @@ export function SettingsView() {
             <TableCell className="text-xs">{s.ownerRole}</TableCell>
             <TableCell className="text-xs tabular-nums">{s.slaDays}</TableCell>
             <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
-            <TableCell>{s.isActive ? <CheckCircle2 className="h-4 w-4 text-emerald-600"/> : <XCircle className="h-4 w-4 text-red-500"/>}</TableCell>
+            <TableCell>{s.isActive ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <XCircle className="h-4 w-4 text-red-500" />}</TableCell>
           </TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
         <TabsContent value="sla"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead>SLA (days)</TableHead></TableRow></TableHeader><TableBody>
@@ -297,6 +473,9 @@ export function SettingsView() {
         <TabsContent value="system"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Key</TableHead><TableHead>Value</TableHead><TableHead>Category</TableHead><TableHead>Label</TableHead></TableRow></TableHeader><TableBody>
           {data?.settings?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.key}</TableCell><TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell><TableCell className="text-xs">{s.label}</TableCell></TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
+        <TabsContent value="users"><UsersView hideHeader /></TabsContent>
+        <TabsContent value="departments"><DepartmentsView hideHeader /></TabsContent>
+        <TabsContent value="audit"><AuditLogView hideHeader /></TabsContent>
       </Tabs>
     </div>
   )
@@ -308,7 +487,7 @@ export function GISView() {
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
 
-  useEffect(() => { fetch('/api/land-parcels?pageSize=100').then(r=>r.json()).then(j=>j.success&&setParcels(j.data.parcels)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/land-parcels?pageSize=100').then(r => r.json()).then(j => j.success && setParcels(j.data.parcels)).finally(() => setLoading(false)) }, [])
 
   const colorMap: Record<string, string> = { Published: '#10b981', Allotted: '#3b82f6', 'Under Application': '#f59e0b', Reserved: '#8b5cf6', 'On Hold': '#f97316', Withdrawn: '#6b7280', Draft: '#d1d5db', 'Under Review': '#fcd34d' }
 
@@ -319,25 +498,20 @@ export function GISView() {
   return (
     <div className="space-y-4">
       <div><h1 className="text-2xl font-bold tracking-tight">GIS Land Map</h1><p className="text-sm text-muted-foreground">Interactive map visualization of land parcels (mock layer)</p></div>
-      <FilterBar activeCount={activeFilters} onClear={() => setStatusFilter('')}>
-        <Select value={statusFilter || 'All'} onValueChange={v => setStatusFilter(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Status" /></SelectTrigger>
-          <SelectContent>{['All', ...Object.keys(colorMap)].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-        </Select>
-      </FilterBar>
+
       <div className="grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2"><Card className="overflow-hidden"><div className="bg-gradient-to-br from-emerald-50 via-white to-emerald-100 p-6 min-h-[400px]">
-          <div className="text-center text-muted-foreground mb-4"><Map className="h-8 w-8 mx-auto mb-2"/><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
+          <div className="text-center text-muted-foreground mb-4"><Map className="h-8 w-8 mx-auto mb-2" /><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
           <div className="grid grid-cols-5 gap-2">{filtered.map((p) => (
             <div key={p.id} className="rounded border-2 p-2 hover:shadow-md transition-shadow" style={{ borderColor: colorMap[p.status] || '#9ca3af' }} title={`${p.plotId}\n${p.zone?.name}\n${p.status}`}>
-              <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }}/><p className="text-[7px] font-mono truncate font-medium">{p.plotId.replace('APCRDA-P-','')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
+              <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }} /><p className="text-[7px] font-mono truncate font-medium">{p.plotId.replace('APCRDA-P-', '')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
             </div>))}</div>
         </div></Card></div>
         <Card className="p-4 space-y-3">
           <h3 className="text-sm font-semibold">Legend</h3>
-          {Object.entries(colorMap).map(([status, color]) => (<div key={status} className="flex items-center gap-2"><div className="h-3 w-3 rounded-sm flex-shrink-0" style={{ backgroundColor: color }}/><span className="text-xs">{status} ({parcels.filter(p=>p.status===status).length})</span></div>))}
-          <Separator/><h3 className="text-sm font-semibold">Zone Distribution</h3>
-          {Object.entries(parcels.reduce((acc: any, p: any) => { const z = p.zone?.name || 'Unknown'; acc[z] = (acc[z]||0)+1; return acc }, {})).map(([zone, count]) => (
+          {Object.entries(colorMap).map(([status, color]) => (<div key={status} className="flex items-center gap-2"><div className="h-3 w-3 rounded-sm flex-shrink-0" style={{ backgroundColor: color }} /><span className="text-xs">{status} ({parcels.filter(p => p.status === status).length})</span></div>))}
+          <Separator /><h3 className="text-sm font-semibold">Zone Distribution</h3>
+          {Object.entries(parcels.reduce((acc: any, p: any) => { const z = p.zone?.name || 'Unknown'; acc[z] = (acc[z] || 0) + 1; return acc }, {})).map(([zone, count]) => (
             <div key={zone} className="flex items-center justify-between"><span className="text-xs">{zone}</span><Badge variant="secondary" className="text-[10px]">{count as number}</Badge></div>
           ))}
         </Card>
@@ -347,24 +521,24 @@ export function GISView() {
 }
 
 // MY WORK QUEUE
-export function MyWorkQueue() {
+export function MyWorkQueue({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  useEffect(() => { fetch('/api/my-work-queue').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
+  useEffect(() => { fetch('/api/my-work-queue').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
   return (
     <div className="space-y-4">
-      <div><h1 className="text-2xl font-bold tracking-tight">My Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>
+      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">My Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-blue-100 bg-blue-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600"/></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
-        <Card className="border-amber-100 bg-amber-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600"/></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
-        <Card className="border-rose-100 bg-rose-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-4 w-4 text-rose-600"/></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
+        <Card className="border-blue-100 bg-blue-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
+        <Card className="border-amber-100 bg-amber-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
+        <Card className="border-rose-100 bg-rose-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-4 w-4 text-rose-600" /></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
       </div>
       <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="p-0">
-        {loading ? <div className="p-4"><Skeleton className="h-12 w-full"/></div> :
-        data?.assignedStages?.length === 0 ? <p className="text-sm text-muted-foreground p-4">No pending actions</p> :
-        <Table><TableHeader><TableRow><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Stage</TableHead></TableRow></TableHeader><TableBody>
-          {data?.assignedStages?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.application?.applicationNumber}</TableCell><TableCell className="text-xs">{s.application?.projectName}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">{s.stageName}</Badge></TableCell></TableRow>))}
-        </TableBody></Table>}
+        {loading ? <div className="p-4"><Skeleton className="h-12 w-full" /></div> :
+          data?.assignedStages?.length === 0 ? <p className="text-sm text-muted-foreground p-4">No pending actions</p> :
+            <Table><TableHeader><TableRow><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Stage</TableHead></TableRow></TableHeader><TableBody>
+              {data?.assignedStages?.map((s: any) => (<TableRow key={s.id}><TableCell className="font-mono text-xs">{s.application?.applicationNumber}</TableCell><TableCell className="text-xs">{s.application?.projectName}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">{s.stageName}</Badge></TableCell></TableRow>))}
+            </TableBody></Table>}
       </CardContent></Card>
     </div>
   )
@@ -472,16 +646,14 @@ export function RiskAlertsView() {
         })}
       </div>
 
-      <FilterBar activeCount={activeFilters} onClear={() => { setSeverityFilter(''); setTypeFilter('') }}>
-        <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[130px] h-8"><SelectValue placeholder="Severity" /></SelectTrigger>
-          <SelectContent>{['All','Critical','High','Medium','Low'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-        </Select>
-        <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}>
-          <SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Alert Type" /></SelectTrigger>
-          <SelectContent><SelectItem value="All">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-        </Select>
-      </FilterBar>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Severity" /></SelectTrigger><SelectContent>{['All', 'Critical', 'High', 'Medium', 'Low'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Alert Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setSeverityFilter(''); setTypeFilter('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
 
       <div className="space-y-2">
         {filtered.map((alert) => {

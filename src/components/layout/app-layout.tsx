@@ -8,7 +8,7 @@ import {
   Sidebar, SidebarContent, SidebarFooter,
   SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton,
   SidebarMenuItem, SidebarProvider, SidebarRail, SidebarSeparator,
-  SidebarTrigger,
+  SidebarTrigger, useSidebar,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -32,7 +32,7 @@ interface AppLayoutProps { children: React.ReactNode }
 
 export type View =
   | 'dashboard' | 'applications' | 'application-detail' | 'workflow-kanban'
-  | 'land-parcels' | 'payments' | 'constructions' | 'grievances'
+  | 'land-parcels' | 'building-permits' | 'payments' | 'constructions' | 'grievances'
   | 'cancellations' | 'reports' | 'audit-log'
   | 'users' | 'roles' | 'departments' | 'settings' | 'gis'
   | 'my-work-queue' | 'risk-alerts'
@@ -69,20 +69,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { view: 'my-work-queue', label: 'My Work Queue', icon: ClipboardList },
-  { view: 'applications', label: 'All Applications', icon: FileText },
-  { view: 'workflow-kanban', label: 'Workflow Board', icon: KanbanSquare },
-  { view: 'cancellations', label: 'Cancellations', icon: ScrollText },
+  { view: 'applications', label: 'Applications', icon: FileText },
   { view: 'land-parcels', label: 'Land Inventory', icon: MapPin },
-  { view: 'gis', label: 'GIS Map', icon: Map },
+  { view: 'building-permits', label: 'Building Permits', icon: ClipboardList },
   { view: 'constructions', label: 'Construction', icon: HardHat },
   { view: 'payments', label: 'Payments', icon: CreditCard },
   { view: 'grievances', label: 'Grievances', icon: MessageSquare },
   { view: 'risk-alerts', label: 'Risk & Alerts', icon: AlertTriangle },
-  { view: 'users', label: 'Users', icon: Users },
-  { view: 'departments', label: 'Departments', icon: Building2 },
   { view: 'reports', label: 'Reports', icon: BarChart3 },
-  { view: 'audit-log', label: 'Audit Trail', icon: Shield },
   { view: 'settings', label: 'Settings', icon: Settings },
 ]
 
@@ -92,6 +86,7 @@ const viewDescriptions: Record<string, string> = {
   'workflow-kanban': 'Visual workflow board for application stages',
   'application-detail': 'Application details and processing',
   'land-parcels': 'Browse and manage land parcels inventory',
+  'building-permits': 'Manage building permits in Amaravati',
   gis: 'Interactive map of land parcels',
   constructions: 'Monitor construction progress and compliance',
   payments: 'Track payments, invoices, and revenue',
@@ -115,6 +110,7 @@ const DATE_RANGES = ['All Time', 'Today', 'This Week', 'This Month', 'This Quart
 const STATUS_OPTIONS: Record<string, string[]> = {
   applications: ['All Statuses', 'Submitted', 'Under Review', 'Approved', 'Rejected', 'On Hold'],
   'land-parcels': ['All Statuses', 'Published', 'Allotted', 'Under Application', 'Reserved', 'On Hold'],
+  'building-permits': ['All Statuses', 'Approved', 'Under Review', 'Rejected'],
   payments: ['All Statuses', 'Paid', 'Partially Paid', 'Pending', 'Overdue'],
   constructions: ['All Statuses', 'Not Started', 'In Progress', 'Delayed', 'Completed'],
   grievances: ['All Statuses', 'Open', 'In Progress', 'Resolved', 'Closed'],
@@ -203,7 +199,36 @@ function GlobalFilterBar({ view, filters, setFilters }: {
   )
 }
 
+// Custom rail that embeds the collapse toggle on the sidebar/content separator
+function SidebarRailWithTrigger() {
+  const { state } = useSidebar()
+  return (
+    <>
+      <SidebarRail />
+      {/* Floating collapse button centered on the rail separator */}
+      <div
+        className={cn(
+          'absolute top-1/2 -translate-y-1/2 z-20 transition-all duration-200',
+          // When expanded sidebar is ~16rem wide; when collapsed ~3rem wide (icon mode)
+          state === 'expanded' ? '-right-3.5' : '-right-3.5',
+        )}
+        style={{ right: '-14px' }}
+      >
+        <SidebarTrigger
+          className={cn(
+            'h-7 w-7 rounded-full border bg-background shadow-md',
+            'hover:bg-accent hover:text-accent-foreground',
+            'flex items-center justify-center',
+            'transition-all duration-200',
+          )}
+        />
+      </div>
+    </>
+  )
+}
+
 export function AppLayout({ children }: AppLayoutProps) {
+
   const { user, logout, meta } = useAuthStore()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -431,20 +456,13 @@ export function AppLayout({ children }: AppLayoutProps) {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
-          <SidebarRail />
+          {/* Invisible rail — collapse button is on the separator instead */}
+          <SidebarRailWithTrigger />
         </Sidebar>
 
         <SidebarInset>
-          {/* Sidebar Collapse Toggle - minimal toolbar */}
-          <div className="flex h-9 shrink-0 items-center px-2 border-b bg-card/60">
-            <SidebarTrigger className="-ml-0.5" />
-          </div>
-
-          {/* Global Filter Bar */}
-          <GlobalFilterBar view={view} filters={globalFilters} setFilters={setGlobalFilters} />
-
-          {/* Main Content - no vertical scrolling */}
-          <div className="flex-1 min-h-0 overflow-hidden p-4 md:p-6 bg-muted/30">
+          {/* Main Content */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-6 md:p-8 bg-muted/30">
             {children}
           </div>
 

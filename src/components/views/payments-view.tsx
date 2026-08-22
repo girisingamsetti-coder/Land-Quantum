@@ -57,16 +57,17 @@ export function PaymentsView() {
         <Card className="border-red-100 bg-red-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><div><p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Overdue</p><p className="text-xl font-bold mt-1 text-red-700 tabular-nums">{formatINR(data.summary.overdue)}</p></div><div className="rounded-lg bg-red-100 p-2"><TrendingDown className="h-4 w-4 text-red-600"/></div></div></CardContent></Card>
       </div>}
 
-      {/* Filters */}
-      <Card><CardContent className="p-3 flex flex-wrap gap-2 items-center">
-        <div className="flex items-center gap-1.5 text-muted-foreground mr-1"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-medium">Filters</span></div>
-        <div className="relative flex-1 max-w-sm"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search app # or applicant..." className="pl-8 h-8 text-sm" value={search} onChange={e => setSearch(e.target.value)} /></div>
-        <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All','Paid','Pending','Partially Paid','Overdue','Forfeited','Refunded'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>
-        <Select value={type || 'All'} onValueChange={v => setType(v === 'All' ? '' : v)}><SelectTrigger className="w-[160px] h-8"><SelectValue placeholder="Type" /></SelectTrigger><SelectContent><SelectItem value="All">All Types</SelectItem>{paymentTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select>
-        {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground hover:text-foreground" onClick={() => { setStatus(''); setType(''); setSearch('') }}><X className="h-3 w-3" /> Clear ({activeFilters})</Button>}
-      </CardContent></Card>
-
-      <Card><CardContent className="p-0">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
+          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search app #..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
+          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All','Paid','Pending','Partially Paid','Overdue','Forfeited','Refunded'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={type || 'All'} onValueChange={v => setType(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{paymentTypes.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setType(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+        </div>
+      </div>
+      <Card>
+        <CardContent className="p-0">
         {loading ? <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-12 w-full"/>)}</div> :
         <Table><TableHeader><TableRow>
           <TableHead>Type</TableHead><TableHead>Application</TableHead><TableHead>Applicant</TableHead><TableHead className="text-right">Due</TableHead><TableHead className="text-right">Paid</TableHead><TableHead className="text-right">Balance</TableHead><TableHead>Due Date</TableHead><TableHead>Status</TableHead>

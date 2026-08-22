@@ -7,9 +7,9 @@ import { Loader2 } from 'lucide-react'
 const ApplicationDetailLazy = lazy(() => import('@/components/applications/application-detail').then(m => ({ default: m.ApplicationDetail })))
 
 const DashboardView = lazy(() => import('@/components/dashboard/dashboard-view').then(m => ({ default: m.DashboardView })))
-const ApplicationsList = lazy(() => import('@/components/applications/applications-list').then(m => ({ default: m.ApplicationsList })))
-const WorkflowKanban = lazy(() => import('@/components/views/index-kanban').then(m => ({ default: m.WorkflowKanban })))
+const ApplicationsModule = lazy(() => import('@/components/applications/applications-module').then(m => ({ default: m.ApplicationsModule })))
 const LandParcelsView = lazy(() => import('@/components/views/land-parcels-view').then(m => ({ default: m.LandParcelsView })))
+const BuildingPermitsView = lazy(() => import('@/components/views/building-permits-view').then(m => ({ default: m.BuildingPermitsView })))
 const PaymentsView = lazy(() => import('@/components/views/payments-view').then(m => ({ default: m.PaymentsView })))
 const ConstructionView = lazy(() => import('@/components/views/construction-view').then(m => ({ default: m.ConstructionView })))
 const GrievancesView = lazy(() => import('@/components/views/grievances-view').then(m => ({ default: m.GrievancesView })))
@@ -20,7 +20,6 @@ const UsersView = lazy(() => import('@/components/views/simple-views').then(m =>
 const DepartmentsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.DepartmentsView })))
 const SettingsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.SettingsView })))
 const GISView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.GISView })))
-const MyWorkQueue = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.MyWorkQueue })))
 const RiskAlertsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.RiskAlertsView })))
 
 function Fallback() {
@@ -36,9 +35,9 @@ function ViewRouter() {
 
   const viewMap: Record<string, React.ReactNode> = {
     'dashboard': <Suspense fallback={<Fallback />}><DashboardView /></Suspense>,
-    'applications': <Suspense fallback={<Fallback />}><ApplicationsList /></Suspense>,
-    'workflow-kanban': <Suspense fallback={<Fallback />}><WorkflowKanban /></Suspense>,
+    'applications': <Suspense fallback={<Fallback />}><ApplicationsModule /></Suspense>,
     'land-parcels': <Suspense fallback={<Fallback />}><LandParcelsView /></Suspense>,
+    'building-permits': <Suspense fallback={<Fallback />}><BuildingPermitsView /></Suspense>,
     'payments': <Suspense fallback={<Fallback />}><PaymentsView /></Suspense>,
     'constructions': <Suspense fallback={<Fallback />}><ConstructionView /></Suspense>,
     'grievances': <Suspense fallback={<Fallback />}><GrievancesView /></Suspense>,
@@ -49,7 +48,7 @@ function ViewRouter() {
     'departments': <Suspense fallback={<Fallback />}><DepartmentsView /></Suspense>,
     'settings': <Suspense fallback={<Fallback />}><SettingsView /></Suspense>,
     'gis': <Suspense fallback={<Fallback />}><GISView /></Suspense>,
-    'my-work-queue': <Suspense fallback={<Fallback />}><MyWorkQueue /></Suspense>,
+
     'risk-alerts': <Suspense fallback={<Fallback />}><RiskAlertsView /></Suspense>,
   }
 
