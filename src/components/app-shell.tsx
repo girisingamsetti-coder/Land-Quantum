@@ -12,6 +12,7 @@ const LandParcelsView = lazy(() => import('@/components/views/land-parcels-view'
 const BuildingPermitsView = lazy(() => import('@/components/views/building-permits-view').then(m => ({ default: m.BuildingPermitsView })))
 const PaymentsView = lazy(() => import('@/components/views/payments-view').then(m => ({ default: m.PaymentsView })))
 const ConstructionView = lazy(() => import('@/components/views/construction-view').then(m => ({ default: m.ConstructionView })))
+const DocumentationView = lazy(() => import('@/components/views/documentation-view').then(m => ({ default: m.DocumentationView })))
 const GrievancesView = lazy(() => import('@/components/views/grievances-view').then(m => ({ default: m.GrievancesView })))
 const CancellationsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.CancellationsView })))
 const ReportsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.ReportsView })))
@@ -40,6 +41,7 @@ function ViewRouter() {
     'building-permits': <Suspense fallback={<Fallback />}><BuildingPermitsView /></Suspense>,
     'payments': <Suspense fallback={<Fallback />}><PaymentsView /></Suspense>,
     'constructions': <Suspense fallback={<Fallback />}><ConstructionView /></Suspense>,
+    'documentation': <Suspense fallback={<Fallback />}><DocumentationView /></Suspense>,
     'grievances': <Suspense fallback={<Fallback />}><GrievancesView /></Suspense>,
     'cancellations': <Suspense fallback={<Fallback />}><CancellationsView /></Suspense>,
     'reports': <Suspense fallback={<Fallback />}><ReportsView /></Suspense>,

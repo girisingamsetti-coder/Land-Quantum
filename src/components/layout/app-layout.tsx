@@ -32,7 +32,7 @@ interface AppLayoutProps { children: React.ReactNode }
 
 export type View =
   | 'dashboard' | 'applications' | 'application-detail' | 'workflow-kanban'
-  | 'land-parcels' | 'building-permits' | 'payments' | 'constructions' | 'grievances'
+  | 'land-parcels' | 'building-permits' | 'payments' | 'documentation' | 'constructions' | 'grievances'
   | 'cancellations' | 'reports' | 'audit-log'
   | 'users' | 'roles' | 'departments' | 'settings' | 'gis'
   | 'my-work-queue' | 'risk-alerts'
@@ -74,6 +74,7 @@ const navItems: NavItem[] = [
   { view: 'building-permits', label: 'Building Permits', icon: ClipboardList },
   { view: 'constructions', label: 'Construction', icon: HardHat },
   { view: 'payments', label: 'Payments', icon: CreditCard },
+  { view: 'documentation', label: 'Documentation', icon: FileText },
   { view: 'grievances', label: 'Grievances', icon: MessageSquare },
   { view: 'risk-alerts', label: 'Risk & Alerts', icon: AlertTriangle },
   { view: 'reports', label: 'Reports', icon: BarChart3 },
@@ -90,6 +91,7 @@ const viewDescriptions: Record<string, string> = {
   gis: 'Interactive map of land parcels',
   constructions: 'Monitor construction progress and compliance',
   payments: 'Track payments, invoices, and revenue',
+  documentation: 'Manage and review project documents',
   grievances: 'Handle investor grievances and appeals',
   cancellations: 'Track cancellation and resumption cases',
   'risk-alerts': 'Automated risk identification and escalations',
@@ -112,6 +114,7 @@ const STATUS_OPTIONS: Record<string, string[]> = {
   'land-parcels': ['All Statuses', 'Published', 'Allotted', 'Under Application', 'Reserved', 'On Hold'],
   'building-permits': ['All Statuses', 'Approved', 'Under Review', 'Rejected'],
   payments: ['All Statuses', 'Paid', 'Partially Paid', 'Pending', 'Overdue'],
+  documentation: ['All Statuses', 'Verified', 'Pending Review', 'Rejected'],
   constructions: ['All Statuses', 'Not Started', 'In Progress', 'Delayed', 'Completed'],
   grievances: ['All Statuses', 'Open', 'In Progress', 'Resolved', 'Closed'],
   cancellations: ['All Statuses', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'],
