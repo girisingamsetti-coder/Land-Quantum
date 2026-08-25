@@ -163,7 +163,7 @@ export function WorkflowKanban({ hideHeader, tabsControl }: { hideHeader?: boole
     try {
       const [configRes, appsRes] = await Promise.all([
         fetch('/api/workflow-config').then(r => r.json()),
-        fetch('/api/applications?pageSize=100').then(r => r.json()),
+        fetch('/api/applications?pageSize=100&excludeStages=true').then(r => r.json()),
       ])
       if (configRes.success && configRes.data?.stages?.length > 0) {
         setStages(configRes.data.stages.map((s: StageConfig) => s.stageName))
@@ -224,7 +224,7 @@ export function WorkflowKanban({ hideHeader, tabsControl }: { hideHeader?: boole
       {!hideHeader && (
       <div className="flex items-center justify-between shrink-0 mb-4">
         <div>
-          <h2 className="text-lg font-semibold">Workflow Board</h2>
+          <h2 className="text-lg font-semibold">Stage View</h2>
           <p className="text-sm text-muted-foreground">
             {apps.length} applications across {activeStages.length} active stages
           </p>

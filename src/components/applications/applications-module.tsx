@@ -40,45 +40,45 @@ export function ApplicationsModule() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-hidden mt-0">
-          <TabsContent value="all" className="h-full m-0 overflow-y-auto pr-2 pb-8">
+          <TabsContent value="all" forceMount className={`h-full m-0 overflow-y-auto pr-2 pb-8 ${activeTab !== 'all' ? 'hidden' : ''}`}>
             <ApplicationsList key={listKey} hideHeader tabsControl={
               <TabsList>
                 <TabsTrigger value="all">All Applications</TabsTrigger>
-                <TabsTrigger value="queue">My Work Queue</TabsTrigger>
-                <TabsTrigger value="kanban">Workflow Board</TabsTrigger>
+                <TabsTrigger value="queue">Work Queue</TabsTrigger>
+                <TabsTrigger value="kanban">Stage View</TabsTrigger>
                 <TabsTrigger value="cancellations">Cancellations</TabsTrigger>
               </TabsList>
             } />
           </TabsContent>
 
-          <TabsContent value="queue" className="h-full m-0 overflow-y-auto pr-2 pb-8">
+          <TabsContent value="queue" forceMount className={`h-full m-0 overflow-y-auto pr-2 pb-8 ${activeTab !== 'queue' ? 'hidden' : ''}`}>
             <MyWorkQueue hideHeader tabsControl={
               <TabsList>
                 <TabsTrigger value="all">All Applications</TabsTrigger>
-                <TabsTrigger value="queue">My Work Queue</TabsTrigger>
-                <TabsTrigger value="kanban">Workflow Board</TabsTrigger>
+                <TabsTrigger value="queue">Work Queue</TabsTrigger>
+                <TabsTrigger value="kanban">Stage View</TabsTrigger>
                 <TabsTrigger value="cancellations">Cancellations</TabsTrigger>
               </TabsList>
             } />
           </TabsContent>
 
-          <TabsContent value="kanban" className="h-full m-0 overflow-hidden pb-4">
+          <TabsContent value="kanban" forceMount className={`h-full m-0 overflow-hidden pb-4 ${activeTab !== 'kanban' ? 'hidden' : ''}`}>
             <WorkflowKanban hideHeader tabsControl={
               <TabsList>
                 <TabsTrigger value="all">All Applications</TabsTrigger>
-                <TabsTrigger value="queue">My Work Queue</TabsTrigger>
-                <TabsTrigger value="kanban">Workflow Board</TabsTrigger>
+                <TabsTrigger value="queue">Work Queue</TabsTrigger>
+                <TabsTrigger value="kanban">Stage View</TabsTrigger>
                 <TabsTrigger value="cancellations">Cancellations</TabsTrigger>
               </TabsList>
             } />
           </TabsContent>
 
-          <TabsContent value="cancellations" className="h-full m-0 overflow-y-auto pr-2 pb-8">
+          <TabsContent value="cancellations" forceMount className={`h-full m-0 overflow-y-auto pr-2 pb-8 ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
             <CancellationsView hideHeader tabsControl={
               <TabsList>
                 <TabsTrigger value="all">All Applications</TabsTrigger>
-                <TabsTrigger value="queue">My Work Queue</TabsTrigger>
-                <TabsTrigger value="kanban">Workflow Board</TabsTrigger>
+                <TabsTrigger value="queue">Work Queue</TabsTrigger>
+                <TabsTrigger value="kanban">Stage View</TabsTrigger>
                 <TabsTrigger value="cancellations">Cancellations</TabsTrigger>
               </TabsList>
             } />

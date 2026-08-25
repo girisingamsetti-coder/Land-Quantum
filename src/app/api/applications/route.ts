@@ -28,7 +28,7 @@ const ALLOTMENT_MODES = [
 
 export async function GET(request: Request) {
   try {
-    await requireAuth()
+    const session = await requireAuth()
 
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
@@ -39,17 +39,40 @@ export async function GET(request: Request) {
     const sector = searchParams.get('sector') ?? ''
     const mode = searchParams.get('mode') ?? ''
     const zone = searchParams.get('zone') ?? ''
+    const excludeStages = searchParams.get('excludeStages') === 'true'
 
     const where: Prisma.ApplicationWhereInput = {}
 
     // Global search
     if (search) {
       where.OR = [
-        { applicationNumber: { contains: search } },
-        { projectName: { contains: search } },
-        { applicant: { organizationName: { contains: search } } },
-        { applicant: { contactPerson: { contains: search } } },
+        { applicationNumber: { contains: search, mode: 'insensitive' } },
+        { projectName: { contains: search, mode: 'insensitive' } },
+        { applicant: { organizationName: { contains: search, mode: 'insensitive' } } },
+        { applicant: { contactPerson: { contains: search, mode: 'insensitive' } } },
       ]
+    }
+
+    // Role-based access control
+    // If not a system admin or super admin, restrict to applications they are assigned to or involved in
+    if (!session.isSystemRole || (session.roleName !== 'Super Admin' && session.roleName !== 'System Administrator')) {
+      const rbacFilter = {
+        OR: [
+          { assignedOfficerId: session.id },
+          { stages: { some: { assignedToId: session.id } } }
+        ]
+      }
+      
+      // Combine with existing OR from search if any
+      if (where.OR) {
+        where.AND = [
+          { OR: where.OR },
+          rbacFilter
+        ]
+        delete where.OR
+      } else {
+        where.OR = rbacFilter.OR
+      }
     }
 
     // Filters
@@ -83,10 +106,12 @@ export async function GET(request: Request) {
           },
           allotmentMode: { select: { id: true, name: true, code: true } },
           assignedOfficer: { select: { id: true, name: true, designation: true } },
-          stages: {
-            select: { id: true, stageName: true, stageOrder: true, status: true, decision: true, completedAt: true },
-            orderBy: { stageOrder: 'asc' },
-          },
+          ...(excludeStages ? {} : {
+            stages: {
+              select: { id: true, stageName: true, stageOrder: true, status: true, decision: true, completedAt: true },
+              orderBy: { stageOrder: 'asc' },
+            }
+          }),
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,

@@ -224,7 +224,7 @@ export function BuildingPermitsView() {
         </div>
       </div>
 
-      {/* Main Workflow Board Area */}
+      {/* Main Stage View Area */}
       <Card className="mb-6 overflow-hidden border-2">
         <CardContent className="h-[430px] overflow-auto p-4 bg-muted/5">
           {/* 6 column grid to meet requirements (12 items visible = 6 cols x 2 rows) */}

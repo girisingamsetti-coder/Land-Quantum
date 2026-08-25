@@ -84,7 +84,7 @@ const navItems: NavItem[] = [
 const viewDescriptions: Record<string, string> = {
   dashboard: 'Overview of key metrics and alerts',
   applications: 'View and manage all land allotment applications',
-  'workflow-kanban': 'Visual workflow board for application stages',
+  'workflow-kanban': 'Visual stage view for applications',
   'application-detail': 'Application details and processing',
   'land-parcels': 'Browse and manage land parcels inventory',
   'building-permits': 'Manage building permits in Amaravati',

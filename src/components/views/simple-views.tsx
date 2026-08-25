@@ -527,7 +527,7 @@ export function MyWorkQueue({ hideHeader, tabsControl }: { hideHeader?: boolean,
   useEffect(() => { fetch('/api/my-work-queue').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
   return (
     <div className="space-y-4">
-      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">My Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
+      {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
       {tabsControl && <div className="mb-4">{tabsControl}</div>}
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="border-blue-100 bg-blue-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
