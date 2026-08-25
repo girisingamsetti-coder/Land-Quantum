@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import {
   Search, Eye, Download, FileSpreadsheet, FileText, ChevronLeft, ChevronRight,
-  Inbox, RefreshCw, Filter, X,
+  Inbox, RefreshCw, Filter, X, PieChart, Activity, Clock, IndianRupee
 } from 'lucide-react'
 
 // ---- Types ----
@@ -145,7 +145,7 @@ function slaBadge(slaRemaining: number | null) {
 
 // ---- Component ----
 
-export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) {
+export function ApplicationsList({ hideHeader, tabsControl }: { hideHeader?: boolean, tabsControl?: React.ReactNode } = {}) {
   const { navigateTo } = useAppLayout()
 
   const [data, setData] = useState<ApplicationsResponse | null>(null)
@@ -230,7 +230,7 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
       )}
       {/* Filters (No Card, No Padding) */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div>{tabsControl}</div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search..." className="pl-8 h-8 text-xs" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} /></div>
           <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1) }}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
@@ -238,6 +238,64 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
           <Select value={sector} onValueChange={(v) => { setSector(v); setPage(1) }}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
           <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 shrink-0 mb-4">
+        <Card>
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="p-3 bg-primary/10 rounded-full shrink-0">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-muted-foreground truncate">Total Applications</p>
+              <h3 className="text-xl font-bold truncate">1,248</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 rounded-full shrink-0">
+              <PieChart className="h-5 w-5 text-blue-500" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-muted-foreground truncate">Active Sectors</p>
+              <h3 className="text-xl font-bold truncate">14</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="p-3 bg-emerald-500/10 rounded-full shrink-0">
+              <Activity className="h-5 w-5 text-emerald-500" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-muted-foreground truncate">Approved Status</p>
+              <h3 className="text-xl font-bold truncate">892</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="p-3 bg-amber-500/10 rounded-full shrink-0">
+              <Clock className="h-5 w-5 text-amber-500" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-muted-foreground truncate">Pending Review</p>
+              <h3 className="text-xl font-bold truncate">124</h3>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="p-3 bg-purple-500/10 rounded-full shrink-0">
+              <IndianRupee className="h-5 w-5 text-purple-500" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-muted-foreground truncate">Est. Investment</p>
+              <h3 className="text-xl font-bold truncate">12.5k Cr</h3>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Table */}
@@ -275,7 +333,7 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
                     <TableHead className="text-right">Investment</TableHead>
                     <TableHead>Priority</TableHead>
                     <TableHead>SLA</TableHead>
-                    <TableHead>Assigned Officer</TableHead>
+                    <TableHead>Lead Manager</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -317,7 +375,7 @@ export function ApplicationsList({ hideHeader }: { hideHeader?: boolean } = {}) 
                         </Badge>
                       </TableCell>
                       <TableCell>{slaBadge(app.slaRemaining)}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-xs font-bold">
                         {app.assignedOfficer?.name || '—'}
                       </TableCell>
                       <TableCell className="text-center">

@@ -81,7 +81,7 @@ function SearchInput({ value, onChange, onSearch, placeholder }: {
 }
 
 // CANCELLATIONS
-export function CancellationsView({ hideHeader }: { hideHeader?: boolean } = {}) {
+export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: boolean, tabsControl?: React.ReactNode } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [status, setStatus] = useState('')
@@ -107,7 +107,7 @@ export function CancellationsView({ hideHeader }: { hideHeader?: boolean } = {})
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Cancellation & Resumption</h1><p className="text-sm text-muted-foreground">Track cancellation cases, notices, and resumption proceedings</p></div>}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div>{tabsControl}</div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search cases..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
           <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
@@ -521,13 +521,14 @@ export function GISView() {
 }
 
 // MY WORK QUEUE
-export function MyWorkQueue({ hideHeader }: { hideHeader?: boolean } = {}) {
+export function MyWorkQueue({ hideHeader, tabsControl }: { hideHeader?: boolean, tabsControl?: React.ReactNode } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   useEffect(() => { fetch('/api/my-work-queue').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
   return (
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">My Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
+      {tabsControl && <div className="mb-4">{tabsControl}</div>}
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="border-blue-100 bg-blue-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
         <Card className="border-amber-100 bg-amber-50/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>

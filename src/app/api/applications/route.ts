@@ -115,3 +115,103 @@ export async function GET(request: Request) {
     return apiError('Failed to fetch applications')
   }
 }
+
+const STAGE_SLA: Record<string, number> = {
+  'Application': 3, 'Eligibility': 7, 'DPR Review': 14, 'Economic Review': 10,
+  'LASC': 21, 'GoM': 14, 'Cabinet Sub-Committee': 14, 'Authority Approval': 14,
+  'Cabinet Approval': 21, 'Government Order': 10, 'LOI': 7, 'Payment': 14,
+  'Revised DPR': 14, 'Agreement': 14, 'Possession': 7, 'Building Permission': 21,
+  'Construction': 365, 'Compliance': 365,
+}
+
+export async function POST(request: Request) {
+  try {
+    await requireAuth()
+
+    const body = await request.json()
+    const {
+      organizationName, entityType, contactPerson, contactPhone, contactEmail,
+      projectName, sector, proposedInvestment, employmentCommitment,
+      projectDescription, developmentTimeline, intendedLandUse, priority,
+    } = body
+
+    // Validate required fields
+    if (!organizationName || !entityType || !projectName || !sector) {
+      return apiError('Missing required fields: organizationName, entityType, projectName, sector', 400)
+    }
+
+    // Generate application number
+    const count = await db.application.count()
+    const year = new Date().getFullYear()
+    const appNumber = `APCRDA-${year}-${String(count + 1).padStart(4, '0')}`
+
+    // Generate applicant ID
+    const applicantCount = await db.applicant.count()
+    const applicantId = `APCRDA-INV-${String(applicantCount + 1).padStart(5, '0')}`
+
+    // Get default assigned officer (lands officer)
+    const landsOfficer = await db.user.findFirst({
+      where: { role: { name: 'APCRDA Lands Officer' } },
+    })
+
+    const now = new Date()
+    const slaDueDate = new Date(now.getTime() + (STAGE_SLA['Application'] ?? 3) * 86400000)
+
+    // Create applicant + application in one transaction
+    const application = await db.$transaction(async (tx) => {
+      const applicant = await tx.applicant.create({
+        data: {
+          applicantId,
+          organizationName,
+          entityType,
+          contactPerson: contactPerson || null,
+          contactPhone: contactPhone || null,
+          contactEmail: contactEmail || null,
+        },
+      })
+
+      return tx.application.create({
+        data: {
+          applicationNumber: appNumber,
+          applicantId: applicant.id,
+          projectName,
+          sector,
+          proposedInvestment: parseFloat(proposedInvestment) || 0,
+          employmentCommitment: parseInt(employmentCommitment) || 0,
+          projectDescription: projectDescription || null,
+          developmentTimeline: developmentTimeline || null,
+          intendedLandUse: intendedLandUse || null,
+          status: 'Submitted',
+          priority: priority || 'Normal',
+          currentStage: 'Application',
+          assignedOfficerId: landsOfficer?.id ?? null,
+          slaDueDate,
+          stages: {
+            create: WORKFLOW_STAGES.map((stageName, si) => ({
+              stageName,
+              stageOrder: si + 1,
+              status: si === 0 ? 'In Progress' : 'Not Started',
+              assignedToId: si === 0 ? null : (landsOfficer?.id ?? null),
+              slaDays: STAGE_SLA[stageName] ?? 7,
+              startedAt: si === 0 ? now : null,
+            })),
+          },
+        },
+        include: {
+          applicant: { select: { id: true, organizationName: true, contactPerson: true, contactEmail: true } },
+          stages: { select: { id: true, stageName: true, stageOrder: true, status: true, decision: true, completedAt: true }, orderBy: { stageOrder: 'asc' } },
+          assignedOfficer: { select: { id: true, name: true, designation: true } },
+        },
+      })
+    })
+
+    return apiSuccess({ application }, 'Application created successfully', 201)
+  } catch (error) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      return (error as { response: ReturnType<typeof apiUnauthorized> }).response
+    }
+    console.error('Create application error:', error)
+    return apiError('Failed to create application')
+  }
+}
+

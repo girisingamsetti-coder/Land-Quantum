@@ -496,7 +496,7 @@ const INVESTORS_DATA: InvestorRow[] = [
 ]
 
 const RECORD_TABS = [
-  { id: 'cases', label: 'Cases', count: 21 },
+  { id: 'cases', label: 'Leads', count: 21 },
   { id: 'dates', label: 'Dates coming up', count: 24 },
   { id: 'money', label: 'Outstanding money', count: 15 },
   { id: 'sectors', label: 'Sectors', count: 11 },
@@ -567,7 +567,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
   const pageData = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const handleCSV = () => {
-    const headers = ['Case', 'Applicant', 'Sector', 'Theme City', 'Plot', 'Step', 'Status', 'Investment', 'Jobs', 'Acres', 'Age (days)', 'Expected By', 'Applied']
+    const headers = ['Lead', 'Applicant', 'Sector', 'Theme City', 'Plot', 'Step', 'Status', 'Investment', 'Jobs', 'Acres', 'Age (days)', 'Expected By', 'Applied']
     const rows = sorted.map(r => [r.id, r.applicant, r.sector, r.themeCity, r.plot, r.step, r.status, r.investment, r.jobs, r.acres, r.ageDays, r.expectedBy, r.applied])
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
     const a = document.createElement('a'); a.href = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`; a.download = 'cases.csv'; a.click()
@@ -633,7 +633,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
                   type="text"
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(1) }}
-                  placeholder="Search by case, applicant, sector, plot..."
+                  placeholder="Search by lead, applicant, sector, plot..."
                   className="pl-7 pr-3 h-7 w-[200px] xl:w-64 rounded-md border bg-background text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-muted-foreground/60"
                 />
               </div>
@@ -651,7 +651,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
               <table className="w-full text-[11px]">
                 <thead className="bg-muted/40">
                   <tr>
-                    {th('Case', 'id', 'min-w-[150px]')}
+                    {th('Lead', 'id', 'min-w-[150px]')}
                     {th('Applicant', 'applicant', 'min-w-[180px]')}
                     {th('Sector', 'sector', 'min-w-[150px]')}
                     {th('Theme city', 'themeCity', 'min-w-[120px]')}
@@ -709,7 +709,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
           <div className="overflow-x-auto">
             <table className="w-full text-[11px]">
               <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Case</th>
+                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lead</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Applicant</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Event</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
@@ -748,7 +748,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
           <div className="overflow-x-auto">
             <table className="w-full text-[11px]">
               <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Case</th>
+                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lead</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Applicant</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Amount</th>
@@ -786,7 +786,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
             <table className="w-full text-[11px]">
               <thead className="bg-muted/40"><tr>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[180px]">Sector</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Cases</th>
+                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">In progress</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Approved</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Turned down</th>
@@ -830,7 +830,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total plots</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Allotted</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Cases</th>
+                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
@@ -938,7 +938,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
               <thead className="bg-muted/40"><tr>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-10">#</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Investor</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Cases</th>
+                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
                 <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Primary sector</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
                 <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>

@@ -409,29 +409,93 @@ export function ApplicationDetail() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
-          <TabsTrigger value="overview" className="text-xs px-3">Overview</TabsTrigger>
-          <TabsTrigger value="applicant" className="text-xs px-3">Applicant</TabsTrigger>
-          <TabsTrigger value="land" className="text-xs px-3">Land</TabsTrigger>
-          <TabsTrigger value="dpr" className="text-xs px-3">DPR</TabsTrigger>
-          <TabsTrigger value="economic" className="text-xs px-3">Economic Review</TabsTrigger>
-          <TabsTrigger value="lasc" className="text-xs px-3">LASC</TabsTrigger>
-          <TabsTrigger value="gom" className="text-xs px-3">GoM</TabsTrigger>
-          <TabsTrigger value="authority" className="text-xs px-3">Authority</TabsTrigger>
-          <TabsTrigger value="cabinet" className="text-xs px-3">Cabinet</TabsTrigger>
-          <TabsTrigger value="go" className="text-xs px-3">GO</TabsTrigger>
-          <TabsTrigger value="loi" className="text-xs px-3">LOI</TabsTrigger>
-          <TabsTrigger value="payments" className="text-xs px-3">Payments</TabsTrigger>
-          <TabsTrigger value="agreement" className="text-xs px-3">Agreement</TabsTrigger>
-          <TabsTrigger value="possession" className="text-xs px-3">Possession</TabsTrigger>
-          <TabsTrigger value="building" className="text-xs px-3">Building</TabsTrigger>
-          <TabsTrigger value="construction" className="text-xs px-3">Construction</TabsTrigger>
-          <TabsTrigger value="compliance" className="text-xs px-3">Compliance</TabsTrigger>
-          <TabsTrigger value="grievances" className="text-xs px-3">Grievances</TabsTrigger>
-          <TabsTrigger value="documents" className="text-xs px-3">Documents</TabsTrigger>
-          <TabsTrigger value="timeline" className="text-xs px-3">Timeline</TabsTrigger>
-          <TabsTrigger value="audit" className="text-xs px-3">Audit</TabsTrigger>
-        </TabsList>
+        {/* Grouped Tab Navigation (Single row, centered) */}
+        <div className="rounded-xl border bg-card shadow-sm overflow-hidden w-full">
+          <div className="flex items-stretch justify-center w-full overflow-x-auto scrollbar-hide">
+            {([
+              {
+                label: 'General',
+                tabs: [
+                  { value: 'overview', label: 'Overview' },
+                  { value: 'applicant', label: 'Applicant' },
+                  { value: 'land', label: 'Land' },
+                ],
+              },
+              {
+                label: 'Approval Process',
+                tabs: [
+                  { value: 'dpr', label: 'DPR' },
+                  { value: 'economic', label: 'Economic Review' },
+                  { value: 'lasc', label: 'LASC' },
+                  { value: 'gom', label: 'GoM' },
+                  { value: 'authority', label: 'Authority' },
+                  { value: 'cabinet', label: 'Cabinet' },
+                ],
+              },
+              {
+                label: 'Post-Approval',
+                tabs: [
+                  { value: 'go', label: 'GO' },
+                  { value: 'loi', label: 'LOI' },
+                  { value: 'payments', label: 'Payments' },
+                  { value: 'agreement', label: 'Agreement' },
+                  { value: 'possession', label: 'Possession' },
+                  { value: 'building', label: 'Building' },
+                ],
+              },
+              {
+                label: 'Implementation',
+                tabs: [
+                  { value: 'construction', label: 'Construction' },
+                  { value: 'compliance', label: 'Compliance' },
+                ],
+              },
+              {
+                label: 'Records',
+                tabs: [
+                  { value: 'grievances', label: 'Grievances' },
+                  { value: 'documents', label: 'Documents' },
+                  { value: 'timeline', label: 'Timeline' },
+                  { value: 'audit', label: 'Audit' },
+                ],
+              },
+            ] as { label: string; tabs: { value: string; label: string }[] }[]).map((group, gi, groups) => (
+              <div key={group.label} className="flex items-stretch flex-1">
+                {/* Group column */}
+                <div className="flex flex-col min-w-0 flex-1">
+                  {/* Group label */}
+                  <div className="px-3 pt-1.5 pb-1 bg-muted/40 border-b text-center">
+                    <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
+                      {group.label}
+                    </span>
+                  </div>
+                  {/* Tabs row */}
+                  <div className="flex items-center justify-center h-full px-1 py-1 gap-0.5">
+                    {group.tabs.map(tab => (
+                      <button
+                        key={tab.value}
+                        onClick={() => setActiveTab(tab.value)}
+                        className={[
+                          'px-2.5 py-1.5 rounded-md text-[11px] font-medium whitespace-nowrap transition-all flex-1 sm:flex-none',
+                          activeTab === tab.value
+                            ? 'bg-primary text-primary-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+                        ].join(' ')}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Separator between groups */}
+                {gi < groups.length - 1 && (
+                  <div className="w-px bg-border self-stretch mx-0.5" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
 
         {/* ========== OVERVIEW TAB ========== */}
         <TabsContent value="overview" className="space-y-4">
@@ -443,62 +507,94 @@ export function ApplicationDetail() {
             <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground mb-1">Land Extent</p><p className="text-lg font-bold">{app.landParcel?.extentAcres ?? '—'} acres</p></CardContent></Card>
           </div>
 
-          {/* Stage Progress Stepper */}
+          {/* Horizontal Stage Progress Tracker — all stages in one row */}
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Workflow Progress</CardTitle></CardHeader>
-            <CardContent>
-              <div className="relative">
-                {app.stages.map((stage, idx) => {
-                  const isCompleted = stage.status === 'Completed'
-                  const isCurrent = stage.stageName === app.currentStage
-                  const isRejected = stage.status === 'Rejected'
-                  const isReturned = stage.status === 'Returned'
-                  const config = workflowConfig.find(w => w.stageName === stage.stageName)
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">Workflow Progress</CardTitle></CardHeader>
+            <CardContent className="pt-3 pb-5 px-3">
+              <div className="flex items-start w-full">
+                {app.stages
+                  .slice()
+                  .sort((a, b) => a.stageOrder - b.stageOrder)
+                  .map((stage, idx, arr) => {
+                    const isCompleted = stage.status === 'Completed'
+                    const isCurrent = stage.stageName === app.currentStage
+                    const isRejected = stage.status === 'Rejected'
+                    const isReturned = stage.status === 'Returned'
+                    const isLast = idx === arr.length - 1
 
-                  return (
-                    <div key={stage.id} className="flex gap-3 mb-1">
-                      {/* Connector line + circle */}
-                      <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${
-                          isCompleted ? 'bg-emerald-600 border-emerald-600 text-white' :
-                          isRejected ? 'bg-red-100 border-red-400 text-red-600' :
-                          isReturned ? 'bg-orange-100 border-orange-400 text-orange-600' :
-                          isCurrent ? 'bg-amber-100 border-amber-500 text-amber-700' :
-                          'bg-gray-50 border-gray-300 text-gray-400'
-                        }`}>
-                          {isCompleted ? <CheckCircle2 className="h-4 w-4" /> :
-                           isRejected ? <XCircle className="h-4 w-4" /> :
-                           isCurrent ? <Clock className="h-4 w-4" /> :
-                           <Circle className="h-4 w-4" />}
-                        </div>
-                        {idx < app.stages.length - 1 && (
-                          <div className={`w-0.5 h-8 ${isCompleted ? 'bg-emerald-400' : 'bg-gray-200'}`} />
-                        )}
-                      </div>
+                    const completedDate = stage.completedAt
+                      ? new Date(stage.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                      : null
 
-                      {/* Stage info */}
-                      <div className="flex-1 pb-4">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-sm font-medium ${isCurrent ? 'text-foreground' : isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    return (
+                      <div key={stage.id} className="flex items-start" style={{ flex: isLast ? '0 0 auto' : '1 1 0', minWidth: 0 }}>
+                        {/* Stage node */}
+                        <div className="flex flex-col items-center shrink-0" style={{ width: 44 }}>
+                          {/* Circle */}
+                          <div className={[
+                            'w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all',
+                            isCompleted
+                              ? 'bg-emerald-500 border-emerald-500 text-white'
+                              : isRejected
+                                ? 'bg-red-100 border-red-400 text-red-600'
+                                : isReturned
+                                  ? 'bg-orange-100 border-orange-400 text-orange-600'
+                                  : isCurrent
+                                    ? 'bg-[#7c1d2e] border-[#7c1d2e] text-white shadow-md'
+                                    : 'bg-background border-dashed border-gray-300 text-gray-300',
+                          ].join(' ')}>
+                            {isCompleted ? (
+                              <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : isRejected ? (
+                              <XCircle className="h-3 w-3" />
+                            ) : isReturned ? (
+                              <RotateCcw className="h-3 w-3" />
+                            ) : isCurrent ? (
+                              <MapPin className="h-3 w-3" />
+                            ) : (
+                              <Circle className="h-3 w-3" />
+                            )}
+                          </div>
+
+                          {/* Stage label */}
+                          <span className={[
+                            'mt-1 leading-tight block text-center w-full',
+                            'text-[8.5px]',
+                            isCompleted
+                              ? 'text-emerald-700 font-medium'
+                              : isCurrent
+                                ? 'text-[#7c1d2e] font-bold'
+                                : isRejected
+                                  ? 'text-red-500'
+                                  : 'text-gray-400',
+                          ].join(' ')}>
                             {stage.stageName}
                           </span>
-                          <Badge className={`${stageColor(stage.status)} hover:${stageColor(stage.status)} text-[10px]`}>{stage.status}</Badge>
-                          {config?.isOptional && <Badge variant="outline" className="text-[10px]">Optional</Badge>}
-                          {stage.decision && <span className="text-[10px] text-muted-foreground">({stage.decision})</span>}
+
+                          {/* Date / status sub-label */}
+                          {completedDate && (
+                            <span className="mt-0.5 text-[7.5px] text-muted-foreground text-center block w-full">{completedDate}</span>
+                          )}
+                          {isCurrent && (
+                            <span className="mt-0.5 text-[7.5px] text-[#7c1d2e]/70 font-semibold text-center block w-full">Active</span>
+                          )}
                         </div>
-                        <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
-                          {stage.assignedTo && <span>{stage.assignedTo.name}</span>}
-                          {stage.slaDays > 0 && <span>SLA: {stage.slaDays}d</span>}
-                          {stage.completedAt && <span>Completed: {formatDate(stage.completedAt)}</span>}
-                          {stage.remarks && <span className="truncate max-w-[200px]" title={stage.remarks}>{stage.remarks}</span>}
-                        </div>
+
+                        {/* Flex-growing connector line */}
+                        {!isLast && (
+                          <div
+                            className={['flex-1 mt-[13px] h-[2px] min-w-[4px]', isCompleted ? 'bg-emerald-400' : 'bg-gray-200'].join(' ')}
+                          />
+                        )}
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
               </div>
             </CardContent>
           </Card>
+
 
           {/* Quick Info */}
           <div className="grid md:grid-cols-2 gap-4">
@@ -510,7 +606,7 @@ export function ApplicationDetail() {
               <InfoRow label="Description" value={app.projectDescription} />
               <InfoRow label="Development Timeline" value={app.developmentTimeline} />
               <InfoRow label="Intended Land Use" value={app.intendedLandUse} />
-              {app.assignedOfficer && <InfoRow label="Assigned Officer" value={`${app.assignedOfficer.name} (${app.assignedOfficer.designation})`} />}
+              {app.assignedOfficer && <InfoRow label="Lead Manager" value={`${app.assignedOfficer.name} (${app.assignedOfficer.designation})`} />}
               {app.slaDueDate && <InfoRow label="SLA Due" value={formatDate(app.slaDueDate)} />}
               {app.rejectionReason && <InfoRow label="Rejection Reason" value={<span className="text-red-600">{app.rejectionReason}</span>} />}
             </DetailCard>
@@ -1080,15 +1176,14 @@ export function ApplicationDetail() {
                 {app.stages.filter(s => s.status !== 'Not Started').map((stage, idx) => (
                   <div key={stage.id} className="flex gap-3 mb-1">
                     <div className="flex flex-col items-center">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${
-                        stage.status === 'Completed' ? 'bg-emerald-600 border-emerald-600 text-white' :
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${stage.status === 'Completed' ? 'bg-emerald-600 border-emerald-600 text-white' :
                         stage.status === 'Rejected' ? 'bg-red-100 border-red-400 text-red-600' :
-                        stage.status === 'Returned' ? 'bg-orange-100 border-orange-400 text-orange-600' :
-                        'bg-amber-100 border-amber-500 text-amber-700'
-                      }`}>
+                          stage.status === 'Returned' ? 'bg-orange-100 border-orange-400 text-orange-600' :
+                            'bg-amber-100 border-amber-500 text-amber-700'
+                        }`}>
                         {stage.status === 'Completed' ? <CheckCircle2 className="h-4 w-4" /> :
-                         stage.status === 'Rejected' ? <XCircle className="h-4 w-4" /> :
-                         <Clock className="h-4 w-4" />}
+                          stage.status === 'Rejected' ? <XCircle className="h-4 w-4" /> :
+                            <Clock className="h-4 w-4" />}
                       </div>
                       {idx < app.stages.filter(s => s.status !== 'Not Started').length - 1 && (
                         <div className="w-0.5 h-8 bg-gray-200" />
