@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { IndianRupee, Filter, X, Search, TrendingDown, CheckCircle2, AlertCircle, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-function formatINR(amount: number) { return `\u20B9${amount.toLocaleString('en-IN')}` }
+function formatINR(amount: number) { return `\u20B9${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` }
 function statusColor(s: string) {
   if (['Approved','Completed','Paid','Compliant'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
   if (['Under Review','In Progress','Pending','Partially Paid','Under Verification'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'

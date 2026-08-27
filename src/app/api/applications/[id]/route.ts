@@ -110,3 +110,78 @@ export async function GET(
     return apiError('Failed to fetch application')
   }
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAuth()
+    const { id } = await params
+    const body = await request.json()
+
+    // Validate if the application exists
+    const existing = await db.application.findUnique({
+      where: { id },
+      select: { applicantId: true }
+    })
+
+    if (!existing) {
+      return apiNotFound('Application not found')
+    }
+
+    const {
+      projectName, sector, projectCategory, projectDescription,
+      proposedInvestment, employmentCommitment, developmentTimeline, intendedLandUse, priority,
+      // applicant fields
+      organizationName, contactPerson, contactPhone, contactEmail, entityType, registrationNumber,
+      pan, gst, registeredAddress, authorizedRep, netWorth, experience
+    } = body
+
+    // Update Application and Applicant
+    const application = await db.$transaction(async (tx) => {
+      // Update Applicant
+      await tx.applicant.update({
+        where: { id: existing.applicantId },
+        data: {
+          organizationName: organizationName !== undefined ? organizationName : undefined,
+          contactPerson: contactPerson !== undefined ? contactPerson : undefined,
+          contactPhone: contactPhone !== undefined ? contactPhone : undefined,
+          contactEmail: contactEmail !== undefined ? contactEmail : undefined,
+          entityType: entityType !== undefined ? entityType : undefined,
+          registrationNumber: registrationNumber !== undefined ? registrationNumber : undefined,
+          pan: pan !== undefined ? pan : undefined,
+          gst: gst !== undefined ? gst : undefined,
+          registeredAddress: registeredAddress !== undefined ? registeredAddress : undefined,
+          authorizedRep: authorizedRep !== undefined ? authorizedRep : undefined,
+          netWorth: netWorth !== undefined ? parseFloat(netWorth) : undefined,
+          experience: experience !== undefined ? experience : undefined,
+        }
+      })
+
+      // Update Application
+      return tx.application.update({
+        where: { id },
+        data: {
+          projectName: projectName !== undefined ? projectName : undefined,
+          sector: sector !== undefined ? sector : undefined,
+          projectCategory: projectCategory !== undefined ? projectCategory : undefined,
+          projectDescription: projectDescription !== undefined ? projectDescription : undefined,
+          proposedInvestment: proposedInvestment !== undefined ? parseFloat(proposedInvestment) : undefined,
+          employmentCommitment: employmentCommitment !== undefined ? parseInt(employmentCommitment, 10) : undefined,
+          developmentTimeline: developmentTimeline !== undefined ? developmentTimeline : undefined,
+          intendedLandUse: intendedLandUse !== undefined ? intendedLandUse : undefined,
+          priority: priority !== undefined ? priority : undefined,
+        }
+      })
+    })
+
+    return apiSuccess({ application }, 'Application updated successfully')
+  } catch (error) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      return (error as { response: ReturnType<typeof apiUnauthorized> }).response
+    }
+    console.error('Update application error:', error)
+    return apiError('Failed to update application')
+  }
+}

@@ -102,7 +102,8 @@ const MODE_OPTIONS = [
 // ---- Helpers ----
 
 function formatINR(amount: number) {
-  return `\u20B9${amount.toLocaleString('en-IN')}`
+  if (amount == null) return '—'
+  return `\u20B9${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr`
 }
 
 function statusColor(status: string): string {
@@ -145,14 +146,14 @@ function slaBadge(slaRemaining: number | null) {
 
 // ---- Component ----
 
-export function ApplicationsList({ hideHeader, tabsControl }: { hideHeader?: boolean, tabsControl?: React.ReactNode } = {}) {
+export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: { hideHeader?: boolean, tabsControl?: React.ReactNode, viewType?: 'all' | 'queue' | 'kanban' | 'cancellations' } = {}) {
   const { navigateTo } = useAppLayout()
 
   const [data, setData] = useState<ApplicationsResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
-  const [status, setStatus] = useState('All')
+  const [status, setStatus] = useState(viewType === 'cancellations' ? 'Cancelled' : 'All')
   const [stage, setStage] = useState('All')
   const [sector, setSector] = useState('All')
   const [mode, setMode] = useState('All')
@@ -168,6 +169,7 @@ export function ApplicationsList({ hideHeader, tabsControl }: { hideHeader?: boo
       if (stage !== 'All') params.set('stage', stage)
       if (sector !== 'All') params.set('sector', sector)
       if (mode !== 'All') params.set('mode', mode)
+      if (viewType) params.set('viewType', viewType)
 
       const res = await fetch(`/api/applications?${params}`)
       const json = await res.json()
@@ -193,7 +195,7 @@ export function ApplicationsList({ hideHeader, tabsControl }: { hideHeader?: boo
   const resetFilters = () => {
     setSearchInput('')
     setSearch('')
-    setStatus('All')
+    setStatus(viewType === 'cancellations' ? 'Cancelled' : 'All')
     setStage('All')
     setSector('All')
     setMode('All')
@@ -208,25 +210,25 @@ export function ApplicationsList({ hideHeader, tabsControl }: { hideHeader?: boo
     <div className="space-y-4">
       {/* Header */}
       {!hideHeader && (
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
-          <p className="text-sm text-muted-foreground">Manage land allotment applications and track workflow progress</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
+            <p className="text-sm text-muted-foreground">Manage land allotment applications and track workflow progress</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" disabled>
+              <FileSpreadsheet className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Export CSV</span>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5" disabled>
+              <FileText className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Export PDF</span>
+            </Button>
+            <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchApplications} disabled={loading}>
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5" disabled>
-            <FileSpreadsheet className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Export CSV</span>
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5" disabled>
-            <FileText className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Export PDF</span>
-          </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={fetchApplications} disabled={loading}>
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
-      </div>
       )}
       {/* Filters (No Card, No Padding) */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">

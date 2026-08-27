@@ -52,7 +52,7 @@ export function ApplicationsModule() {
           </TabsContent>
 
           <TabsContent value="queue" forceMount className={`h-full m-0 overflow-y-auto pr-2 pb-8 ${activeTab !== 'queue' ? 'hidden' : ''}`}>
-            <MyWorkQueue hideHeader tabsControl={
+            <ApplicationsList key={`queue-${listKey}`} viewType="queue" hideHeader tabsControl={
               <TabsList>
                 <TabsTrigger value="all">All Applications</TabsTrigger>
                 <TabsTrigger value="queue">Work Queue</TabsTrigger>
@@ -74,7 +74,7 @@ export function ApplicationsModule() {
           </TabsContent>
 
           <TabsContent value="cancellations" forceMount className={`h-full m-0 overflow-y-auto pr-2 pb-8 ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
-            <CancellationsView hideHeader tabsControl={
+            <ApplicationsList key={`cancellations-${listKey}`} viewType="cancellations" hideHeader tabsControl={
               <TabsList>
                 <TabsTrigger value="all">All Applications</TabsTrigger>
                 <TabsTrigger value="queue">Work Queue</TabsTrigger>

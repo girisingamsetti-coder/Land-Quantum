@@ -20,8 +20,10 @@ import {
   ArrowUpCircle, RotateCcw, XCircle, Building2, User, MapPin, FileText,
   IndianRupee, HardHat, Scale, Gavel, ScrollText, CreditCard, HandshakeIcon,
   KeyRound, Hammer, ClipboardCheck, MessageSquareWarning, FolderOpen,
-  History, Shield, Loader2,
+  History, Shield, Loader2, Edit, Save, StickyNote
 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 // ---- Types ----
 
@@ -151,7 +153,8 @@ const WORKFLOW_STAGES = [
 // ---- Helpers ----
 
 function formatINR(amount: number) {
-  return `\u20B9${amount.toLocaleString('en-IN')}`
+  if (amount == null) return '—'
+  return `\u20B9${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr`
 }
 
 function formatDate(dateStr: string | null) {
@@ -200,20 +203,27 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   )
 }
 
-function DetailCard({ title, description, children, icon: Icon }: {
+function DetailCard({ title, description, children, icon: Icon, onEdit }: {
   title: string; description?: string; children: React.ReactNode
-  icon?: React.ElementType
+  icon?: React.ElementType; onEdit?: () => void
 }) {
   return (
-    <Card>
+    <Card className="flex flex-col">
       <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-4 text-emerald-600" />}
-          <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            {Icon && <Icon className="h-4 w-4 text-emerald-600" />}
+            <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+          </div>
+          {onEdit && (
+            <Button variant="ghost" size="icon" className="h-6 w-6 -mt-1 -mr-1 text-muted-foreground hover:text-foreground hover:bg-muted/50" onClick={onEdit}>
+              <Edit className="h-3 w-3" />
+            </Button>
+          )}
         </div>
         {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="text-sm">{children}</CardContent>
+      <CardContent className="text-sm flex-1">{children}</CardContent>
     </Card>
   )
 }
@@ -268,6 +278,44 @@ function StageActionDialog({ open, onOpenChange, stageName, decision, onSubmit, 
   )
 }
 
+// ---- Note Dialog ----
+
+function NoteActionDialog({ open, onOpenChange, onSubmit, loading }: {
+  open: boolean; onOpenChange: (open: boolean) => void
+  onSubmit: (note: string) => void; loading: boolean
+}) {
+  const [note, setNote] = useState('')
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) setNote(''); onOpenChange(v) }}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <StickyNote className="h-5 w-5 text-emerald-600" />
+            Add Note
+          </DialogTitle>
+          <DialogDescription>Add a note to this application. It will be visible to all assigned officers.</DialogDescription>
+        </DialogHeader>
+        <div className="py-2">
+          <Textarea 
+            placeholder="Type your note here..." 
+            value={note} 
+            onChange={e => setNote(e.target.value)}
+            className="min-h-[100px] text-sm"
+          />
+        </div>
+        <DialogFooter className="sm:justify-between">
+          <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} disabled={loading}>Cancel</Button>
+          <Button size="sm" onClick={() => onSubmit(note)} disabled={!note.trim() || loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Note
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 // ---- Main Component ----
 
 export function ApplicationDetail() {
@@ -285,6 +333,75 @@ export function ApplicationDetail() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogDecision, setDialogDecision] = useState('Approved')
   const [dialogLoading, setDialogLoading] = useState(false)
+
+  // Note dialog state
+  const [noteDialogOpen, setNoteDialogOpen] = useState(false)
+  const [noteLoading, setNoteLoading] = useState(false)
+
+  const handleAddNote = async (note: string) => {
+    setNoteLoading(true)
+    // Simulate API call to save note
+    await new Promise(r => setTimeout(r, 600))
+    setNoteLoading(false)
+    setNoteDialogOpen(false)
+  }
+
+  // Inline edit state
+  const [editingCard, setEditingCard] = useState<string | null>(null)
+  const [editLoading, setEditLoading] = useState(false)
+  const [editForm, setEditForm] = useState<Record<string, string>>({})
+
+  const startEditing = (cardId: string) => {
+    if (!app) return
+    setEditingCard(cardId)
+    setEditForm({
+      projectName: app.projectName || '',
+      sector: app.sector || '',
+      projectCategory: app.projectCategory || '',
+      proposedInvestment: app.proposedInvestment.toString(),
+      employmentCommitment: app.employmentCommitment.toString(),
+      projectDescription: app.projectDescription || '',
+      developmentTimeline: app.developmentTimeline || '',
+      intendedLandUse: app.intendedLandUse || '',
+      priority: app.priority || '',
+      organizationName: app.applicant.organizationName || '',
+      entityType: app.applicant.entityType || '',
+      registrationNumber: app.applicant.registrationNumber || '',
+      pan: app.applicant.pan || '',
+      gst: app.applicant.gst || '',
+      registeredAddress: app.applicant.registeredAddress || '',
+      contactPerson: app.applicant.contactPerson || '',
+      contactPhone: app.applicant.contactPhone || '',
+      contactEmail: app.applicant.contactEmail || '',
+      authorizedRep: app.applicant.authorizedRep || '',
+      netWorth: app.applicant.netWorth.toString(),
+      experience: app.applicant.experience || '',
+    })
+  }
+
+  const setFormValue = (field: string, value: string) => {
+    setEditForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSaveInline = async () => {
+    if (!app) return
+    setEditLoading(true)
+    try {
+      const res = await fetch(`/api/applications/${app.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm)
+      })
+      if (res.ok) {
+        setEditingCard(null)
+        fetchApplication() // Refresh data
+      }
+    } catch (error) {
+      console.error('Failed to save:', error)
+    } finally {
+      setEditLoading(false)
+    }
+  }
 
   const fetchApplication = useCallback(async () => {
     if (!appId) return
@@ -359,7 +476,7 @@ export function ApplicationDetail() {
   const nextStageName = WORKFLOW_STAGES[currentStageIdx + 1]
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1.5">
       {/* Stage Action Dialog */}
       <StageActionDialog
         open={dialogOpen}
@@ -370,41 +487,144 @@ export function ApplicationDetail() {
         loading={dialogLoading}
       />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon" className="mt-0.5 h-8 w-8" onClick={() => navigateTo('applications')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold tracking-tight ">{app.applicationNumber}</h1>
-              <Badge className={`${statusColor(app.status)} hover:${statusColor(app.status)}`}>{app.status}</Badge>
-              <Badge className={`${priorityColor(app.priority)} hover:${priorityColor(app.priority)}`}>{app.priority}</Badge>
+      {/* Note Dialog */}
+      <NoteActionDialog
+        open={noteDialogOpen}
+        onOpenChange={setNoteDialogOpen}
+        onSubmit={handleAddNote}
+        loading={noteLoading}
+      />
+
+      <div className="flex flex-col gap-1.5">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <Button variant="ghost" size="icon" className="mt-0.5 h-8 w-8" onClick={() => navigateTo('applications')}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl font-bold tracking-tight ">{app.applicationNumber}</h1>
+                <Badge className={`${statusColor(app.status)} hover:${statusColor(app.status)}`}>{app.status}</Badge>
+                <Badge className={`${priorityColor(app.priority)} hover:${priorityColor(app.priority)}`}>{app.priority}</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {app.projectName} — {app.applicant.organizationName}
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {app.projectName} — {app.applicant.organizationName}
-            </p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className={`${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')} hover:${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')}`}>
+              <Clock className="h-3 w-3 mr-1" /> {app.currentStage}
+            </Badge>
+            {app.status !== 'Rejected' && app.status !== 'Completed' && app.status !== 'Cancelled' && (
+              <>
+                <Button size="sm" variant="outline" className="gap-1 border-orange-400 text-orange-700 hover:bg-orange-50" onClick={() => { setDialogDecision('Returned'); setDialogOpen(true) }}>
+                  <RotateCcw className="h-3.5 w-3.5" /> Return
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1 border-red-400 text-red-700 hover:bg-red-50" onClick={() => { setDialogDecision('Rejected'); setDialogOpen(true) }}>
+                  <XCircle className="h-3.5 w-3.5" /> Reject
+                </Button>
+              </>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge className={`${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')} hover:${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')}`}>
-            <Clock className="h-3 w-3 mr-1" /> {app.currentStage}
-          </Badge>
-          {app.status !== 'Rejected' && app.status !== 'Completed' && app.status !== 'Cancelled' && (
-            <>
-              <Button size="sm" className="gap-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => { setDialogDecision('Approved'); setDialogOpen(true) }}>
-                <ArrowUpCircle className="h-3.5 w-3.5" /> Advance
-              </Button>
-              <Button size="sm" variant="outline" className="gap-1 border-orange-400 text-orange-700 hover:bg-orange-50" onClick={() => { setDialogDecision('Returned'); setDialogOpen(true) }}>
-                <RotateCcw className="h-3.5 w-3.5" /> Return
-              </Button>
-              <Button size="sm" variant="outline" className="gap-1 border-red-400 text-red-700 hover:bg-red-50" onClick={() => { setDialogDecision('Rejected'); setDialogOpen(true) }}>
-                <XCircle className="h-3.5 w-3.5" /> Reject
-              </Button>
-            </>
-          )}
+
+        {/* Summary cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <Card><CardContent className="py-1.5 px-3 flex flex-col justify-center"><p className="text-[11px] text-muted-foreground mb-0.5">Proposed Investment</p><p className="text-base font-bold text-emerald-700">{formatINR(app.proposedInvestment)}</p></CardContent></Card>
+          <Card><CardContent className="py-1.5 px-3 flex flex-col justify-center"><p className="text-[11px] text-muted-foreground mb-0.5">Employment</p><p className="text-base font-bold">{app.employmentCommitment.toLocaleString('en-IN')} jobs</p></CardContent></Card>
+          <Card><CardContent className="py-1.5 px-3 flex flex-col justify-center"><p className="text-[11px] text-muted-foreground mb-0.5">FSI/FAR</p><p className="text-base font-bold">{app.landParcel?.fsiFar ?? '—'}</p></CardContent></Card>
+          <Card><CardContent className="py-1.5 px-3 flex flex-col justify-center"><p className="text-[11px] text-muted-foreground mb-0.5">Land Extent</p><p className="text-base font-bold">{app.landParcel?.extentAcres ?? '—'} acres</p></CardContent></Card>
         </div>
+
+        {/* Horizontal Stage Progress Tracker — all stages in one row */}
+        <Card>
+          <CardHeader className="py-1.5 px-3 pb-0 border-none"><CardTitle className="text-base font-semibold leading-none">Workflow Progress</CardTitle></CardHeader>
+          <CardContent className="pt-0 pb-1.5 px-3">
+            <div className="flex items-end w-full">
+              {app.stages
+                .slice()
+                .sort((a, b) => a.stageOrder - b.stageOrder)
+                .map((stage, idx, arr) => {
+                  const isCompleted = stage.status === 'Completed'
+                  const isCurrent = stage.stageName === app.currentStage
+                  const isRejected = stage.status === 'Rejected'
+                  const isReturned = stage.status === 'Returned'
+                  const isLast = idx === arr.length - 1
+
+                  const completedDate = stage.completedAt
+                    ? new Date(stage.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                    : null
+
+                  return (
+                    <div key={stage.id} className="flex items-end" style={{ flex: isLast ? '0 0 auto' : '1 1 0', minWidth: 0 }}>
+                      {/* Stage node */}
+                      <div className="flex flex-col items-center justify-end shrink-0" style={{ width: 44 }}>
+                        {/* Stage label */}
+                        <span className={[
+                          'mb-1 leading-tight block text-center w-full',
+                          'text-[8.5px]',
+                          isCompleted
+                            ? 'text-emerald-700 font-medium'
+                            : isCurrent
+                              ? 'text-[#7c1d2e] font-bold'
+                              : isRejected
+                                ? 'text-red-500'
+                                : 'text-gray-400',
+                        ].join(' ')}>
+                          {stage.stageName}
+                        </span>
+
+                        {/* Date / status sub-label */}
+                        {completedDate && (
+                          <span className="mb-1 text-[7.5px] text-muted-foreground text-center block w-full">{completedDate}</span>
+                        )}
+                        {isCurrent && (
+                          <span className="mb-1 text-[7.5px] text-[#7c1d2e]/70 font-semibold text-center block w-full">Active</span>
+                        )}
+
+                        {/* Circle */}
+                        <div className={[
+                          'w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all',
+                          isCompleted
+                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                            : isRejected
+                              ? 'bg-red-100 border-red-400 text-red-600'
+                              : isReturned
+                                ? 'bg-orange-100 border-orange-400 text-orange-600'
+                                : isCurrent
+                                  ? 'bg-[#7c1d2e] border-[#7c1d2e] text-white shadow-md'
+                                  : 'bg-background border-dashed border-gray-300 text-gray-300',
+                        ].join(' ')}>
+                          {isCompleted ? (
+                            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : isRejected ? (
+                            <XCircle className="h-3 w-3" />
+                          ) : isReturned ? (
+                            <RotateCcw className="h-3 w-3" />
+                          ) : isCurrent ? (
+                            <MapPin className="h-3 w-3" />
+                          ) : (
+                            <Circle className="h-3 w-3" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Flex-growing connector line */}
+                      {!isLast && (
+                        <div
+                          className={['flex-1 mb-[13px] h-[2px] min-w-[4px]', isCompleted ? 'bg-emerald-400' : 'bg-gray-200'].join(' ')}
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Tabs */}
@@ -455,6 +675,7 @@ export function ApplicationDetail() {
                 tabs: [
                   { value: 'grievances', label: 'Grievances' },
                   { value: 'documents', label: 'Documents' },
+                  { value: 'notes', label: 'Notes' },
                   { value: 'timeline', label: 'Timeline' },
                   { value: 'audit', label: 'Audit' },
                 ],
@@ -499,117 +720,97 @@ export function ApplicationDetail() {
 
         {/* ========== OVERVIEW TAB ========== */}
         <TabsContent value="overview" className="space-y-4">
-          {/* Summary cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground mb-1">Proposed Investment</p><p className="text-lg font-bold text-emerald-700">{formatINR(app.proposedInvestment)}</p></CardContent></Card>
-            <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground mb-1">Employment</p><p className="text-lg font-bold">{app.employmentCommitment.toLocaleString('en-IN')} jobs</p></CardContent></Card>
-            <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground mb-1">FSI/FAR</p><p className="text-lg font-bold">{app.landParcel?.fsiFar ?? '—'}</p></CardContent></Card>
-            <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground mb-1">Land Extent</p><p className="text-lg font-bold">{app.landParcel?.extentAcres ?? '—'} acres</p></CardContent></Card>
-          </div>
-
-          {/* Horizontal Stage Progress Tracker — all stages in one row */}
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">Workflow Progress</CardTitle></CardHeader>
-            <CardContent className="pt-3 pb-5 px-3">
-              <div className="flex items-start w-full">
-                {app.stages
-                  .slice()
-                  .sort((a, b) => a.stageOrder - b.stageOrder)
-                  .map((stage, idx, arr) => {
-                    const isCompleted = stage.status === 'Completed'
-                    const isCurrent = stage.stageName === app.currentStage
-                    const isRejected = stage.status === 'Rejected'
-                    const isReturned = stage.status === 'Returned'
-                    const isLast = idx === arr.length - 1
-
-                    const completedDate = stage.completedAt
-                      ? new Date(stage.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
-                      : null
-
-                    return (
-                      <div key={stage.id} className="flex items-start" style={{ flex: isLast ? '0 0 auto' : '1 1 0', minWidth: 0 }}>
-                        {/* Stage node */}
-                        <div className="flex flex-col items-center shrink-0" style={{ width: 44 }}>
-                          {/* Circle */}
-                          <div className={[
-                            'w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all',
-                            isCompleted
-                              ? 'bg-emerald-500 border-emerald-500 text-white'
-                              : isRejected
-                                ? 'bg-red-100 border-red-400 text-red-600'
-                                : isReturned
-                                  ? 'bg-orange-100 border-orange-400 text-orange-600'
-                                  : isCurrent
-                                    ? 'bg-[#7c1d2e] border-[#7c1d2e] text-white shadow-md'
-                                    : 'bg-background border-dashed border-gray-300 text-gray-300',
-                          ].join(' ')}>
-                            {isCompleted ? (
-                              <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            ) : isRejected ? (
-                              <XCircle className="h-3 w-3" />
-                            ) : isReturned ? (
-                              <RotateCcw className="h-3 w-3" />
-                            ) : isCurrent ? (
-                              <MapPin className="h-3 w-3" />
-                            ) : (
-                              <Circle className="h-3 w-3" />
-                            )}
-                          </div>
-
-                          {/* Stage label */}
-                          <span className={[
-                            'mt-1 leading-tight block text-center w-full',
-                            'text-[8.5px]',
-                            isCompleted
-                              ? 'text-emerald-700 font-medium'
-                              : isCurrent
-                                ? 'text-[#7c1d2e] font-bold'
-                                : isRejected
-                                  ? 'text-red-500'
-                                  : 'text-gray-400',
-                          ].join(' ')}>
-                            {stage.stageName}
-                          </span>
-
-                          {/* Date / status sub-label */}
-                          {completedDate && (
-                            <span className="mt-0.5 text-[7.5px] text-muted-foreground text-center block w-full">{completedDate}</span>
-                          )}
-                          {isCurrent && (
-                            <span className="mt-0.5 text-[7.5px] text-[#7c1d2e]/70 font-semibold text-center block w-full">Active</span>
-                          )}
-                        </div>
-
-                        {/* Flex-growing connector line */}
-                        {!isLast && (
-                          <div
-                            className={['flex-1 mt-[13px] h-[2px] min-w-[4px]', isCompleted ? 'bg-emerald-400' : 'bg-gray-200'].join(' ')}
-                          />
-                        )}
-                      </div>
-                    )
-                  })}
-              </div>
-            </CardContent>
-          </Card>
-
-
-          {/* Quick Info */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <DetailCard title="Project Details" icon={FileText}>
-              <InfoRow label="Project" value={app.projectName} />
-              <InfoRow label="Sector" value={app.sector} />
-              <InfoRow label="Category" value={app.projectCategory} />
-              <InfoRow label="Allotment Mode" value={app.allotmentMode?.name} />
-              <InfoRow label="Description" value={app.projectDescription} />
-              <InfoRow label="Development Timeline" value={app.developmentTimeline} />
-              <InfoRow label="Intended Land Use" value={app.intendedLandUse} />
-              {app.assignedOfficer && <InfoRow label="Lead Manager" value={`${app.assignedOfficer.name} (${app.assignedOfficer.designation})`} />}
-              {app.slaDueDate && <InfoRow label="SLA Due" value={formatDate(app.slaDueDate)} />}
-              {app.rejectionReason && <InfoRow label="Rejection Reason" value={<span className="text-red-600">{app.rejectionReason}</span>} />}
+          {/* Comprehensive Summary */}
+          <div className="grid md:grid-cols-2 gap-2">
+            <DetailCard title="Project Details" icon={FileText} onEdit={() => startEditing('project')}>
+              {editingCard === 'project' ? (
+                <div className="space-y-4 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5"><Label className="text-xs">Project Name</Label><Input value={editForm.projectName} onChange={e => setFormValue('projectName', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Sector</Label><Input value={editForm.sector} onChange={e => setFormValue('sector', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Category</Label><Input value={editForm.projectCategory} onChange={e => setFormValue('projectCategory', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Priority</Label><Input value={editForm.priority} onChange={e => setFormValue('priority', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Investment (₹ Cr)</Label><Input type="number" value={editForm.proposedInvestment} onChange={e => setFormValue('proposedInvestment', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Employment</Label><Input type="number" value={editForm.employmentCommitment} onChange={e => setFormValue('employmentCommitment', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Timeline</Label><Input value={editForm.developmentTimeline} onChange={e => setFormValue('developmentTimeline', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Intended Land Use</Label><Input value={editForm.intendedLandUse} onChange={e => setFormValue('intendedLandUse', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Description</Label><Textarea value={editForm.projectDescription} onChange={e => setFormValue('projectDescription', e.target.value)} className="text-sm resize-none" rows={2} /></div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-3 border-t">
+                    <Button variant="outline" size="sm" onClick={() => setEditingCard(null)} disabled={editLoading}>Cancel</Button>
+                    <Button size="sm" onClick={handleSaveInline} disabled={editLoading}>{editLoading && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}Save</Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <InfoRow label="Project" value={app.projectName} />
+                  <InfoRow label="Sector" value={app.sector} />
+                  <InfoRow label="Category" value={app.projectCategory} />
+                  <InfoRow label="Allotment Mode" value={app.allotmentMode?.name} />
+                  <InfoRow label="Description" value={app.projectDescription} />
+                  <InfoRow label="Development Timeline" value={app.developmentTimeline} />
+                  <InfoRow label="Intended Land Use" value={app.intendedLandUse} />
+                  {app.assignedOfficer && <InfoRow label="Lead Manager" value={`${app.assignedOfficer.name} (${app.assignedOfficer.designation})`} />}
+                  {app.slaDueDate && <InfoRow label="SLA Due" value={formatDate(app.slaDueDate)} />}
+                  {app.rejectionReason && <InfoRow label="Rejection Reason" value={<span className="text-red-600">{app.rejectionReason}</span>} />}
+                </>
+              )}
             </DetailCard>
+
+            <DetailCard title="Applicant Summary" icon={User} onEdit={() => startEditing('applicant-summary')}>
+              {editingCard === 'applicant-summary' ? (
+                <div className="space-y-4 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Organization Name</Label><Input value={editForm.organizationName} onChange={e => setFormValue('organizationName', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Entity Type</Label><Input value={editForm.entityType} onChange={e => setFormValue('entityType', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Registration No.</Label><Input value={editForm.registrationNumber} onChange={e => setFormValue('registrationNumber', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Contact Person</Label><Input value={editForm.contactPerson} onChange={e => setFormValue('contactPerson', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Contact Phone</Label><Input value={editForm.contactPhone} onChange={e => setFormValue('contactPhone', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Contact Email</Label><Input type="email" value={editForm.contactEmail} onChange={e => setFormValue('contactEmail', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Net Worth (₹)</Label><Input type="number" value={editForm.netWorth} onChange={e => setFormValue('netWorth', e.target.value)} className="h-8 text-sm" /></div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-3 border-t">
+                    <Button variant="outline" size="sm" onClick={() => setEditingCard(null)} disabled={editLoading}>Cancel</Button>
+                    <Button size="sm" onClick={handleSaveInline} disabled={editLoading}>{editLoading && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}Save</Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <InfoRow label="Organization" value={app.applicant.organizationName} />
+                  <InfoRow label="Entity Type" value={app.applicant.entityType} />
+                  <InfoRow label="Registration No." value={app.applicant.registrationNumber} />
+                  <InfoRow label="Contact Person" value={app.applicant.contactPerson ? `${app.applicant.contactPerson} (${app.applicant.contactPhone || 'No Phone'})` : '—'} />
+                  <InfoRow label="Email" value={app.applicant.contactEmail} />
+                  <InfoRow label="Net Worth" value={formatINR(app.applicant.netWorth)} />
+                </>
+              )}
+            </DetailCard>
+
+            <DetailCard title="Land Parcel Summary" icon={MapPin}>
+              <InfoRow label="Plot ID" value={app.landParcel?.plotId} />
+              <InfoRow label="Survey Number" value={app.landParcel?.surveyNumber} />
+              <InfoRow label="Extent" value={app.landParcel ? `${app.landParcel.extentAcres} acres` : '—'} />
+              <InfoRow label="Zone" value={app.landParcel?.zone?.name} />
+              <InfoRow label="Reserve Price" value={app.landParcel ? formatINR(app.landParcel.reservePrice) : '—'} />
+              <InfoRow label="Encumbrance" value={app.landParcel ? <Badge className={`${app.landParcel.encumbranceStatus === 'Clear' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'} hover:opacity-100`}>{app.landParcel.encumbranceStatus}</Badge> : '—'} />
+            </DetailCard>
+
+            <DetailCard title="Financial Summary" icon={CreditCard}>
+              <InfoRow label="Total Payments" value={app.payments.length.toString()} />
+              <InfoRow label="Total Amount Paid" value={formatINR(app.payments.reduce((acc, p) => acc + (p.amountPaid || 0), 0))} />
+              <InfoRow label="Outstanding Dues" value={formatINR(app.payments.reduce((acc, p) => acc + ((p.amountDue || 0) - (p.amountPaid || 0)), 0))} />
+              <InfoRow label="Next Payment Due" value={app.payments.find(p => p.status === 'Pending' || p.status === 'Overdue')?.dueDate ? formatDate(app.payments.find(p => p.status === 'Pending' || p.status === 'Overdue')?.dueDate!) : '—'} />
+            </DetailCard>
+
+            <DetailCard title="Approval & Post-Approval" icon={Shield}>
+              <InfoRow label="Economic Score" value={app.economicReviews[0] ? `${app.economicReviews[0].percentage}% (${app.economicReviews[0].rating})` : '—'} />
+              <InfoRow label="DPR Status" value={app.dprVersions.length > 0 ? app.dprVersions[app.dprVersions.length - 1].status : '—'} />
+              <InfoRow label="GO Number" value={app.governmentOrders[0]?.goNumber || '—'} />
+              <InfoRow label="LOI Status" value={app.lois[0]?.status || '—'} />
+              <InfoRow label="Agreement Status" value={app.agreements[0]?.status || '—'} />
+              <InfoRow label="Possession Status" value={app.possessions[0]?.status || '—'} />
+            </DetailCard>
+
             <DetailCard title="Key Dates" icon={Clock}>
               <InfoRow label="Application Date" value={formatDate(app.createdAt)} />
               <InfoRow label="Last Updated" value={formatDate(app.updatedAt)} />
@@ -623,22 +824,61 @@ export function ApplicationDetail() {
         {/* ========== APPLICANT TAB ========== */}
         <TabsContent value="applicant">
           <div className="grid md:grid-cols-2 gap-4">
-            <DetailCard title="Applicant Details" icon={User}>
-              <InfoRow label="Applicant ID" value={<span className=" text-xs">{app.applicant.applicantId}</span>} />
-              <InfoRow label="Organization" value={app.applicant.organizationName} />
-              <InfoRow label="Entity Type" value={app.applicant.entityType} />
-              <InfoRow label="Registration No." value={app.applicant.registrationNumber} />
-              <InfoRow label="PAN" value={app.applicant.pan} />
-              <InfoRow label="GST" value={app.applicant.gst} />
-              <InfoRow label="Experience" value={app.applicant.experience} />
+            <DetailCard title="Applicant Details" icon={User} onEdit={() => startEditing('applicant-details')}>
+              {editingCard === 'applicant-details' ? (
+                <div className="space-y-4 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Organization Name</Label><Input value={editForm.organizationName} onChange={e => setFormValue('organizationName', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Entity Type</Label><Input value={editForm.entityType} onChange={e => setFormValue('entityType', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Registration No.</Label><Input value={editForm.registrationNumber} onChange={e => setFormValue('registrationNumber', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">PAN</Label><Input value={editForm.pan} onChange={e => setFormValue('pan', e.target.value)} className="h-8 text-sm uppercase" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">GST</Label><Input value={editForm.gst} onChange={e => setFormValue('gst', e.target.value)} className="h-8 text-sm uppercase" /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Experience</Label><Input value={editForm.experience} onChange={e => setFormValue('experience', e.target.value)} className="h-8 text-sm" /></div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-3 border-t">
+                    <Button variant="outline" size="sm" onClick={() => setEditingCard(null)} disabled={editLoading}>Cancel</Button>
+                    <Button size="sm" onClick={handleSaveInline} disabled={editLoading}>{editLoading && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}Save</Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <InfoRow label="Applicant ID" value={<span className=" text-xs">{app.applicant.applicantId}</span>} />
+                  <InfoRow label="Organization" value={app.applicant.organizationName} />
+                  <InfoRow label="Entity Type" value={app.applicant.entityType} />
+                  <InfoRow label="Registration No." value={app.applicant.registrationNumber} />
+                  <InfoRow label="PAN" value={app.applicant.pan} />
+                  <InfoRow label="GST" value={app.applicant.gst} />
+                  <InfoRow label="Experience" value={app.applicant.experience} />
+                </>
+              )}
             </DetailCard>
-            <DetailCard title="Contact & Financial" icon={Building2}>
-              <InfoRow label="Registered Address" value={app.applicant.registeredAddress} />
-              <InfoRow label="Contact Person" value={app.applicant.contactPerson} />
-              <InfoRow label="Phone" value={app.applicant.contactPhone} />
-              <InfoRow label="Email" value={app.applicant.contactEmail} />
-              <InfoRow label="Authorized Rep" value={app.applicant.authorizedRep} />
-              <InfoRow label="Net Worth" value={formatINR(app.applicant.netWorth)} />
+
+            <DetailCard title="Contact & Financial" icon={Building2} onEdit={() => startEditing('contact-financial')}>
+              {editingCard === 'contact-financial' ? (
+                <div className="space-y-4 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5"><Label className="text-xs">Contact Person</Label><Input value={editForm.contactPerson} onChange={e => setFormValue('contactPerson', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Authorized Rep</Label><Input value={editForm.authorizedRep} onChange={e => setFormValue('authorizedRep', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Contact Phone</Label><Input value={editForm.contactPhone} onChange={e => setFormValue('contactPhone', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5"><Label className="text-xs">Contact Email</Label><Input type="email" value={editForm.contactEmail} onChange={e => setFormValue('contactEmail', e.target.value)} className="h-8 text-sm" /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Registered Address</Label><Textarea value={editForm.registeredAddress} onChange={e => setFormValue('registeredAddress', e.target.value)} className="text-sm resize-none" rows={2} /></div>
+                    <div className="space-y-1.5 col-span-2"><Label className="text-xs">Net Worth (₹)</Label><Input type="number" value={editForm.netWorth} onChange={e => setFormValue('netWorth', e.target.value)} className="h-8 text-sm" /></div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-3 border-t">
+                    <Button variant="outline" size="sm" onClick={() => setEditingCard(null)} disabled={editLoading}>Cancel</Button>
+                    <Button size="sm" onClick={handleSaveInline} disabled={editLoading}>{editLoading && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}Save</Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <InfoRow label="Registered Address" value={app.applicant.registeredAddress} />
+                  <InfoRow label="Contact Person" value={app.applicant.contactPerson} />
+                  <InfoRow label="Phone" value={app.applicant.contactPhone} />
+                  <InfoRow label="Email" value={app.applicant.contactEmail} />
+                  <InfoRow label="Authorized Rep" value={app.applicant.authorizedRep} />
+                  <InfoRow label="Net Worth" value={formatINR(app.applicant.netWorth)} />
+                </>
+              )}
             </DetailCard>
           </div>
         </TabsContent>
@@ -1165,6 +1405,25 @@ export function ApplicationDetail() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        {/* ========== NOTES TAB ========== */}
+        <TabsContent value="notes">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 border-b">
+              <CardTitle className="text-sm font-semibold">Application Notes</CardTitle>
+              <Button size="sm" onClick={() => setNoteDialogOpen(true)} className="h-8 gap-1 bg-emerald-600 hover:bg-emerald-700">
+                <StickyNote className="h-3.5 w-3.5" /> Add Note
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+                <StickyNote className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                <p>No notes have been added yet.</p>
+                <p className="text-xs mt-1">Click "Add Note" to attach a remark to this application.</p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ========== TIMELINE TAB ========== */}

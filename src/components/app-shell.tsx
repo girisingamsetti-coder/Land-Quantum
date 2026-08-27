@@ -22,6 +22,7 @@ const DepartmentsView = lazy(() => import('@/components/views/simple-views').the
 const SettingsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.SettingsView })))
 const GISView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.GISView })))
 const RiskAlertsView = lazy(() => import('@/components/views/simple-views').then(m => ({ default: m.RiskAlertsView })))
+const DealsView = lazy(() => import('@/components/views/deals-view').then(m => ({ default: m.DealsView })))
 
 function Fallback() {
   return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
@@ -52,6 +53,7 @@ function ViewRouter() {
     'gis': <Suspense fallback={<Fallback />}><GISView /></Suspense>,
 
     'risk-alerts': <Suspense fallback={<Fallback />}><RiskAlertsView /></Suspense>,
+    'deals': <Suspense fallback={<Fallback />}><DealsView /></Suspense>,
   }
 
   return viewMap[view] || <Suspense fallback={<Fallback />}><DashboardView /></Suspense>

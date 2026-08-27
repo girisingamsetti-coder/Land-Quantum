@@ -34,7 +34,8 @@ import {
 import { cn } from '@/lib/utils'
 
 function formatINR(amount: number) {
-  return `₹${amount.toLocaleString('en-IN')}`
+  if (amount == null) return '—'
+  return `₹${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr`
 }
 
 function statusColor(s: string) {

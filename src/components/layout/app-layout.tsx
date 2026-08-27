@@ -24,7 +24,7 @@ import {
   Users, Building2, LogOut, Bell, BarChart3, KanbanSquare,
   Shield, Settings, ScrollText, Map, ClipboardList, MessageSquare,
   Check, Circle, Clock, X, SlidersHorizontal,
-  Moon, Sun, UserCircle, Calendar, ChevronLeft, ChevronRight
+  Moon, Sun, UserCircle, Calendar, ChevronLeft, ChevronRight, Handshake
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -35,7 +35,7 @@ export type View =
   | 'land-parcels' | 'building-permits' | 'payments' | 'documentation' | 'constructions' | 'grievances'
   | 'cancellations' | 'reports' | 'audit-log'
   | 'users' | 'roles' | 'departments' | 'settings' | 'gis'
-  | 'my-work-queue' | 'risk-alerts'
+  | 'my-work-queue' | 'risk-alerts' | 'deals'
 
 export interface GlobalFilters {
   zone: string
@@ -70,6 +70,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { view: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { view: 'applications', label: 'Applications', icon: FileText },
+  { view: 'deals', label: 'Deals', icon: Handshake },
   { view: 'land-parcels', label: 'Land Inventory', icon: MapPin },
   { view: 'building-permits', label: 'Building Permits', icon: ClipboardList },
   { view: 'constructions', label: 'Construction', icon: HardHat },
@@ -84,6 +85,7 @@ const navItems: NavItem[] = [
 const viewDescriptions: Record<string, string> = {
   dashboard: 'Overview of key metrics and alerts',
   applications: 'View and manage all land allotment applications',
+  deals: 'Track and manage investor deal pipeline',
   'workflow-kanban': 'Visual stage view for applications',
   'application-detail': 'Application details and processing',
   'land-parcels': 'Browse and manage land parcels inventory',

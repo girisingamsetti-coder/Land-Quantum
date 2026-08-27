@@ -16,8 +16,11 @@ import {
   AlertTriangle, ArrowRight, ChevronRight, AlertCircle,
   ClipboardCheck, LayoutList, ShieldCheck, BadgeCheck, Award, Handshake, PackageCheck,
   Search, Download, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, Users,
-  Calendar, ChevronDown, Filter, MessageSquare, Building2
+  Calendar, ChevronDown, Filter, MessageSquare, Building2, X
 } from 'lucide-react'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
 interface DashboardStats {
@@ -525,7 +528,7 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
     : <ArrowDown className="h-3 w-3 text-primary" />
 }
 
-function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => void }) {
+export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => void }) {
   const [activeTab, setActiveTab] = useState('cases')
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('ageDays')
@@ -1045,6 +1048,214 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
   )
 }
 
+// ─── Dashboard Applications Table ──────────────────────────────────────────
+
+export const MOCK_APP_ROWS = [
+  { id: 'APCRDA-2026-0001', applicant: 'Vajra Technologies Pvt Ltd', sector: 'IT/ITES', investment: '₹680 Cr', area: '19 ac', appliedOn: '29 Jul 2026', stage: 'Application', sla: '2 days', priority: 'High', status: 'Submitted', lead: 'K. Padmavathi' },
+  { id: 'APCRDA-2026-0002', applicant: 'Kaveri Media Networks', sector: 'Media & Entertainment', investment: '₹310 Cr', area: '15 ac', appliedOn: '10 Jul 2026', stage: 'DPR Review', sla: '5 days', priority: 'Normal', status: 'Under Review', lead: 'R. Venkatesh' },
+  { id: 'APCRDA-2026-0003', applicant: 'Bharat Electronics Systems', sector: 'Industrial', investment: '₹1,450 Cr', area: '45 ac', appliedOn: '18 May 2026', stage: 'Economic Review', sla: 'Overdue', priority: 'High', status: 'Under Review', lead: 'K. Padmavathi' },
+  { id: 'APCRDA-2025-0004', applicant: 'Deccan Logistics & Warehousing', sector: 'Logistics', investment: '₹120 Cr', area: '7 ac', appliedOn: '12 Apr 2026', stage: 'LASC Scrutiny', sla: 'Overdue', priority: 'Normal', status: 'Under Review', lead: 'S. Rao' },
+  { id: 'APCRDA-2026-0005', applicant: 'Global Skills Alliance', sector: 'Education', investment: '₹210 Cr', area: '5 ac', appliedOn: '24 Apr 2026', stage: 'Govt. Approval', sla: '10 days', priority: 'Normal', status: 'Under Review', lead: 'R. Venkatesh' },
+  { id: 'APCRDA-2026-0006', applicant: 'Nirmaan Health Partners', sector: 'Healthcare', investment: '₹540 Cr', area: '28 ac', appliedOn: '25 Feb 2026', stage: 'LASC Scrutiny', sla: '17 days', priority: 'High', status: 'Under Review', lead: 'K. Padmavathi' },
+  { id: 'APCRDA-2025-0007', applicant: 'Sunrise Sports Ventures', sector: 'Sports', investment: '₹390 Cr', area: '54 ac', appliedOn: '20 Jan 2026', stage: 'Govt. Approval', sla: '26 days', priority: 'High', status: 'Approved', lead: 'S. Rao' },
+  { id: 'APCRDA-2025-0008', applicant: 'AP Judicial Infrastructure', sector: 'Government Organisations', investment: '₹160 Cr', area: '8 ac', appliedOn: '25 Dec 2025', stage: 'Govt. Approval', sla: '17 days', priority: 'Normal', status: 'Under Review', lead: 'R. Venkatesh' },
+  { id: 'APCRDA-2025-0009', applicant: 'Sristi Financial Services', sector: 'Financial Institutions', investment: '₹890 Cr', area: '7 ac', appliedOn: '09 Dec 2025', stage: 'Order & Offer', sla: '17 days', priority: 'High', status: 'Approved', lead: 'K. Padmavathi' },
+  { id: 'APCRDA-2025-0010', applicant: 'Krishna Hospitality Group', sector: 'Hospitality', investment: '₹720 Cr', area: '22 ac', appliedOn: '07 Nov 2025', stage: 'Govt. Approval', sla: '26 days', priority: 'Normal', status: 'Under Review', lead: 'S. Rao' },
+]
+
+export function DashBadge({ value, variant }: { value: string; variant: 'status' | 'priority' | 'sla' }) {
+  const cls = (() => {
+    if (variant === 'status') {
+      if (value === 'Approved') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      if (value === 'Rejected') return 'bg-red-50 text-red-700 border-red-200'
+      if (value === 'Active') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      if (value === 'Cancelled') return 'bg-red-50 text-red-700 border-red-200'
+      if (value === 'Pending') return 'bg-amber-50 text-amber-700 border-amber-200'
+      return 'bg-amber-50 text-amber-700 border-amber-200'
+    }
+    if (variant === 'priority') {
+      if (value === 'High' || value === 'Critical') return 'bg-red-50 text-red-700 border-red-200'
+      return 'bg-slate-100 text-slate-600 border-slate-200'
+    }
+    // sla
+    if (value === 'Overdue') return 'bg-red-50 text-red-700 border-red-200 font-semibold'
+    if (value.includes('2 days') || value.includes('1 day')) return 'bg-orange-50 text-orange-700 border-orange-200'
+    return 'bg-slate-50 text-slate-600 border-slate-200'
+  })()
+  return <Badge variant="outline" className={cn('text-[9px] py-0 font-medium', cls)}>{value}</Badge>
+}
+
+export const DASH_SECTOR_OPTIONS = ['All Sectors', 'Commercial', 'Education', 'Financial Institutions', 'Food Processing', 'Government Organisations', 'Healthcare', 'Hospitality', 'IT/ITES', 'Industrial', 'Logistics', 'NGOs', 'Others', 'Pharmaceutical', 'Political Parties', 'Sports', 'Textiles']
+export const DASH_STAGE_OPTIONS = ['All Stages', 'Application', 'Eligibility', 'DPR Review', 'Economic Review', 'LASC Scrutiny', 'Govt. Approval', 'Order & Offer']
+export const DASH_STATUS_OPTIONS = ['All Statuses', 'Submitted', 'Under Review', 'Approved', 'Rejected']
+export const DASH_PRIORITY_OPTIONS = ['All Priorities', 'Normal', 'High', 'Critical']
+
+export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: string) => void }) {
+  const [rows, setRows] = useState(MOCK_APP_ROWS)
+  const [search, setSearch] = useState('')
+  const [filterSector, setFilterSector] = useState('All Sectors')
+  const [filterStage, setFilterStage] = useState('All Stages')
+  const [filterStatus, setFilterStatus] = useState('All Statuses')
+  const [filterPriority, setFilterPriority] = useState('All Priorities')
+  const [sortCol, setSortCol] = useState<string | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 8
+
+  // Fetch real applications and prepend
+  useEffect(() => {
+    fetch('/api/applications?pageSize=50')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.data?.applications?.length) {
+          const mapped = data.data.applications.map((a: any) => ({
+            id: a.applicationNumber,
+            applicant: a.applicant?.organizationName || 'Unknown',
+            sector: a.sector || '—',
+            investment: a.proposedInvestment ? `₹${(Number(a.proposedInvestment) / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` : '—',
+            area: a.landParcel?.extentAcres ? `${a.landParcel.extentAcres} ac` : '—',
+            appliedOn: new Date(a.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            stage: a.currentStage || 'Application',
+            sla: a.slaRemaining != null ? (a.slaRemaining < 0 ? 'Overdue' : `${a.slaRemaining} days`) : '—',
+            priority: a.priority || 'Normal',
+            status: a.status || 'Submitted',
+            lead: a.assignedOfficer?.name || '—',
+          }))
+          setRows(prev => [...mapped, ...prev])
+        }
+      })
+      .catch(() => { })
+  }, [])
+
+  const handleSort = (col: string) => {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(col); setSortDir('asc') }
+    setPage(1)
+  }
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase()
+    return rows.filter(r => {
+      const matchQ = !q || r.id.toLowerCase().includes(q) || r.applicant.toLowerCase().includes(q) ||
+        r.sector.toLowerCase().includes(q) || r.stage.toLowerCase().includes(q) || r.lead.toLowerCase().includes(q) ||
+        r.status.toLowerCase().includes(q) || r.priority.toLowerCase().includes(q)
+
+      const matchSector = filterSector === 'All Sectors' || r.sector === filterSector
+      const matchStage = filterStage === 'All Stages' || r.stage === filterStage
+      const matchStatus = filterStatus === 'All Statuses' || r.status === filterStatus
+      const matchPriority = filterPriority === 'All Priorities' || r.priority === filterPriority
+
+      return matchQ && matchSector && matchStage && matchStatus && matchPriority
+    })
+  }, [rows, search, filterSector, filterStage, filterStatus, filterPriority])
+
+  const sorted = useMemo(() => {
+    if (!sortCol) return filtered
+    return [...filtered].sort((a, b) => {
+      const av = (a as any)[sortCol]; const bv = (b as any)[sortCol]
+      return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av))
+    })
+  }, [filtered, sortCol, sortDir])
+
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE) || 1
+  const paged = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  const th = (label: string, key: string, cls = '') => (
+    <th
+      className={cn('px-3 py-2 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider cursor-pointer select-none hover:text-foreground transition-colors whitespace-nowrap', cls)}
+      onClick={() => handleSort(key)}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        {sortCol === key
+          ? sortDir === 'asc' ? <ArrowUp className="h-3 w-3 text-primary" /> : <ArrowDown className="h-3 w-3 text-primary" />
+          : <ArrowUpDown className="h-3 w-3 text-muted-foreground/40" />}
+      </div>
+    </th>
+  )
+
+  const resetFilters = () => {
+    setSearch('')
+    setFilterSector('All Sectors')
+    setFilterStage('All Stages')
+    setFilterStatus('All Statuses')
+    setFilterPriority('All Priorities')
+    setPage(1)
+  }
+
+  return (
+    <Card className="shadow-sm">
+      <CardHeader className="px-4 py-1 border-b flex flex-row items-center justify-between space-y-0 gap-3">
+        <CardTitle className="text-sm font-bold tracking-tight shrink-0">Applications</CardTitle>
+        <div className="flex flex-wrap items-center justify-end gap-2 flex-1">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+            <input
+              value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
+              placeholder="Search..."
+              className="pl-7 pr-3 h-7 w-[160px] md:w-[180px] rounded-md border bg-background text-[11px] outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+            />
+          </div>
+          <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}><SelectTrigger className="w-[125px] h-7 text-[11px]"><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]"><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{DASH_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]"><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterStatus !== 'All Statuses' || filterPriority !== 'All Priorities') && (
+            <Button variant="ghost" size="sm" className="h-7 text-[11px] gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3 w-3" /> Clear</Button>
+          )}
+        </div>
+      </CardHeader>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[11px]">
+          <thead className="bg-muted/40 border-b">
+            <tr>
+              {th('Application ID', 'id', 'min-w-[160px]')}
+              {th('Applicant', 'applicant', 'min-w-[180px]')}
+              {th('Sector', 'sector', 'min-w-[130px]')}
+              {th('Investment', 'investment', 'min-w-[100px]')}
+              {th('Area', 'area', 'min-w-[70px]')}
+              {th('Applied On', 'appliedOn', 'min-w-[110px]')}
+              {th('Stage', 'stage', 'min-w-[130px]')}
+              {th('SLA', 'sla', 'min-w-[90px]')}
+              {th('Priority', 'priority', 'min-w-[80px]')}
+              {th('Status', 'status', 'min-w-[100px]')}
+              {th('Lead Manager', 'lead', 'min-w-[130px]')}
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {paged.length === 0 ? (
+              <tr><td colSpan={11} className="text-center py-8 text-muted-foreground text-xs">No results found</td></tr>
+            ) : paged.map(row => (
+              <tr key={row.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => onNavigate(row.id)}>
+                <td className="px-3 py-2 text-[10px] text-primary font-semibold">{row.id}</td>
+                <td className="px-3 py-2 max-w-[200px]"><span className="truncate block font-medium">{row.applicant}</span></td>
+                <td className="px-3 py-2 text-muted-foreground">{row.sector}</td>
+                <td className="px-3 py-2 font-semibold tabular-nums">{row.investment}</td>
+                <td className="px-3 py-2 text-muted-foreground tabular-nums">{row.area}</td>
+                <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{row.appliedOn}</td>
+                <td className="px-3 py-2 text-muted-foreground">{row.stage}</td>
+                <td className="px-3 py-2"><DashBadge value={row.sla} variant="sla" /></td>
+                <td className="px-3 py-2"><DashBadge value={row.priority} variant="priority" /></td>
+                <td className="px-3 py-2"><DashBadge value={row.status} variant="status" /></td>
+                <td className="px-3 py-2 text-muted-foreground">{row.lead}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="px-4 py-1.5 border-t flex items-center justify-between bg-muted/20">
+        <div className="text-[11px] text-muted-foreground">
+          Showing {paged.length > 0 ? (page - 1) * PAGE_SIZE + 1 : 0} to {Math.min(page * PAGE_SIZE, sorted.length)} of {sorted.length} entries
+        </div>
+        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-1 rounded hover:bg-muted disabled:opacity-30 border bg-background flex items-center gap-1 px-2 shadow-sm transition-colors"><ChevronLeft className="h-3 w-3" /> Prev</button>
+          <span className="px-2 font-medium">Page {page} of {totalPages}</span>
+          <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="p-1 rounded hover:bg-muted disabled:opacity-30 border bg-background flex items-center gap-1 px-2 shadow-sm transition-colors">Next <ChevronRight className="h-3 w-3" /></button>
+        </div>
+      </div>
+    </Card>
+  )
+}
 
 export function DashboardView() {
   const { view, navigateTo } = useAppLayout()
@@ -1553,9 +1764,8 @@ export function DashboardView() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Records Table */}
-      <RecordsTable onNavigateToApp={() => navigateTo('applications')} />
+      {/* ── Applications Table ── */}
+      <DashboardApplicationsTable onNavigate={(id) => navigateTo('application-detail', { id })} />
 
     </div>
   )

@@ -134,7 +134,7 @@ function StageSection({ stage, items, navigateTo }: { stage: string, items: AppI
           </div>
         )}
       </div>
-      
+
       {items.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center bg-muted/10">
           <p className="text-sm text-muted-foreground">No applications currently in this stage.</p>
@@ -222,17 +222,17 @@ export function WorkflowKanban({ hideHeader, tabsControl }: { hideHeader?: boole
   return (
     <div className="space-y-4 h-full flex flex-col pb-4">
       {!hideHeader && (
-      <div className="flex items-center justify-between shrink-0 mb-4">
-        <div>
-          <h2 className="text-lg font-semibold">Stage View</h2>
-          <p className="text-sm text-muted-foreground">
-            {apps.length} applications across {activeStages.length} active stages
-          </p>
+        <div className="flex items-center justify-between shrink-0 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold">Stage View</h2>
+            <p className="text-sm text-muted-foreground">
+              {apps.length} applications across {activeStages.length} active stages
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={fetchData}>
+            <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+          </Button>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchData}>
-          <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-        </Button>
-      </div>
       )}
       {tabsControl && <div className="shrink-0">{tabsControl}</div>}
 

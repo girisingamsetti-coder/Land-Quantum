@@ -18,8 +18,9 @@ import {
   IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { RecordsTable } from '@/components/dashboard/dashboard-view'
 
-function formatINR(amount: number) { return `\u20B9${amount.toLocaleString('en-IN')}` }
+function formatINR(amount: number) { return `\u20B9${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` }
 
 function statusColor(s: string) {
   if (['Approved', 'Completed', 'Paid', 'Compliant', 'Resolved', 'Issued', 'Executed', 'Registered'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
@@ -116,29 +117,30 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
       </div>
       <Card>
         <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div> :
-        <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
-          {filtered.map((c: any) => (
-            <TableRow key={c.id}>
-              <TableCell className=" text-xs font-medium">{c.caseNumber}</TableCell>
-              <TableCell className=" text-[11px]">{c.application?.applicationNumber}</TableCell>
-              <TableCell className="text-xs">{c.application?.projectName}</TableCell>
-              <TableCell><Badge variant="outline" className={cn('text-[10px]', c.initiatedBy === 'APCRDA' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200')}>{c.initiatedBy}</Badge></TableCell>
-              <TableCell className="text-xs max-w-[200px] truncate">{c.reason}</TableCell>
-              <TableCell className="text-xs">{c.decision || '—'}</TableCell>
-              <TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(c.status))}>{c.status}</Badge></TableCell>
-            </TableRow>))}
-        </TableBody></Table>}</CardContent></Card>
+          <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
+            {filtered.map((c: any) => (
+              <TableRow key={c.id}>
+                <TableCell className=" text-xs font-medium">{c.caseNumber}</TableCell>
+                <TableCell className=" text-[11px]">{c.application?.applicationNumber}</TableCell>
+                <TableCell className="text-xs">{c.application?.projectName}</TableCell>
+                <TableCell><Badge variant="outline" className={cn('text-[10px]', c.initiatedBy === 'APCRDA' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200')}>{c.initiatedBy}</Badge></TableCell>
+                <TableCell className="text-xs max-w-[200px] truncate">{c.reason}</TableCell>
+                <TableCell className="text-xs">{c.decision || '—'}</TableCell>
+                <TableCell><Badge variant="outline" className={cn('text-[10px]', statusColor(c.status))}>{c.status}</Badge></TableCell>
+              </TableRow>))}
+          </TableBody></Table>}</CardContent></Card>
     </div>
   )
 }
 
 // REPORTS
 export function ReportsView() {
-  const [reportId, setReportId] = useState('case-pipeline');
+  const [reportId, setReportId] = useState('summary');
   const [filters, setFilters] = useState({ from: '', to: '', phase: 'ALL', status: 'ALL' });
   const [exporting, setExporting] = useState<string | null>(null);
 
   const catalogue = useMemo(() => [
+    { id: 'summary', title: 'Summary', description: 'Live summary table of all leads, dates, money, sectors, plots and investors' },
     { id: 'case-pipeline', title: 'Case Pipeline', description: 'Overview of all cases across phases' },
     { id: 'financial-summary', title: 'Financial Summary', description: 'Payments, dues and revenue' },
     { id: 'land-allocation', title: 'Land Allocation', description: 'Plot status and sector distribution' },
@@ -173,7 +175,7 @@ export function ReportsView() {
         data = {
           summary: [{ label: 'Dormant Cases', value: '24' }, { label: 'At-Risk Revenue', value: '₹145 Cr' }, { label: 'Pending Cancellations', value: '8' }],
           columns: [{ key: 'id', label: 'App ID', align: 'left' }, { key: 'lastActivity', label: 'Last Activity', align: 'left' }, { key: 'riskLevel', label: 'Risk Level', align: 'left' }, { key: 'pendingDues', label: 'Pending Dues (₹)', align: 'right' }],
-          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${4000 + i}`, lastActivity: `${60 + i * 5} days ago`, riskLevel: i % 3 === 0 ? 'High (Cancellation Pending)' : 'Medium (Dormant)', pendingDues: (500000 * i).toLocaleString('en-IN') }))
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${4000 + i}`, lastActivity: `${60 + i * 5} days ago`, riskLevel: i % 3 === 0 ? 'High (Cancellation Pending)' : 'Medium (Dormant)', pendingDues: `₹${((500000 * i) / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` }))
         };
       } else if (reportId === 'grievances-summary') {
         data = {
@@ -192,7 +194,7 @@ export function ReportsView() {
         data = {
           summary: [{ label: 'Total Cases', value: '1,245' }, { label: 'Value', value: '₹4,500 Cr' }, { label: 'Avg Processing', value: '45 days' }],
           columns: [{ key: 'id', label: 'ID', align: 'left' }, { key: 'applicant', label: 'Applicant', align: 'left' }, { key: 'status', label: 'Status', align: 'left' }, { key: 'date', label: 'Date', align: 'left' }, { key: 'value', label: 'Value (₹)', align: 'right' }],
-          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${1000 + i}`, applicant: `Company ${String.fromCharCode(65 + (i % 26))} Pvt Ltd`, status: ['Under Review', 'Approved', 'Pending Payment'][i % 3], date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), value: (1000000 * (i + 1)).toLocaleString('en-IN') }))
+          rows: Array.from({ length: 15 }).map((_, i) => ({ id: `APP-2024-${1000 + i}`, applicant: `Company ${String.fromCharCode(65 + (i % 26))} Pvt Ltd`, status: ['Under Review', 'Approved', 'Pending Payment'][i % 3], date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), value: `₹${((1000000 * (i + 1)) / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` }))
         };
       }
       setReport(data);
@@ -274,7 +276,10 @@ export function ReportsView() {
           </Button>
         </div>
       </div>
-      <Card className="shadow-md overflow-hidden">
+      {reportId === 'summary' ? (
+        <RecordsTable onNavigateToApp={() => { }} />
+      ) : (
+        <Card className="shadow-md overflow-hidden">
 
           {isLoading ? (
             <div className="p-8 flex justify-center items-center">
@@ -327,6 +332,7 @@ export function ReportsView() {
             </>
           )}
         </Card>
+      )}
     </div>
   )
 }
@@ -367,15 +373,15 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
       </div>
       <Card>
         <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div> :
-        <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
-          {filtered.map((l: any) => (<TableRow key={l.id}>
-            <TableCell className="text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">{new Date(l.createdAt).toLocaleString('en-IN')}</TableCell>
-            <TableCell className="text-xs">{l.userName || 'System'}</TableCell>
-            <TableCell className="text-xs">{l.role || '—'}</TableCell>
-            <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{l.action}</Badge></TableCell>
-            <TableCell className="text-xs">{l.module || '—'}</TableCell>
-          </TableRow>))}
-        </TableBody></Table>}</CardContent></Card>
+          <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
+            {filtered.map((l: any) => (<TableRow key={l.id}>
+              <TableCell className="text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">{new Date(l.createdAt).toLocaleString('en-IN')}</TableCell>
+              <TableCell className="text-xs">{l.userName || 'System'}</TableCell>
+              <TableCell className="text-xs">{l.role || '—'}</TableCell>
+              <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{l.action}</Badge></TableCell>
+              <TableCell className="text-xs">{l.module || '—'}</TableCell>
+            </TableRow>))}
+          </TableBody></Table>}</CardContent></Card>
     </div>
   )
 }
@@ -418,16 +424,16 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
       </div>
       <Card>
         <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div> :
-        <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
-          {filtered.map((u: any) => (<TableRow key={u.id}>
-            <TableCell className="text-sm font-medium">{u.name}</TableCell>
-            <TableCell className="text-xs">{u.email}</TableCell>
-            <TableCell className="text-xs">{u.designation || '—'}</TableCell>
-            <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{u.role?.name}</Badge></TableCell>
-            <TableCell className="text-xs">{u.department?.name || '—'}</TableCell>
-            <TableCell><Badge variant="outline" className={cn('text-[10px]', u.isActive ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200')}>{u.isActive ? 'Active' : 'Inactive'}</Badge></TableCell>
-          </TableRow>))}
-        </TableBody></Table>}</CardContent></Card>
+          <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
+            {filtered.map((u: any) => (<TableRow key={u.id}>
+              <TableCell className="text-sm font-medium">{u.name}</TableCell>
+              <TableCell className="text-xs">{u.email}</TableCell>
+              <TableCell className="text-xs">{u.designation || '—'}</TableCell>
+              <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-100">{u.role?.name}</Badge></TableCell>
+              <TableCell className="text-xs">{u.department?.name || '—'}</TableCell>
+              <TableCell><Badge variant="outline" className={cn('text-[10px]', u.isActive ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200')}>{u.isActive ? 'Active' : 'Inactive'}</Badge></TableCell>
+            </TableRow>))}
+          </TableBody></Table>}</CardContent></Card>
     </div>
   )
 }
