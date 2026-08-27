@@ -7,3 +7,23 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Sector Filter Data
+Whenever asked to add a sector filter, use the following exact list of sectors:
+* All Sectors
+* Commercial
+* Education
+* Financial Institutions
+* Food Processing
+* Government Organisations
+* Healthcare
+* Hospitality
+* IT/ITES
+* Industrial
+* Logistics
+* NGOs
+* Others
+* Pharmaceutical
+* Political Parties
+* Sports
+* Textiles

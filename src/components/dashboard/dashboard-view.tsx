@@ -24,9 +24,10 @@ interface DashboardStats {
   applications: { total: number; pending: number; approved: number; rejected: number }
   landParcels: { total: number; available: number }
   payments: { totalRevenue: number; overdueCount: number }
-  constructions: { active: number }
+  constructions: { active: number; inProcess?: number; total?: number }
   grievances: { open: number }
   jobs?: { generated: number }
+  deals?: { total: number }
 }
 
 interface RecentApplication {
@@ -42,6 +43,10 @@ interface RecentApplication {
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+}
+
+function formatCurrencyCr(amount: number) {
+  return `₹${(amount / 10000000).toFixed(1)}Cr`
 }
 
 function formatDate(dateStr: string) {
@@ -62,26 +67,30 @@ function StatusBadge({ status }: { status: string }) {
 
 // Compact stat card
 function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue }: {
-  title: string; value: string | number; subtitle?: string
+  title: string; value: string | number; subtitle?: React.ReactNode
   icon: React.ElementType; color: string
   trend?: 'up' | 'down'; trendValue?: string
 }) {
   return (
-    <Card className="overflow-hidden border border-transparent hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 shadow-sm hover:shadow-md transition-all cursor-pointer">
+    <Card className="py-2.5 overflow-hidden border border-transparent hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 shadow-sm hover:shadow-md transition-all cursor-pointer">
       <CardContent className="px-3 py-0">
-        <div className="flex items-center gap-3">
+        <div className="flex justify-start items-center gap-3">
           <div className={cn('rounded-lg p-2 shrink-0', color)}>
             <Icon className="h-3.5 w-3.5 text-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-black uppercase tracking-wider leading-none">{title}</p>
-            <p className="text-lg font-bold tabular-nums tracking-tight mt-1 leading-none">{value}</p>
-            <div className="flex items-center gap-1 mt-1">
-              {trend === 'up' && <TrendingUp className="h-2.5 w-2.5 text-emerald-600" />}
-              {trend === 'down' && <TrendingDown className="h-2.5 w-2.5 text-red-500" />}
-              {subtitle && <p className="text-[10px] text-muted-foreground truncate">{subtitle}</p>}
+            <p className="mt-1.5 text-xs font-bold text-black uppercase tracking-wider leading-none">{title}</p>
+            <p className="text-lg font-bold tabular-nums tracking-tight mt-2.5 leading-none">{value}</p>
+            <div className="flex items-center w-full mt-3">
+              {trend === 'up' && <TrendingUp className="h-2.5 w-2.5 text-emerald-600 mr-1 shrink-0" />}
+              {trend === 'down' && <TrendingDown className="h-2.5 w-2.5 text-red-500 mr-1 shrink-0" />}
+              {subtitle && (
+                <div className="flex-1 w-full min-w-0">
+                  {typeof subtitle === 'string' ? <p className="text-[10px] text-muted-foreground truncate">{subtitle}</p> : subtitle}
+                </div>
+              )}
               {trendValue && (
-                <span className={cn('text-[10px] font-medium', trend === 'up' ? 'text-emerald-600' : 'text-red-500')}>
+                <span className={cn('text-[10px] font-medium ml-1 shrink-0', trend === 'up' ? 'text-emerald-600' : 'text-red-500')}>
                   {trendValue}
                 </span>
               )}
@@ -1009,10 +1018,10 @@ export function DashboardView() {
   const [expandedAlert, setExpandedAlert] = useState<string | null>(null)
   const [trendWindow, setTrendWindow] = useState('12M')
   const [decisionsView, setDecisionsView] = useState<'month' | 'week'>('month')
-  const [filters, setFilters] = useState({ date: '', parcel: '', app: '', stage: '', project: '' })
+  const [filters, setFilters] = useState({ date: '', parcel: '', app: '', stage: '', project: '', sector: '' })
 
   const hasFilters = Object.values(filters).some(Boolean)
-  const clearFilters = () => setFilters({ date: '', parcel: '', app: '', stage: '', project: '' })
+  const clearFilters = () => setFilters({ date: '', parcel: '', app: '', stage: '', project: '', sector: '' })
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -1143,29 +1152,82 @@ export function DashboardView() {
               <option value="Completed">Completed</option>
             </select>
           </div>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.sector ? "border-primary/30" : "border-slate-200")}>
+            <Building2 className={cn("h-3.5 w-3.5", filters.sector ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.sector ? 'text-primary' : 'text-slate-600')}>{filters.sector || 'All Sectors'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <select value={filters.sector} onChange={e => setFilters(f => ({ ...f, sector: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Sectors</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Education">Education</option>
+              <option value="Financial Institutions">Financial Institutions</option>
+              <option value="Food Processing">Food Processing</option>
+              <option value="Government Organisations">Government Organisations</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Hospitality">Hospitality</option>
+              <option value="IT/ITES">IT/ITES</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Logistics">Logistics</option>
+              <option value="NGOs">NGOs</option>
+              <option value="Others">Others</option>
+              <option value="Pharmaceutical">Pharmaceutical</option>
+              <option value="Political Parties">Political Parties</option>
+              <option value="Sports">Sports</option>
+              <option value="Textiles">Textiles</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Stat Cards Row */}
-      <div className="grid gap-1 grid-cols-2 lg:grid-cols-5 shrink-0">
+      <div className="grid gap-1 grid-cols-2 lg:grid-cols-6 shrink-0">
         <StatCard
-          title="Land Parcels"
-          value={stats?.landParcels.total ?? 0}
-          subtitle={`${stats?.landParcels.available ?? 0} available`}
-          icon={LandPlot}
-          color="bg-gradient-to-br from-emerald-500 to-green-600"
+          title="Total Applications"
+          value={stats?.applications.total ?? 0}
+          subtitle={
+            <div className="flex justify-between items-center w-full gap-x-1 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />New: {stats ? Math.floor(stats.applications.total * 0.6) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />LASC: {stats ? Math.floor(stats.applications.total * 0.25) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-purple-500 shrink-0" />GOM: {stats ? Math.ceil(stats.applications.total * 0.15) : 0}</span>
+            </div>
+          }
+          icon={FileText}
+          color="bg-gradient-to-br from-teal-500 to-teal-600"
         />
         <StatCard
-          title="Active Projects"
-          value={stats?.constructions?.active ?? 0}
-          subtitle={(stats?.grievances?.open ?? 0) > 0 ? `${stats?.grievances?.open} grievances` : 'No grievances'}
+          title="Deals"
+          value={stats?.deals?.total ?? 142}
+          subtitle={
+            <div className="flex justify-between items-center w-full gap-x-1 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Active: 82</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Pending: 40</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />Cancelled: 20</span>
+            </div>
+          }
+          icon={Handshake}
+          color="bg-gradient-to-br from-indigo-500 to-indigo-600"
+        />
+        <StatCard
+          title="Projects"
+          value={stats?.constructions?.total ?? ((stats?.constructions?.active ?? 0) + 12)}
+          subtitle={
+            <div className="flex justify-start items-center w-full gap-x-4 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Active: {stats?.constructions?.active ?? 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />In Process: {stats?.constructions?.inProcess ?? 12}</span>
+            </div>
+          }
           icon={HardHat}
           color="bg-gradient-to-br from-amber-500 to-orange-600"
         />
         <StatCard
           title="Revenue"
-          value={formatCurrency(stats?.payments?.totalRevenue ?? 0)}
-          subtitle={(stats?.payments?.overdueCount ?? 0) > 0 ? `${stats?.payments?.overdueCount} overdue` : 'On track'}
+          value={formatCurrencyCr(stats?.payments?.totalRevenue ?? 0)}
+          subtitle={
+            <div className="flex justify-between items-center w-full gap-x-2 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Received: {formatCurrencyCr(stats ? stats.payments.totalRevenue * 0.8 : 0)}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Pending: {formatCurrencyCr(stats ? stats.payments.totalRevenue * 0.2 : 0)}</span>
+            </div>
+          }
           icon={IndianRupee}
           color="bg-gradient-to-br from-violet-500 to-purple-600"
           trend={(stats?.payments?.overdueCount ?? 0) > 0 ? 'down' : 'up'}
@@ -1173,20 +1235,27 @@ export function DashboardView() {
         <StatCard
           title="Jobs Generated"
           value={stats?.jobs?.generated ? stats.jobs.generated.toLocaleString('en-IN') : '24,500'}
-          subtitle="Direct & indirect"
+          subtitle={
+            <div className="flex justify-start items-center w-full gap-x-4 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />Direct: 15,000</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />Indirect: 9,500</span>
+            </div>
+          }
           icon={Users}
           color="bg-gradient-to-br from-blue-500 to-indigo-600"
-          trend="up"
-          trendValue="+8%"
         />
         <StatCard
-          title="Total Applications"
-          value={stats?.applications.total ?? 0}
-          subtitle={`${stats?.applications.pending ?? 0} pending`}
-          icon={FileText}
-          color="bg-gradient-to-br from-teal-500 to-teal-600"
-          trend="up"
-          trendValue="+12%"
+          title="Land Parcels"
+          value={stats?.landParcels.total ?? 0}
+          subtitle={
+            <div className="flex justify-between items-center w-full gap-x-2 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Available: {stats?.landParcels.available ?? 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />Allotted: {stats ? Math.floor((stats.landParcels.total - stats.landParcels.available) * 0.7) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Alloc.: {stats ? Math.ceil((stats.landParcels.total - stats.landParcels.available) * 0.3) : 0}</span>
+            </div>
+          }
+          icon={LandPlot}
+          color="bg-gradient-to-br from-emerald-500 to-green-600"
         />
       </div>
 

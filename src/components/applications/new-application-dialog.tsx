@@ -13,60 +13,71 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import {
-  Building2, User, Briefcase, ChevronRight, ChevronLeft,
-  Check, Loader2, Plus,
+  Building2, Briefcase, ChevronRight, ChevronLeft,
+  Check, Loader2, Plus, Globe, MapPin, Users
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ---- Constants ----
 
-const ENTITY_TYPES = [
-  'Individual', 'Proprietorship', 'Partnership', 'LLP', 'Trust',
-  'Society', 'Pvt Ltd', 'Public Ltd', 'PSU', 'Govt Dept', 'Semi-Govt', 'Consortium',
-]
-
 const SECTORS = [
-  'IT & ITES', 'Real Estate', 'Healthcare', 'Education',
-  'Hospitality & Tourism', 'Manufacturing', 'Financial Services', 'Retail',
-  'Logistics', 'Energy', 'Agriculture', 'Media & Entertainment',
+  'Commercial', 'Education', 'Financial Institutions', 'Food Processing',
+  'Government Organisations', 'Healthcare', 'Hospitality', 'IT/ITES',
+  'Industrial', 'Logistics', 'NGOs', 'Others', 'Pharmaceutical',
+  'Political Parties', 'Sports', 'Textiles'
 ]
 
-const PRIORITIES = ['Low', 'Normal', 'High', 'Critical']
+const SUB_SECTORS = [
+  'Software Development', 'BPO/KPO', 'Data Center', 'R&D', 'Manufacturing', 'Warehousing', 'Retail', 'Other'
+]
 
 // ---- Steps ----
 
 const STEPS = [
-  { id: 1, label: 'Applicant', icon: Building2 },
-  { id: 2, label: 'Project', icon: Briefcase },
-  { id: 3, label: 'Contact', icon: User },
+  { id: 1, label: 'Basic Info', icon: Building2 },
+  { id: 2, label: 'Org Profile', icon: Briefcase },
+  { id: 3, label: 'Vision & Plan', icon: Globe },
+  { id: 4, label: 'Land & Details', icon: MapPin },
 ]
 
 // ---- Types ----
 
 interface FormData {
-  // Step 1 – Applicant
-  organizationName: string
-  entityType: string
-  // Step 2 – Project
-  projectName: string
+  // Step 1 – Basic Information
+  enquiryName: string
   sector: string
-  proposedInvestment: string
-  employmentCommitment: string
-  projectDescription: string
-  developmentTimeline: string
-  intendedLandUse: string
-  priority: string
-  // Step 3 – Contact
-  contactPerson: string
+  subSector: string
+  organizationName: string
+  registeredAddress: string
+  // Step 2 – Organization Profile
+  representativeName: string
+  designation: string
   contactPhone: string
   contactEmail: string
+  // Step 3 – Project Vision & Plan
+  organizationBackground: string
+  projectVision: string
+  utilizationPlan: string
+  areaAllocation: string
+  // Step 4 – Land Requirements & Project Details
+  landExtent: string
+  builtUpArea: string
+  proposedInvestmentCr: string
+  permanentEmployees: string
+  temporaryEmployees: string
+  partTimeEmployees: string
+  interns: string
+  contractualStaff: string
+  studentCapacity: string
 }
 
 const INITIAL_FORM: FormData = {
-  organizationName: '', entityType: '',
-  projectName: '', sector: '', proposedInvestment: '', employmentCommitment: '',
-  projectDescription: '', developmentTimeline: '', intendedLandUse: '', priority: 'Normal',
-  contactPerson: '', contactPhone: '', contactEmail: '',
+  enquiryName: '', sector: '', subSector: '', organizationName: '', registeredAddress: '',
+  representativeName: '', designation: '', contactPhone: '', contactEmail: '',
+  organizationBackground: '', projectVision: '', utilizationPlan: '', areaAllocation: '',
+  landExtent: '', builtUpArea: '', proposedInvestmentCr: '',
+  permanentEmployees: '', temporaryEmployees: '', partTimeEmployees: '',
+  interns: '', contractualStaff: '', studentCapacity: '',
 }
 
 // ---- Field helpers ----
@@ -107,19 +118,15 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
   const validateStep = (): boolean => {
     const newErrors: Partial<FormData> = {}
     if (step === 1) {
+      if (!form.enquiryName.trim()) newErrors.enquiryName = 'Required'
       if (!form.organizationName.trim()) newErrors.organizationName = 'Required'
-      if (!form.entityType) newErrors.entityType = 'Required'
-    }
-    if (step === 2) {
-      if (!form.projectName.trim()) newErrors.projectName = 'Required'
-      if (!form.sector) newErrors.sector = 'Required'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const next = () => {
-    if (validateStep()) setStep(s => Math.min(s + 1, 3))
+    if (validateStep()) setStep(s => Math.min(s + 1, 4))
   }
 
   const back = () => setStep(s => Math.max(s - 1, 1))
@@ -160,8 +167,8 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl flex flex-col min-h-[550px]">
-        <DialogHeader>
+      <DialogContent className="w-[95vw] sm:w-[60.5vw] max-w-[95vw] sm:max-w-[60.5vw] h-[86.9vh] max-h-[86.9vh] flex flex-col p-6 rounded-xl gap-0">
+        <DialogHeader className="pb-4 border-b shrink-0">
           <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
               <Plus className="h-4 w-4 text-primary" />
@@ -192,30 +199,32 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
             <Button className="mt-2" onClick={handleClose}>Close</Button>
           </div>
         ) : (
-          <div className="flex flex-col flex-1">
-            {/* Step indicator */}
-            <div className="flex items-center justify-center gap-0 mb-6 shrink-0">
+          <div className="flex flex-col flex-1 overflow-hidden mt-4">
+            {/* Top Step indicator */}
+            <div className="flex items-center justify-center gap-0 mb-6 shrink-0 px-4">
               {STEPS.map((s, idx) => {
                 const done = step > s.id
                 const active = step === s.id
                 const Icon = s.icon
                 return (
                   <div key={s.id} className="flex items-center">
-                    <div className="flex flex-col items-center gap-1">
+                    <div className="flex flex-col items-center gap-2">
                       <div className={cn(
-                        'h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all',
-                        done ? 'bg-emerald-500 text-white' : active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+                        'h-10 w-10 rounded-full border-2 flex items-center justify-center transition-all',
+                        done ? 'bg-primary border-primary text-primary-foreground' :
+                          active ? 'border-primary text-primary bg-background' :
+                            'border-muted-foreground/30 text-muted-foreground bg-background'
                       )}>
-                        {done ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                        {done ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                       </div>
-                      <span className={cn('text-[10px] font-medium', active ? 'text-primary' : 'text-muted-foreground')}>
+                      <span className={cn('text-xs font-medium w-[80px] text-center leading-tight', active ? 'text-foreground' : 'text-muted-foreground')}>
                         {s.label}
                       </span>
                     </div>
                     {idx < STEPS.length - 1 && (
                       <div className={cn(
-                        'h-px w-16 mb-4 mx-2 transition-all',
-                        done ? 'bg-emerald-500' : 'bg-border',
+                        'h-[2px] w-10 sm:w-16 md:w-24 -mt-6 mx-2 transition-all',
+                        done ? 'bg-primary' : 'bg-border'
                       )} />
                     )}
                   </div>
@@ -223,14 +232,59 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
               })}
             </div>
 
-            <div className="flex-1 overflow-y-auto px-1">
-              {/* Step 1: Applicant */}
+            <div className="flex-1 overflow-y-auto px-2 pb-4">
+              {/* Step 1: Basic Information */}
               {step === 1 && (
-                <div className="grid grid-cols-2 gap-6">
-                  <Field label="Organisation / Applicant Name" required>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <Field label="Enquiry Name" required>
+                      <Input
+                        id="enquiry-name"
+                        placeholder="Project/Enquiry Name"
+                        value={form.enquiryName}
+                        onChange={e => set('enquiryName', e.target.value)}
+                        className={cn('h-9 text-sm', errors.enquiryName && 'border-destructive')}
+                      />
+                      {errors.enquiryName && <p className="text-[11px] text-destructive">{errors.enquiryName}</p>}
+                    </Field>
+
+                    <Field label="Sector">
+                      <Select value={form.sector} onValueChange={v => set('sector', v)}>
+                        <SelectTrigger id="sector" className="h-9 text-sm bg-muted/20">
+                          <SelectValue placeholder="Select sector" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SECTORS.map(s => (
+                            <SelectItem key={s} value={s} className="text-sm">{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <Field label="Sub-Sector">
+                      <Select value={form.subSector} onValueChange={v => set('subSector', v)}>
+                        <SelectTrigger id="subsector" className="h-9 text-sm bg-muted/20">
+                          <SelectValue placeholder={form.sector ? "Select sub-sector" : "Select sector first"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SUB_SECTORS.map(s => (
+                            <SelectItem key={s} value={s} className="text-sm">{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </div>
+
+                  <Field label="Applicant/Company Name" required>
                     <Input
                       id="org-name"
-                      placeholder="e.g. Sunrise Techpark Pvt Ltd"
+                      placeholder="Full legal name"
                       value={form.organizationName}
                       onChange={e => set('organizationName', e.target.value)}
                       className={cn('h-9 text-sm', errors.organizationName && 'border-destructive')}
@@ -238,171 +292,260 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                     {errors.organizationName && <p className="text-[11px] text-destructive">{errors.organizationName}</p>}
                   </Field>
 
-                  <Field label="Entity Type" required>
-                    <Select value={form.entityType} onValueChange={v => set('entityType', v)}>
-                      <SelectTrigger id="entity-type" className={cn('h-9 text-sm', errors.entityType && 'border-destructive')}>
-                        <SelectValue placeholder="Select entity type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ENTITY_TYPES.map(t => (
-                          <SelectItem key={t} value={t} className="text-sm">{t}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.entityType && <p className="text-[11px] text-destructive">{errors.entityType}</p>}
-                  </Field>
-                </div>
-              )}
-
-              {/* Step 2: Project */}
-              {step === 2 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-6">
-                    <Field label="Project Name" required>
-                      <Input
-                        id="project-name"
-                        placeholder="e.g. Sunrise IT Park Phase 1"
-                        value={form.projectName}
-                        onChange={e => set('projectName', e.target.value)}
-                        className={cn('h-9 text-sm', errors.projectName && 'border-destructive')}
-                      />
-                      {errors.projectName && <p className="text-[11px] text-destructive">{errors.projectName}</p>}
-                    </Field>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field label="Sector" required>
-                        <Select value={form.sector} onValueChange={v => set('sector', v)}>
-                          <SelectTrigger id="sector" className={cn('h-9 text-sm', errors.sector && 'border-destructive')}>
-                            <SelectValue placeholder="Select sector" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {SECTORS.map(s => (
-                              <SelectItem key={s} value={s} className="text-sm">{s}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {errors.sector && <p className="text-[11px] text-destructive">{errors.sector}</p>}
-                      </Field>
-
-                      <Field label="Priority">
-                        <Select value={form.priority} onValueChange={v => set('priority', v)}>
-                          <SelectTrigger id="priority" className="h-9 text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {PRIORITIES.map(p => (
-                              <SelectItem key={p} value={p} className="text-sm">{p}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </Field>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <Field label="Proposed Investment (₹)">
-                      <Input
-                        id="investment"
-                        type="number"
-                        placeholder="e.g. 50000000"
-                        value={form.proposedInvestment}
-                        onChange={e => set('proposedInvestment', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
-                    <Field label="Employment Commitment">
-                      <Input
-                        id="employment"
-                        type="number"
-                        placeholder="e.g. 500"
-                        value={form.employmentCommitment}
-                        onChange={e => set('employmentCommitment', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <Field label="Development Timeline">
-                      <Input
-                        id="timeline"
-                        placeholder="e.g. 3 years"
-                        value={form.developmentTimeline}
-                        onChange={e => set('developmentTimeline', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
-                    <Field label="Intended Land Use">
-                      <Input
-                        id="land-use"
-                        placeholder="e.g. IT Park, Mixed Use"
-                        value={form.intendedLandUse}
-                        onChange={e => set('intendedLandUse', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
-                  </div>
-
-                  <Field label="Project Description">
+                  <Field label="Registered Address">
                     <Textarea
-                      id="description"
-                      placeholder="Brief description of the project..."
-                      value={form.projectDescription}
-                      onChange={e => set('projectDescription', e.target.value)}
-                      className="text-sm resize-none"
+                      id="registered-address"
+                      placeholder="Complete registered address"
+                      value={form.registeredAddress}
+                      onChange={e => set('registeredAddress', e.target.value)}
+                      className="text-sm resize-none bg-muted/20"
                       rows={3}
                     />
                   </Field>
                 </div>
               )}
 
-              {/* Step 3: Contact */}
-              {step === 3 && (
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <Field label="Contact Person">
-                      <Input
-                        id="contact-person"
-                        placeholder="e.g. Rajesh Kumar"
-                        value={form.contactPerson}
-                        onChange={e => set('contactPerson', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
-                    <Field label="Phone Number">
-                      <Input
-                        id="contact-phone"
-                        placeholder="e.g. +91-9876543210"
-                        value={form.contactPhone}
-                        onChange={e => set('contactPhone', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
-                    <Field label="Email Address">
-                      <Input
-                        id="contact-email"
-                        type="email"
-                        placeholder="e.g. contact@company.in"
-                        value={form.contactEmail}
-                        onChange={e => set('contactEmail', e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </Field>
+              {/* Step 2: Organization Profile */}
+              {step === 2 && (
+                <div className="space-y-6">
+                  {/* Organization Profile Card */}
+                  <div className="rounded-lg border border-border bg-card p-5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Building2 className="h-5 w-5 text-foreground" />
+                      <h3 className="text-lg font-semibold text-foreground">Organization Profile</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-6">Classification and legal details of the organization</p>
+
+                    <div className="border-b pb-4 flex items-center justify-between cursor-pointer group">
+                      <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Organization Details</span>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                    </div>
                   </div>
 
-                  {/* Summary card */}
-                  <div>
-                    <div className="rounded-lg border bg-muted/40 p-4 space-y-2 h-full flex flex-col">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 shrink-0">Summary</p>
-                      <div className="space-y-2 flex-1">
-                        <SummaryRow label="Organisation" value={form.organizationName} />
-                        <SummaryRow label="Entity" value={form.entityType} />
-                        <SummaryRow label="Project" value={form.projectName} />
-                        <SummaryRow label="Sector" value={form.sector} />
-                        <SummaryRow label="Priority" value={form.priority} />
-                        {form.proposedInvestment && (
-                          <SummaryRow label="Investment" value={`₹${parseFloat(form.proposedInvestment).toLocaleString('en-IN')}`} />
-                        )}
+                  {/* Representative Details Card */}
+                  <div className="rounded-lg border border-border bg-card p-5 space-y-6">
+                    <h3 className="text-lg font-semibold text-foreground">Representative Details</h3>
+
+                    <Field label="Representative Name">
+                      <Input
+                        id="rep-name"
+                        placeholder="Contact person name"
+                        value={form.representativeName}
+                        onChange={e => set('representativeName', e.target.value)}
+                        className="h-9 text-sm bg-muted/20"
+                      />
+                    </Field>
+
+                    <Field label="Designation">
+                      <Input
+                        id="designation"
+                        placeholder="e.g., Managing Director, CEO"
+                        value={form.designation}
+                        onChange={e => set('designation', e.target.value)}
+                        className="h-9 text-sm bg-muted/20"
+                      />
+                    </Field>
+
+                    <div className="grid grid-cols-2 gap-6">
+                      <Field label="Contact Number">
+                        <Input
+                          id="contact-phone"
+                          placeholder="+91 XXXXXXXXXX"
+                          value={form.contactPhone}
+                          onChange={e => set('contactPhone', e.target.value)}
+                          className="h-9 text-sm bg-muted/20"
+                        />
+                      </Field>
+                      <Field label="Email Address">
+                        <Input
+                          id="contact-email"
+                          type="email"
+                          placeholder="email@example.com"
+                          value={form.contactEmail}
+                          onChange={e => set('contactEmail', e.target.value)}
+                          className="h-9 text-sm bg-muted/20"
+                        />
+                      </Field>
+                    </div>
+
+                    <div className="border-t pt-4 flex items-center justify-between cursor-pointer group">
+                      <div className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors">
+                        <Plus className="h-4 w-4" />
+                        <span className="text-sm">Additional Contacts</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Project Vision & Plan */}
+              {step === 3 && (
+                <div className="h-full flex flex-col pb-2">
+                  <div className="rounded-lg border border-border bg-card p-5 flex flex-col flex-1 overflow-hidden">
+                    <div className="flex items-center gap-2 mb-1 shrink-0">
+                      <Globe className="h-5 w-5 text-foreground" />
+                      <h3 className="text-lg font-semibold text-foreground">Project Vision & Plan</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4 shrink-0">Describe your project vision, utilization plan, and area allocation</p>
+
+                    <div className="space-y-6 flex-1 overflow-y-auto pr-2">
+                      {/* Background */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
+                          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Background of the Organization</span>
+                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        </div>
+                        <Field label="Background (Optional)">
+                          <Textarea
+                            id="org-background"
+                            placeholder="Provide a brief background of the organization..."
+                            value={form.organizationBackground || ''}
+                            onChange={e => set('organizationBackground', e.target.value)}
+                            className="text-sm resize-none bg-muted/20"
+                            rows={3}
+                          />
+                        </Field>
+                      </div>
+
+                      {/* Vision */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
+                          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Development Plan / Vision of the Project</span>
+                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        </div>
+                        <Field label="Project Vision (Optional)">
+                          <Textarea
+                            id="project-vision"
+                            placeholder="Describe the development plan or vision of the project..."
+                            value={form.projectVision || ''}
+                            onChange={e => set('projectVision', e.target.value)}
+                            className="text-sm resize-none bg-muted/20"
+                            rows={3}
+                          />
+                        </Field>
+                      </div>
+
+                      {/* Utilization Plan */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
+                          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Utilization Plan of the Area</span>
+                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        </div>
+                        <Field label="Utilization Plan (Optional)">
+                          <Textarea
+                            id="utilization-plan"
+                            placeholder="How do you plan to utilize the allocated area?"
+                            value={form.utilizationPlan || ''}
+                            onChange={e => set('utilizationPlan', e.target.value)}
+                            className="text-sm resize-none bg-muted/20"
+                            rows={3}
+                          />
+                        </Field>
+                      </div>
+
+                      {/* Area Allocation */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
+                          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Area Allocation by Use Type</span>
+                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        </div>
+                        <Field label="Area Allocation (Optional)">
+                          <Textarea
+                            id="area-allocation"
+                            placeholder="Break down area allocation by use type (e.g., manufacturing, office, warehouse, green space)..."
+                            value={form.areaAllocation || ''}
+                            onChange={e => set('areaAllocation', e.target.value)}
+                            className="text-sm resize-none bg-muted/20"
+                            rows={3}
+                          />
+                        </Field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Land Requirements & Project Details */}
+              {step === 4 && (
+                <div className="h-full flex flex-col pb-2">
+                  <div className="rounded-lg border border-border bg-card p-5 flex flex-col flex-1 overflow-hidden">
+                    <h3 className="text-lg font-semibold text-foreground mb-6 shrink-0">Land Requirements & Project Details</h3>
+
+                    <div className="space-y-6 flex-1 overflow-y-auto pr-2">
+                      <div className="grid grid-cols-2 gap-6">
+                        <Field label="Land Extent Requested (Acres)">
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={form.landExtent}
+                            onChange={e => set('landExtent', e.target.value)}
+                            className="h-9 text-sm bg-muted/20"
+                          />
+                        </Field>
+                        <Field label="Proposed Built-up Area (Sq. Ft.)">
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={form.builtUpArea}
+                            onChange={e => set('builtUpArea', e.target.value)}
+                            className="h-9 text-sm bg-muted/20"
+                          />
+                        </Field>
+                      </div>
+
+                      <Field label="Proposed Investment (₹ Cr)">
+                        <Input
+                          type="number"
+                          placeholder="0.00"
+                          value={form.proposedInvestmentCr}
+                          onChange={e => set('proposedInvestmentCr', e.target.value)}
+                          className="h-9 text-sm bg-muted/20"
+                        />
+                      </Field>
+
+                      <div className="border-t pt-4">
+                        <div className="flex items-center justify-between mb-4 cursor-pointer group">
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                            <span className="text-sm font-medium text-foreground">Jobs Breakdown</span>
+                          </div>
+                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-6 mb-6">
+                          <Field label="Permanent Employees">
+                            <Input type="number" placeholder="0" value={form.permanentEmployees} onChange={e => set('permanentEmployees', e.target.value)} className="h-9 text-sm bg-muted/20" />
+                          </Field>
+                          <Field label="Temporary Employees">
+                            <Input type="number" placeholder="0" value={form.temporaryEmployees} onChange={e => set('temporaryEmployees', e.target.value)} className="h-9 text-sm bg-muted/20" />
+                          </Field>
+                          <Field label="Part-Time Employees">
+                            <Input type="number" placeholder="0" value={form.partTimeEmployees} onChange={e => set('partTimeEmployees', e.target.value)} className="h-9 text-sm bg-muted/20" />
+                          </Field>
+                          <Field label="Interns">
+                            <Input type="number" placeholder="0" value={form.interns} onChange={e => set('interns', e.target.value)} className="h-9 text-sm bg-muted/20" />
+                          </Field>
+                          <Field label="Contractual Staff">
+                            <Input type="number" placeholder="0" value={form.contractualStaff} onChange={e => set('contractualStaff', e.target.value)} className="h-9 text-sm bg-muted/20" />
+                          </Field>
+                          <Field label="Student Capacity (Institutions)">
+                            <Input type="number" placeholder="0" value={form.studentCapacity} onChange={e => set('studentCapacity', e.target.value)} className="h-9 text-sm bg-muted/20" />
+                          </Field>
+                        </div>
+
+                        <div className="rounded-md bg-muted/30 p-3 border border-border/50 text-sm">
+                          <span className="text-muted-foreground mr-2">Total Committed Jobs:</span>
+                          <span className="font-semibold text-foreground">
+                            {
+                              (parseInt(form.permanentEmployees || '0') +
+                                parseInt(form.temporaryEmployees || '0') +
+                                parseInt(form.partTimeEmployees || '0') +
+                                parseInt(form.interns || '0') +
+                                parseInt(form.contractualStaff || '0')).toLocaleString()
+                            }
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -411,7 +554,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between pt-2 border-t mt-2">
+            <div className="flex items-center justify-between pt-4 border-t mt-4 shrink-0 bg-background">
               <Button
                 variant="ghost"
                 size="sm"
@@ -441,15 +584,5 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
         )}
       </DialogContent>
     </Dialog>
-  )
-}
-
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  if (!value) return null
-  return (
-    <div className="flex items-center justify-between text-xs">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
-    </div>
   )
 }
