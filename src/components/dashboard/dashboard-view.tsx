@@ -533,6 +533,42 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 10
 
+  const [realCases, setRealCases] = useState<CaseRecord[]>([])
+
+  useEffect(() => {
+    fetch('/api/applications?pageSize=50')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data && data.data.applications) {
+          const mapped = data.data.applications.map((app: any) => {
+            const ageDays = Math.floor((Date.now() - new Date(app.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+            const applied = new Date(app.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            return {
+              id: app.applicationNumber,
+              applicant: app.applicant?.organizationName || 'Unknown',
+              sector: app.sector || 'N/A',
+              themeCity: app.landParcel?.zone?.name || 'TBD',
+              plot: app.landParcel?.plotId || 'TBD',
+              step: app.currentStage || 'Application',
+              status: app.status === 'Submitted' ? 'In progress' : app.status,
+              investment: `₹${app.proposedInvestment} Cr`,
+              investmentNum: app.proposedInvestment || 0,
+              jobs: app.employmentCommitment || 0,
+              acres: app.landParcel?.extentAcres || 0,
+              ageDays,
+              expectedBy: app.slaDueDate ? new Date(app.slaDueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+              isLate: app.slaRemaining !== null && app.slaRemaining < 0,
+              applied
+            }
+          })
+          setRealCases(mapped)
+        }
+      })
+      .catch(err => console.error('Failed to fetch real applications', err))
+  }, [])
+
+  const combinedCases = useMemo(() => [...realCases, ...ALL_CASES], [realCases])
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
     else { setSortKey(key); setSortDir('asc') }
@@ -541,7 +577,7 @@ function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => vo
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
-    return ALL_CASES.filter(r =>
+    return combinedCases.filter(r =>
       !q ||
       r.id.toLowerCase().includes(q) ||
       r.applicant.toLowerCase().includes(q) ||

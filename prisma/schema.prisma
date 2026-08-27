@@ -160,6 +160,7 @@ model Application {
   slaDueDate        DateTime?
   remarks           String?
   rejectionReason   String?
+  wizardData        Json?            // Stores full 11-step application payload
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   applicant         Applicant        @relation(fields: [applicantId], references: [id])

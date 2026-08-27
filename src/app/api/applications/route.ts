@@ -154,15 +154,17 @@ export async function POST(request: Request) {
     await requireAuth()
 
     const body = await request.json()
+    // The frontend sends everything in a large form object
     const {
-      organizationName, entityType, contactPerson, contactPhone, contactEmail,
-      projectName, sector, proposedInvestment, employmentCommitment,
-      projectDescription, developmentTimeline, intendedLandUse, priority,
+      organizationName, enquiryName, sector, subSector,
+      representativeName, designation, contactPhone, contactEmail,
+      proposedInvestmentCr, permanentEmployees, temporaryEmployees, partTimeEmployees,
+      interns, contractualStaff, landExtent, builtUpArea
     } = body
 
     // Validate required fields
-    if (!organizationName || !entityType || !projectName || !sector) {
-      return apiError('Missing required fields: organizationName, entityType, projectName, sector', 400)
+    if (!organizationName || !enquiryName || !sector) {
+      return apiError('Missing required fields: organizationName, enquiryName, sector', 400)
     }
 
     // Generate application number
@@ -182,14 +184,21 @@ export async function POST(request: Request) {
     const now = new Date()
     const slaDueDate = new Date(now.getTime() + (STAGE_SLA['Application'] ?? 3) * 86400000)
 
+    // Calculate total employment
+    const employmentCommitment = (parseInt(permanentEmployees || '0') +
+      parseInt(temporaryEmployees || '0') +
+      parseInt(partTimeEmployees || '0') +
+      parseInt(interns || '0') +
+      parseInt(contractualStaff || '0'))
+
     // Create applicant + application in one transaction
     const application = await db.$transaction(async (tx) => {
       const applicant = await tx.applicant.create({
         data: {
           applicantId,
           organizationName,
-          entityType,
-          contactPerson: contactPerson || null,
+          entityType: 'Not Specified', // Can be refined later based on input if added
+          contactPerson: representativeName || null,
           contactPhone: contactPhone || null,
           contactEmail: contactEmail || null,
         },
@@ -199,18 +208,16 @@ export async function POST(request: Request) {
         data: {
           applicationNumber: appNumber,
           applicantId: applicant.id,
-          projectName,
+          projectName: enquiryName,
           sector,
-          proposedInvestment: parseFloat(proposedInvestment) || 0,
-          employmentCommitment: parseInt(employmentCommitment) || 0,
-          projectDescription: projectDescription || null,
-          developmentTimeline: developmentTimeline || null,
-          intendedLandUse: intendedLandUse || null,
+          proposedInvestment: parseFloat(proposedInvestmentCr) || 0,
+          employmentCommitment,
           status: 'Submitted',
-          priority: priority || 'Normal',
+          priority: 'Normal',
           currentStage: 'Application',
           assignedOfficerId: landsOfficer?.id ?? null,
           slaDueDate,
+          wizardData: body, // Store the entire 11-step payload
           stages: {
             create: WORKFLOW_STAGES.map((stageName, si) => ({
               stageName,
