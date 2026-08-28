@@ -469,7 +469,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         <SidebarInset className="min-w-0 w-full">
           {/* Main Content */}
-          <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pt-0 px-0 bg-muted/30">
+          <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pt-0 px-0 bg-muted/30 flex flex-col">
             {children}
           </div>
         </SidebarInset>
