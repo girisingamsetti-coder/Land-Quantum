@@ -6,6 +6,9 @@ export async function GET() {
   try {
     await requireAuth()
     const cases = await db.cancellationCase.findMany({
+      where: {
+        status: 'Cancelled',
+      },
       include: {
         application: { select: { applicationNumber: true, projectName: true, applicant: { select: { organizationName: true } } } },
       },

@@ -85,7 +85,6 @@ function SearchInput({ value, onChange, onSearch, placeholder }: {
 export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: boolean, tabsControl?: React.ReactNode } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
 
   useEffect(() => { fetch('/api/cancellations').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
@@ -93,16 +92,15 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
   const filtered = useMemo(() => {
     if (!data?.cases) return []
     return data.cases.filter((c: any) => {
-      if (status && c.status !== status) return false
       if (search) {
         const s = search.toLowerCase()
         return c.caseNumber?.toLowerCase().includes(s) || c.application?.projectName?.toLowerCase().includes(s) || c.reason?.toLowerCase().includes(s)
       }
       return true
     })
-  }, [data, status, search])
+  }, [data, search])
 
-  const activeFilters = [status, search].filter(Boolean).length
+  const activeFilters = [search].filter(Boolean).length
 
   return (
     <div className="space-y-4">
@@ -111,8 +109,7 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
         <div>{tabsControl}</div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search cases..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
-          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
         </div>
       </div>
       <Card>
