@@ -120,6 +120,7 @@ interface FormData {
   
   // Document
   dprDocumentName: string
+}
 
 const INITIAL_FORM: FormData = {
   sector: '', subSector: '',
