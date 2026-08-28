@@ -542,7 +542,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
   const [sortKey, setSortKey] = useState<SortKey>('ageDays')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 10
+  const PAGE_SIZE = 100
 
   const [realCases, setRealCases] = useState<CaseRecord[]>([])
 
@@ -1113,7 +1113,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
   const [sortCol, setSortCol] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 8
+  const PAGE_SIZE = 100
 
   // Fetch real applications and prepend
   useEffect(() => {
