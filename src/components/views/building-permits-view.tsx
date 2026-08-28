@@ -167,7 +167,7 @@ export function BuildingPermitsView() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-r from-blue-50 to-white/50 border-blue-100">
+        <Card className="bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-blue-100 text-blue-600 rounded-lg"><FileText className="h-6 w-6" /></div>
             <div>
@@ -176,7 +176,7 @@ export function BuildingPermitsView() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-emerald-50 to-white/50 border-emerald-100">
+        <Card className="bg-gradient-to-r from-emerald-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg"><CheckCircle2 className="h-6 w-6" /></div>
             <div>
@@ -185,7 +185,7 @@ export function BuildingPermitsView() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-amber-50 to-white/50 border-amber-100">
+        <Card className="bg-gradient-to-r from-amber-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-amber-100 text-amber-600 rounded-lg"><Clock className="h-6 w-6" /></div>
             <div>
@@ -194,7 +194,7 @@ export function BuildingPermitsView() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-red-50 to-white/50 border-red-100">
+        <Card className="bg-gradient-to-r from-red-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-red-100 text-red-600 rounded-lg"><XCircle className="h-6 w-6" /></div>
             <div>

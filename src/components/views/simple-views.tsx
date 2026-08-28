@@ -38,10 +38,10 @@ function severityColor(s: string) {
 }
 
 function severityTileColor(s: string) {
-  if (s === 'Critical') return { bg: 'bg-gradient-to-r from-red-50 to-white/50', border: 'border-red-100', text: 'text-red-700', iconBg: 'bg-red-100', iconText: 'text-red-600' }
-  if (s === 'High') return { bg: 'bg-gradient-to-r from-orange-50 to-white/50', border: 'border-orange-100', text: 'text-orange-700', iconBg: 'bg-orange-100', iconText: 'text-orange-600' }
-  if (s === 'Medium') return { bg: 'bg-gradient-to-r from-amber-50 to-white/50', border: 'border-amber-100', text: 'text-amber-700', iconBg: 'bg-amber-100', iconText: 'text-amber-600' }
-  return { bg: 'bg-gradient-to-r from-blue-50 to-white/50', border: 'border-blue-100', text: 'text-blue-700', iconBg: 'bg-blue-100', iconText: 'text-blue-600' }
+  if (s === 'Critical') return { bg: 'bg-gradient-to-r from-red-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-red-700', iconBg: 'bg-red-100', iconText: 'text-red-600' }
+  if (s === 'High') return { bg: 'bg-gradient-to-r from-orange-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-orange-700', iconBg: 'bg-orange-100', iconText: 'text-orange-600' }
+  if (s === 'Medium') return { bg: 'bg-gradient-to-r from-amber-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-amber-700', iconBg: 'bg-amber-100', iconText: 'text-amber-600' }
+  return { bg: 'bg-gradient-to-r from-blue-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-blue-700', iconBg: 'bg-blue-100', iconText: 'text-blue-600' }
 }
 
 // Filter bar component
@@ -533,9 +533,9 @@ export function MyWorkQueue({ hideHeader, tabsControl }: { hideHeader?: boolean,
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
       {tabsControl && <div className="mb-4">{tabsControl}</div>}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-blue-100 bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
-        <Card className="border-amber-100 bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
-        <Card className="border-rose-100 bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-4 w-4 text-rose-600" /></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-4 w-4 text-rose-600" /></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
       </div>
       <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="p-0">
         {loading ? <div className="p-4"><Skeleton className="h-12 w-full" /></div> :
@@ -633,7 +633,7 @@ export function RiskAlertsView() {
           const tc = severityTileColor(sev)
           const count = RISK_ALERTS.filter(a => a.severity === sev).length
           return (
-            <Card key={sev} className={cn('border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'ring-2 ring-offset-1 ring-current')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
+            <Card key={sev} className={cn('border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div>

@@ -56,7 +56,7 @@ export function ConstructionView() {
           {label:'Not Started', val:data.summary.notStarted, Icon:Clock, color:'blue', border:'border-blue-100', bg:'bg-gradient-to-r from-blue-50 to-white/50', iconBg:'bg-blue-100', iconText:'text-blue-600', valColor:'text-blue-700'},
           {label:'Completed', val:data.summary.completed, Icon:CheckCircle2, color:'emerald', border:'border-emerald-100', bg:'bg-gradient-to-r from-emerald-50 to-white/50', iconBg:'bg-emerald-100', iconText:'text-emerald-600', valColor:'text-emerald-700'},
         ].map(s=>(
-          <Card key={s.label} className={cn('border', s.border, s.bg, 'cursor-pointer transition-all hover:shadow-md', status === s.label && 'ring-2 ring-offset-1')} onClick={() => setStatus(status === s.label ? '' : s.label)}>
+          <Card key={s.label} className={cn('border border-transparent', s.bg, 'cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', status === s.label && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setStatus(status === s.label ? '' : s.label)}>
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div><p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{s.label}</p><p className={cn('text-2xl font-bold mt-1 tabular-nums', s.valColor)}>{s.val}</p></div>

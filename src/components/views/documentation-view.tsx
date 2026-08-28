@@ -380,10 +380,9 @@ export function DocumentationView() {
           <Card
             key={s.label}
             className={cn(
-              'border cursor-pointer transition-all hover:shadow-md hover:border-primary/40',
-              s.border,
+              'border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
               s.bg,
-              statusFilter === s.filterVal && 'ring-2 ring-primary ring-offset-1'
+              statusFilter === s.filterVal && 'outline outline-1 outline-primary outline-offset-[-1px]'
             )}
             onClick={() => setStatusFilter(statusFilter === s.filterVal ? '' : s.filterVal)}
           >

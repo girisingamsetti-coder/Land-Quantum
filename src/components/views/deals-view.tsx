@@ -577,7 +577,7 @@ export function DealsView() {
           { label: 'Weighted Forecast', value: `₹${fmt(Math.round(weightedValue))} Cr`, sub: 'Probability-adjusted', icon: Target, color: 'bg-blue-500', bgClass: 'bg-gradient-to-r from-blue-50 to-white/50' },
           { label: 'Deals Closed', value: closedCount, sub: `₹${fmt(closedValue)} Cr won`, icon: CheckCircle2, color: 'bg-emerald-500', bgClass: 'bg-gradient-to-r from-emerald-50 to-white/50' },
         ].map(s => (
-          <Card key={s.label} className={cn("py-2.5 border border-transparent hover:border-slate-300 shadow-sm hover:shadow-md transition-all cursor-pointer", s.bgClass)}>
+          <Card key={s.label} className={cn("py-2.5 border border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer", s.bgClass)}>
             <CardContent className="px-3 py-0">
               <div className="flex items-center gap-3">
                 <div className={cn('rounded-lg p-2 shrink-0', s.color)}>

@@ -83,7 +83,7 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
     : 'bg-gradient-to-r from-slate-50 to-white/50'
 
   return (
-    <Card className={cn("py-2.5 overflow-hidden border border-transparent hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 shadow-sm hover:shadow-md transition-all cursor-pointer", bgClass)}>
+    <Card className={cn("py-2.5 overflow-hidden border border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] shadow-sm hover:shadow-md transition-all cursor-pointer", bgClass)}>
       <CardContent className="px-3 py-0">
         <div className="flex justify-start items-center gap-3">
           <div className={cn('rounded-lg p-2 shrink-0', color)}>
@@ -197,7 +197,7 @@ const PIPELINE_STAGES: PipelineStage[] = [
 function PipelineCard({ stage }: { stage: PipelineStage }) {
   const Icon = stage.icon
   return (
-    <Card className="bg-gradient-to-r from-emerald-50/50 to-white/50 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all py-2 gap-0 cursor-pointer">
+    <Card className="bg-gradient-to-r from-emerald-50/50 to-white/50 border border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
       <CardContent className="px-2 pt-2 pb-2">
         {/* Top Section */}
         <div className="flex items-center justify-between mb-4 mt-1">
