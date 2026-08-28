@@ -125,7 +125,6 @@
   --sidebar-ring: oklch(0.65 0.15 180);
   --sidebar-group-foreground: oklch(0.50 0.015 260);
 }
-}
 
 /* Custom Scrollbar to avoid thick grey track on Windows */
 ::-webkit-scrollbar {
