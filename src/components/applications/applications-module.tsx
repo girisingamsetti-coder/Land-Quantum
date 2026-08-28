@@ -114,16 +114,16 @@ export function ApplicationsModule() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
         <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1 mb-0 rounded-none h-auto">
           <TabsTrigger value="all" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <LayoutGrid className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>All Applications</b>
+            <LayoutGrid className="w-4 h-4 mr-2 text-blue-500" /> <b>All Applications</b>
           </TabsTrigger>
           <TabsTrigger value="queue" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <Inbox className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>Work Queue</b>
+            <Inbox className="w-4 h-4 mr-2 text-emerald-500" /> <b>Work Queue</b>
           </TabsTrigger>
           <TabsTrigger value="kanban" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <Kanban className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>Stage View</b>
+            <Kanban className="w-4 h-4 mr-2 text-amber-500" /> <b>Stage View</b>
           </TabsTrigger>
           <TabsTrigger value="cancellations" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <Ban className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>Cancellations</b>
+            <Ban className="w-4 h-4 mr-2 text-purple-500" /> <b>Cancellations</b>
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 overflow-hidden mt-0">
