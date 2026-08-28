@@ -114,16 +114,16 @@ export function ApplicationsModule() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
         <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1 mb-0 rounded-none h-auto">
           <TabsTrigger value="all" className="border bg-white rounded-md px-4 py-3 text-base font-bold h-[54px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <LayoutGrid className="w-4 h-4 mr-2" /> All Applications
+            <LayoutGrid className="w-4 h-4 mr-2" /> <b>All Applications</b>
           </TabsTrigger>
           <TabsTrigger value="queue" className="border bg-white rounded-md px-4 py-3 text-base font-bold h-[54px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <Inbox className="w-4 h-4 mr-2" /> Work Queue
+            <Inbox className="w-4 h-4 mr-2" /> <b>Work Queue</b>
           </TabsTrigger>
           <TabsTrigger value="kanban" className="border bg-white rounded-md px-4 py-3 text-base font-bold h-[54px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <Kanban className="w-4 h-4 mr-2" /> Stage View
+            <Kanban className="w-4 h-4 mr-2" /> <b>Stage View</b>
           </TabsTrigger>
           <TabsTrigger value="cancellations" className="border bg-white rounded-md px-4 py-3 text-base font-bold h-[54px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <Ban className="w-4 h-4 mr-2" /> Cancellations
+            <Ban className="w-4 h-4 mr-2" /> <b>Cancellations</b>
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 overflow-hidden mt-0">

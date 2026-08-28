@@ -245,7 +245,7 @@ export function ApplicationsList({
               <FileText className="h-5 w-5 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-muted-foreground truncate">Total Applications</p>
+              <p className="text-sm font-bold text-foreground truncate">Total Applications</p>
               <h3 className="text-xl font-bold truncate">1,248</h3>
             </div>
           </CardContent>
@@ -259,7 +259,7 @@ export function ApplicationsList({
               <PieChart className="h-5 w-5 text-blue-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-muted-foreground truncate">Active Sectors</p>
+              <p className="text-sm font-bold text-foreground truncate">Active Sectors</p>
               <h3 className="text-xl font-bold truncate">14</h3>
             </div>
           </CardContent>
@@ -273,7 +273,7 @@ export function ApplicationsList({
               <Activity className="h-5 w-5 text-emerald-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-muted-foreground truncate">Approved Status</p>
+              <p className="text-sm font-bold text-foreground truncate">Approved Status</p>
               <h3 className="text-xl font-bold truncate">892</h3>
             </div>
           </CardContent>
@@ -287,7 +287,7 @@ export function ApplicationsList({
               <Clock className="h-5 w-5 text-amber-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-muted-foreground truncate">Pending Review</p>
+              <p className="text-sm font-bold text-foreground truncate">Pending Review</p>
               <h3 className="text-xl font-bold truncate">124</h3>
             </div>
           </CardContent>
@@ -301,7 +301,7 @@ export function ApplicationsList({
               <IndianRupee className="h-5 w-5 text-purple-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-muted-foreground truncate">Est. Investment</p>
+              <p className="text-sm font-bold text-foreground truncate">Est. Investment</p>
               <h3 className="text-xl font-bold truncate">12.5k Cr</h3>
             </div>
           </CardContent>
