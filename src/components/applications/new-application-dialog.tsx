@@ -65,6 +65,7 @@ interface FormData {
   designation: string
   contactPhone: string
   contactEmail: string
+  additionalContacts: { name: string; designation: string; phone: string; email: string }[]
   
   // Project Vision & Plan
   organizationBackground: string
@@ -90,21 +91,7 @@ interface FormData {
   devPlanInvestment: string[]
   
   // Similar Facilities
-  facility1Location: string
-  facility1LandArea: string
-  facility1BuiltUp: string
-  facility1Employees: string
-  facility1Investment: string
-  facility2Location: string
-  facility2LandArea: string
-  facility2BuiltUp: string
-  facility2Employees: string
-  facility2Investment: string
-  facility3Location: string
-  facility3LandArea: string
-  facility3BuiltUp: string
-  facility3Employees: string
-  facility3Investment: string
+  facilities: { location: string; landArea: string; builtUp: string; employees: string; investment: string }[]
   
   // Funding & Additional Details
   projectFunding: string
@@ -124,18 +111,7 @@ interface FormData {
   significantDevelopmentsDetails: string
   
   // Financials
-  finYear1: string
-  finYear1NetWorth: string
-  finYear1Turnover: string
-  finYear1Profit: string
-  finYear2: string
-  finYear2NetWorth: string
-  finYear2Turnover: string
-  finYear2Profit: string
-  finYear3: string
-  finYear3NetWorth: string
-  finYear3Turnover: string
-  finYear3Profit: string
+  financials: { year: string; netWorth: string; turnover: string; profit: string }[]
   gstNumber: string
   panNumber: string
   itrFiled: boolean
@@ -149,6 +125,7 @@ const INITIAL_FORM: FormData = {
   sector: '', subSector: '',
   enquiryName: '', organizationName: '', registeredAddress: '',
   representativeName: '', designation: '', contactPhone: '', contactEmail: '',
+  additionalContacts: [],
   organizationBackground: '', projectVision: '', utilizationPlan: '', areaAllocation: '',
   landExtent: '', builtUpArea: '', proposedInvestmentCr: '',
   permanentEmployees: '', temporaryEmployees: '', partTimeEmployees: '',
@@ -157,15 +134,11 @@ const INITIAL_FORM: FormData = {
   devPlanArea: ['', '', '', ''],
   devPlanBuiltUp: ['', '', '', ''],
   devPlanInvestment: ['', '', '', ''],
-  facility1Location: '', facility1LandArea: '', facility1BuiltUp: '', facility1Employees: '', facility1Investment: '',
-  facility2Location: '', facility2LandArea: '', facility2BuiltUp: '', facility2Employees: '', facility2Investment: '',
-  facility3Location: '', facility3LandArea: '', facility3BuiltUp: '', facility3Employees: '', facility3Investment: '',
+  facilities: [],
   projectFunding: '', specialRequirements: '', jointVentures: '',
   promoterName: '', promoterContact: '', promoterBackground: '', promoterQualifications: '', promoterExperience: '', promoterRole: '',
   significantDevelopments: [], significantDevelopmentsDetails: '',
-  finYear1: '', finYear1NetWorth: '', finYear1Turnover: '', finYear1Profit: '',
-  finYear2: '', finYear2NetWorth: '', finYear2Turnover: '', finYear2Profit: '',
-  finYear3: '', finYear3NetWorth: '', finYear3Turnover: '', finYear3Profit: '',
+  financials: [],
   gstNumber: '', panNumber: '',
   itrFiled: false, yearsInOperation: '', projectsCompleted: '',
   dprDocumentName: '',
@@ -201,8 +174,18 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
   const [submitting, setSubmitting] = useState(false)
   const [successApp, setSuccessApp] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
 
-  const set = (field: keyof FormData, value: string | string[] | boolean) => {
+  const toggleSection = (id: string) => {
+    setCollapsedSections(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const set = (field: keyof FormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }))
     if (errors[field as keyof FormData]) setErrors(prev => ({ ...prev, [field]: '' }))
   }
@@ -304,10 +287,18 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
           <h3 className="text-lg font-semibold text-foreground">Organization Profile</h3>
         </div>
         <p className="text-sm text-muted-foreground mb-6">Classification and legal details of the organization</p>
-        <div className="border-b pb-4 flex items-center justify-between cursor-pointer group">
+        <div 
+          className="border-b pb-4 flex items-center justify-between cursor-pointer group"
+          onClick={() => toggleSection('org-details')}
+        >
           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Organization Details</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+          <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", collapsedSections.has('org-details') ? '' : 'rotate-90')} />
         </div>
+        {!collapsedSections.has('org-details') && (
+          <div className="pt-4 grid grid-cols-2 gap-6">
+            {/* Can add extra org details here if needed */}
+          </div>
+        )}
       </div>
       <div className="rounded-lg border border-border bg-card p-5 space-y-6">
         <h3 className="text-lg font-semibold text-foreground">Representative Details</h3>
@@ -325,12 +316,42 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
             <Input id={`contact-email-${stepNumber}`} type="email" placeholder="email@example.com" value={form.contactEmail} onChange={e => set('contactEmail', e.target.value)} className="h-9 text-sm bg-muted/20" />
           </Field>
         </div>
-        <div className="border-t pt-4 flex items-center justify-between cursor-pointer group">
-          <div className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors">
-            <Plus className="h-4 w-4" />
-            <span className="text-sm">Additional Contacts</span>
+        {form.additionalContacts.map((contact, idx) => (
+          <div key={idx} className="border-t pt-4 space-y-6 relative">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium text-foreground">Additional Contact {idx + 1}</h4>
+              <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => {
+                const arr = [...form.additionalContacts]
+                arr.splice(idx, 1)
+                set('additionalContacts', arr)
+              }}>
+                Remove
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <Field label="Name"><Input value={contact.name} onChange={e => {
+                const arr = [...form.additionalContacts]; arr[idx].name = e.target.value; set('additionalContacts', arr)
+              }} className="h-9 text-sm bg-muted/20" /></Field>
+              <Field label="Designation"><Input value={contact.designation} onChange={e => {
+                const arr = [...form.additionalContacts]; arr[idx].designation = e.target.value; set('additionalContacts', arr)
+              }} className="h-9 text-sm bg-muted/20" /></Field>
+              <Field label="Phone"><Input value={contact.phone} onChange={e => {
+                const arr = [...form.additionalContacts]; arr[idx].phone = e.target.value; set('additionalContacts', arr)
+              }} className="h-9 text-sm bg-muted/20" /></Field>
+              <Field label="Email"><Input value={contact.email} type="email" onChange={e => {
+                const arr = [...form.additionalContacts]; arr[idx].email = e.target.value; set('additionalContacts', arr)
+              }} className="h-9 text-sm bg-muted/20" /></Field>
+            </div>
           </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+        ))}
+        <div 
+          className="border-t pt-4 flex items-center justify-between cursor-pointer group"
+          onClick={() => set('additionalContacts', [...form.additionalContacts, { name: '', designation: '', phone: '', email: '' }])}
+        >
+          <div className="flex items-center gap-2 text-primary group-hover:text-primary/80 transition-colors">
+            <Plus className="h-4 w-4" />
+            <span className="text-sm font-medium">Add Contact</span>
+          </div>
         </div>
       </div>
     </div>
@@ -549,26 +570,60 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                     </div>
                     <p className="text-sm text-muted-foreground mb-6 shrink-0">Details of similar facilities operated by the organization</p>
                     <div className="space-y-6 flex-1 overflow-y-auto pr-2">
-                      <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
-                        <span className="text-sm font-medium text-foreground">Similar Facility Details (Optional, up to 3)</span>
-                        <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                      <div 
+                        className="flex items-center justify-between border-b pb-2 cursor-pointer group"
+                        onClick={() => toggleSection('facilities')}
+                      >
+                        <span className="text-sm font-medium text-foreground">Similar Facility Details (Optional)</span>
+                        <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", collapsedSections.has('facilities') ? '' : 'rotate-90')} />
                       </div>
                       
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="rounded-lg border border-border bg-card p-5 space-y-6">
-                          <h4 className="text-sm font-medium text-foreground">Facility {i} <span className="text-muted-foreground font-normal">(Optional)</span></h4>
-                          <div className="grid grid-cols-3 gap-6">
-                            <Field label="Location"><Input placeholder="City, State" value={form[`facility${i}Location` as keyof FormData] as string} onChange={e => set(`facility${i}Location` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                            <Field label="Land Area (Acres)"><Input type="number" placeholder="0" value={form[`facility${i}LandArea` as keyof FormData] as string} onChange={e => set(`facility${i}LandArea` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                            <Field label="Built-Up (SFT)"><Input type="number" placeholder="0" value={form[`facility${i}BuiltUp` as keyof FormData] as string} onChange={e => set(`facility${i}BuiltUp` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                          </div>
-                          <div className="grid grid-cols-3 gap-6">
-                            <Field label="No. of Employees"><Input type="number" placeholder="0" value={form[`facility${i}Employees` as keyof FormData] as string} onChange={e => set(`facility${i}Employees` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                            <Field label="Amount Invested (Cr)"><Input type="number" placeholder="0" value={form[`facility${i}Investment` as keyof FormData] as string} onChange={e => set(`facility${i}Investment` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                            <div />
-                          </div>
-                        </div>
-                      ))}
+                      {!collapsedSections.has('facilities') && (
+                        <>
+                          {form.facilities.map((facility, idx) => (
+                            <div key={idx} className="rounded-lg border border-border bg-card p-5 space-y-6 relative">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-sm font-medium text-foreground">Facility {idx + 1}</h4>
+                                <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => {
+                                  const arr = [...form.facilities]
+                                  arr.splice(idx, 1)
+                                  set('facilities', arr)
+                                }}>
+                                  Remove
+                                </Button>
+                              </div>
+                              <div className="grid grid-cols-3 gap-6">
+                                <Field label="Location"><Input placeholder="City, State" value={facility.location} onChange={e => {
+                                  const arr = [...form.facilities]; arr[idx].location = e.target.value; set('facilities', arr)
+                                }} className="h-9 text-sm bg-muted/20" /></Field>
+                                <Field label="Land Area (Acres)"><Input type="number" placeholder="0" value={facility.landArea} onChange={e => {
+                                  const arr = [...form.facilities]; arr[idx].landArea = e.target.value; set('facilities', arr)
+                                }} className="h-9 text-sm bg-muted/20" /></Field>
+                                <Field label="Built-Up (SFT)"><Input type="number" placeholder="0" value={facility.builtUp} onChange={e => {
+                                  const arr = [...form.facilities]; arr[idx].builtUp = e.target.value; set('facilities', arr)
+                                }} className="h-9 text-sm bg-muted/20" /></Field>
+                              </div>
+                              <div className="grid grid-cols-3 gap-6">
+                                <Field label="No. of Employees"><Input type="number" placeholder="0" value={facility.employees} onChange={e => {
+                                  const arr = [...form.facilities]; arr[idx].employees = e.target.value; set('facilities', arr)
+                                }} className="h-9 text-sm bg-muted/20" /></Field>
+                                <Field label="Amount Invested (Cr)"><Input type="number" placeholder="0" value={facility.investment} onChange={e => {
+                                  const arr = [...form.facilities]; arr[idx].investment = e.target.value; set('facilities', arr)
+                                }} className="h-9 text-sm bg-muted/20" /></Field>
+                                <div />
+                              </div>
+                            </div>
+                          ))}
+                          
+                          <Button 
+                            variant="outline" 
+                            className="w-full border-dashed gap-2"
+                            onClick={() => set('facilities', [...form.facilities, { location: '', landArea: '', builtUp: '', employees: '', investment: '' }])}
+                          >
+                            <Plus className="h-4 w-4" /> Add Facility
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -700,23 +755,55 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                     <p className="text-sm text-muted-foreground mb-4 shrink-0">Comprehensive financial information including historical data and credibility analysis</p>
                     <div className="space-y-6 flex-1 overflow-y-auto pr-2">
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
-                          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Financial History (Past 3 Years) - Optional</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        <div 
+                          className="flex items-center justify-between border-b pb-2 cursor-pointer group"
+                          onClick={() => toggleSection('financials')}
+                        >
+                          <span className="text-sm font-medium text-foreground">Financial History (Optional)</span>
+                          <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", collapsedSections.has('financials') ? '' : 'rotate-90')} />
                         </div>
-                        <p className="text-sm text-muted-foreground">Provide financial data for the past 3 years if available (can be added later)</p>
                         
-                        {[1, 2, 3].map(i => (
-                          <div key={i} className="rounded-lg border border-border bg-card p-5 space-y-4">
-                            <h4 className="text-sm font-medium text-foreground">Year {i}</h4>
-                            <div className="grid grid-cols-4 gap-6">
-                              <Field label="Year"><Input placeholder={i === 1 ? '2023' : i === 2 ? '2022' : '2021'} value={form[`finYear${i}` as keyof FormData] as string} onChange={e => set(`finYear${i}` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                              <Field label="Net Worth (₹ Cr)"><Input type="number" placeholder="0.00" value={form[`finYear${i}NetWorth` as keyof FormData] as string} onChange={e => set(`finYear${i}NetWorth` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                              <Field label="Turnover (₹ Cr)"><Input type="number" placeholder="0.00" value={form[`finYear${i}Turnover` as keyof FormData] as string} onChange={e => set(`finYear${i}Turnover` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                              <Field label="Profit (₹ Cr)"><Input type="number" placeholder="0.00" value={form[`finYear${i}Profit` as keyof FormData] as string} onChange={e => set(`finYear${i}Profit` as keyof FormData, e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
-                            </div>
-                          </div>
-                        ))}
+                        {!collapsedSections.has('financials') && (
+                          <>
+                            <p className="text-sm text-muted-foreground mb-4">Provide financial data for the past years if available (can be added later)</p>
+                            {form.financials.map((fin, idx) => (
+                              <div key={idx} className="rounded-lg border border-border bg-card p-5 space-y-4 relative">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-sm font-medium text-foreground">Financial Year {idx + 1}</h4>
+                                  <Button variant="ghost" size="sm" className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => {
+                                    const arr = [...form.financials]
+                                    arr.splice(idx, 1)
+                                    set('financials', arr)
+                                  }}>
+                                    Remove
+                                  </Button>
+                                </div>
+                                <div className="grid grid-cols-4 gap-6">
+                                  <Field label="Year"><Input placeholder="e.g. 2023" value={fin.year} onChange={e => {
+                                    const arr = [...form.financials]; arr[idx].year = e.target.value; set('financials', arr)
+                                  }} className="h-9 text-sm bg-muted/20" /></Field>
+                                  <Field label="Net Worth (₹ Cr)"><Input type="number" placeholder="0.00" value={fin.netWorth} onChange={e => {
+                                    const arr = [...form.financials]; arr[idx].netWorth = e.target.value; set('financials', arr)
+                                  }} className="h-9 text-sm bg-muted/20" /></Field>
+                                  <Field label="Turnover (₹ Cr)"><Input type="number" placeholder="0.00" value={fin.turnover} onChange={e => {
+                                    const arr = [...form.financials]; arr[idx].turnover = e.target.value; set('financials', arr)
+                                  }} className="h-9 text-sm bg-muted/20" /></Field>
+                                  <Field label="Profit (₹ Cr)"><Input type="number" placeholder="0.00" value={fin.profit} onChange={e => {
+                                    const arr = [...form.financials]; arr[idx].profit = e.target.value; set('financials', arr)
+                                  }} className="h-9 text-sm bg-muted/20" /></Field>
+                                </div>
+                              </div>
+                            ))}
+                            
+                            <Button 
+                              variant="outline" 
+                              className="w-full border-dashed gap-2"
+                              onClick={() => set('financials', [...form.financials, { year: '', netWorth: '', turnover: '', profit: '' }])}
+                            >
+                              <Plus className="h-4 w-4" /> Add Financial Year
+                            </Button>
+                          </>
+                        )}
                       </div>
 
                       <div className="space-y-4">
