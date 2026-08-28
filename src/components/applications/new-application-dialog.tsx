@@ -141,7 +141,9 @@ interface FormData {
   itrFiled: boolean
   yearsInOperation: string
   projectsCompleted: string
-}
+  
+  // Document
+  dprDocumentName: string
 
 const INITIAL_FORM: FormData = {
   sector: '', subSector: '',
@@ -166,6 +168,7 @@ const INITIAL_FORM: FormData = {
   finYear3: '', finYear3NetWorth: '', finYear3Turnover: '', finYear3Profit: '',
   gstNumber: '', panNumber: '',
   itrFiled: false, yearsInOperation: '', projectsCompleted: '',
+  dprDocumentName: '',
 }
 
 // ---- Field helpers ----
@@ -766,12 +769,36 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                     </div>
                     <p className="text-sm text-muted-foreground mb-6 shrink-0">Upload the proposal/DPR document that will be submitted with this application.</p>
                     
-                    <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg bg-muted/5 p-12">
+                    <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg bg-muted/5 p-12 relative">
                       <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4">
                         <Upload className="h-8 w-8 text-foreground/70" />
                       </div>
-                      <Button variant="outline" className="mb-2">Choose File</Button>
-                      <p className="text-xs text-muted-foreground">PDF or Word document (Max 10MB)</p>
+                      <input 
+                        type="file" 
+                        id="dpr-upload" 
+                        className="hidden" 
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            set('dprDocumentName', file.name);
+                          }
+                        }}
+                      />
+                      <Button variant="outline" className="mb-2" onClick={() => document.getElementById('dpr-upload')?.click()}>
+                        Choose File
+                      </Button>
+                      <p className="text-xs text-muted-foreground mb-4">PDF or Word document (Max 10MB)</p>
+                      
+                      {form.dprDocumentName && (
+                        <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-md">
+                          <FileText className="h-4 w-4" />
+                          <span className="text-sm font-medium">{form.dprDocumentName}</span>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-primary/20" onClick={() => set('dprDocumentName', '')}>
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
