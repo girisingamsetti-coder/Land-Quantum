@@ -419,7 +419,7 @@ export function DocumentationView() {
 
         <div className="flex flex-wrap items-center gap-2">
           <Select value={categoryFilter || 'All'} onValueChange={(v) => setCategoryFilter(v === 'All' ? '' : v)}>
-            <SelectTrigger className="w-[140px] h-9 text-xs">
+            <SelectTrigger className="w-[140px] h-9 text-xs" data-active={!!categoryFilter && categoryFilter !== 'All'}>
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -432,7 +432,7 @@ export function DocumentationView() {
           </Select>
 
           <Select value={statusFilter || 'All'} onValueChange={(v) => setStatusFilter(v === 'All' ? '' : v)}>
-            <SelectTrigger className="w-[140px] h-9 text-xs">
+            <SelectTrigger className="w-[140px] h-9 text-xs" data-active={!!statusFilter && statusFilter !== 'All'}>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>

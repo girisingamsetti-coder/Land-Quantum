@@ -18,6 +18,8 @@ import {
   Inbox, RefreshCw, Filter, X, PieChart, Activity, Clock, IndianRupee
 } from 'lucide-react'
 
+import { cn } from "@/lib/utils"
+
 // ---- Types ----
 
 interface AppStage {
@@ -146,19 +148,34 @@ function slaBadge(slaRemaining: number | null) {
 
 // ---- Component ----
 
-export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: { hideHeader?: boolean, tabsControl?: React.ReactNode, viewType?: 'all' | 'queue' | 'kanban' | 'cancellations' } = {}) {
+export function ApplicationsList({
+  hideHeader,
+  viewType = 'all',
+  search = '',
+  status = 'All',
+  stage = 'All',
+  sector = 'All',
+}: {
+  hideHeader?: boolean;
+  viewType?: 'all' | 'queue' | 'kanban' | 'cancellations';
+  search?: string;
+  status?: string;
+  stage?: string;
+  sector?: string;
+} = {}) {
   const { navigateTo } = useAppLayout()
 
   const [data, setData] = useState<ApplicationsResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [searchInput, setSearchInput] = useState('')
-  const [status, setStatus] = useState(viewType === 'cancellations' ? 'Cancelled' : 'All')
-  const [stage, setStage] = useState('All')
-  const [sector, setSector] = useState('All')
-  const [mode, setMode] = useState('All')
+  const [selectedStatCard, setSelectedStatCard] = useState<string | null>(null)
+  const mode = 'All' // Mode is always All for now
   const [page, setPage] = useState(1)
   const pageSize = 20
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1)
+  }, [search, status, stage, sector, viewType])
 
   const fetchApplications = useCallback(async () => {
     setLoading(true)
@@ -187,27 +204,13 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
     fetchApplications()
   }, [fetchApplications])
 
-  const handleSearch = () => {
-    setSearch(searchInput)
-    setPage(1)
-  }
-
-  const resetFilters = () => {
-    setSearchInput('')
-    setSearch('')
-    setStatus(viewType === 'cancellations' ? 'Cancelled' : 'All')
-    setStage('All')
-    setSector('All')
-    setMode('All')
-    setPage(1)
-  }
 
   const totalPages = data ? Math.ceil(data.total / pageSize) : 0
   const from = data ? (data.page - 1) * data.pageSize + 1 : 0
   const to = data ? Math.min(data.page * data.pageSize, data.total) : 0
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1 h-full flex flex-col">
       {/* Header */}
       {!hideHeader && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -230,20 +233,12 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
           </div>
         </div>
       )}
-      {/* Filters (No Card, No Padding) */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div>{tabsControl}</div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search..." className="pl-8 h-8 text-xs" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} /></div>
-          <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1) }}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={stage} onValueChange={(v) => { setStage(v); setPage(1) }}><SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={sector} onValueChange={(v) => { setSector(v); setPage(1) }}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 shrink-0 mb-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-1 shrink-0 mb-1">
+        <Card
+          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'total' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          onClick={() => setSelectedStatCard(selectedStatCard === 'total' ? null : 'total')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-full shrink-0">
               <FileText className="h-5 w-5 text-primary" />
@@ -254,7 +249,10 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'sectors' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          onClick={() => setSelectedStatCard(selectedStatCard === 'sectors' ? null : 'sectors')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-blue-500/10 rounded-full shrink-0">
               <PieChart className="h-5 w-5 text-blue-500" />
@@ -265,7 +263,10 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'approved' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          onClick={() => setSelectedStatCard(selectedStatCard === 'approved' ? null : 'approved')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-emerald-500/10 rounded-full shrink-0">
               <Activity className="h-5 w-5 text-emerald-500" />
@@ -276,7 +277,10 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'pending' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          onClick={() => setSelectedStatCard(selectedStatCard === 'pending' ? null : 'pending')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-amber-500/10 rounded-full shrink-0">
               <Clock className="h-5 w-5 text-amber-500" />
@@ -287,7 +291,10 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card
+          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'investment' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          onClick={() => setSelectedStatCard(selectedStatCard === 'investment' ? null : 'investment')}
+        >
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-3 bg-purple-500/10 rounded-full shrink-0">
               <IndianRupee className="h-5 w-5 text-purple-500" />
@@ -301,8 +308,8 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
       </div>
 
       {/* Table */}
-      <Card>
-        <CardContent className="p-0 overflow-x-auto">
+      <Card className="py-0 overflow-hidden flex-1 flex flex-col min-h-0">
+        <CardContent className="p-0 flex-1 flex flex-col min-h-0">
           {loading ? (
             <div className="p-4 space-y-3">
               <Skeleton className="h-9 w-full" />
@@ -322,79 +329,81 @@ export function ApplicationsList({ hideHeader, tabsControl, viewType = 'all' }: 
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>App #</TableHead>
-                    <TableHead>Applicant</TableHead>
-                    <TableHead>Project</TableHead>
-                    <TableHead>Plot</TableHead>
-                    <TableHead>Sector</TableHead>
-                    <TableHead>Stage</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Investment</TableHead>
-                    <TableHead>Priority</TableHead>
-                    <TableHead>SLA</TableHead>
-                    <TableHead>Lead Manager</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.applications.map((app) => (
-                    <TableRow key={app.id}>
-                      <TableCell className=" text-xs font-medium">{app.applicationNumber}</TableCell>
-                      <TableCell>
-                        <div className="max-w-[180px] truncate" title={app.applicant?.organizationName}>
-                          <p className="font-medium text-sm truncate">{app.applicant?.organizationName}</p>
-                          <p className="text-xs text-muted-foreground truncate">{app.applicant?.contactPerson}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[150px] truncate text-sm" title={app.projectName ?? ''}>
-                        {app.projectName || '—'}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {app.landParcel?.plotId ? (
-                          <span className=" text-xs">{app.landParcel.plotId}</span>
-                        ) : '—'}
-                      </TableCell>
-                      <TableCell className="text-xs">{app.sector || '—'}</TableCell>
-                      <TableCell>
-                        <Badge className={`${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')} hover:${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')} text-[11px]`}>
-                          {app.currentStage}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`${statusColor(app.status)} hover:${statusColor(app.status)} text-[11px]`}>
-                          {app.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-sm font-medium tabular-nums">
-                        {formatINR(app.proposedInvestment)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`${priorityColor(app.priority)} hover:${priorityColor(app.priority)} text-[11px]`}>
-                          {app.priority}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{slaBadge(app.slaRemaining)}</TableCell>
-                      <TableCell className="text-xs font-bold">
-                        {app.assignedOfficer?.name || '—'}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="ghost" size="icon" className="h-8 w-8"
-                          onClick={() => navigateTo('application-detail', { id: app.id })}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+              <div className="flex-1 overflow-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>App #</TableHead>
+                      <TableHead>Applicant</TableHead>
+                      <TableHead>Project</TableHead>
+                      <TableHead>Plot</TableHead>
+                      <TableHead>Sector</TableHead>
+                      <TableHead>Stage</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Investment</TableHead>
+                      <TableHead>Priority</TableHead>
+                      <TableHead>SLA</TableHead>
+                      <TableHead>Lead Manager</TableHead>
+                      <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {data.applications.map((app) => (
+                      <TableRow key={app.id}>
+                        <TableCell className=" text-xs font-medium">{app.applicationNumber}</TableCell>
+                        <TableCell>
+                          <div className="max-w-[180px] truncate" title={app.applicant?.organizationName}>
+                            <p className="font-medium text-sm truncate">{app.applicant?.organizationName}</p>
+                            <p className="text-xs text-muted-foreground truncate">{app.applicant?.contactPerson}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate text-sm" title={app.projectName ?? ''}>
+                          {app.projectName || '—'}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {app.landParcel?.plotId ? (
+                            <span className=" text-xs">{app.landParcel.plotId}</span>
+                          ) : '—'}
+                        </TableCell>
+                        <TableCell className="text-xs">{app.sector || '—'}</TableCell>
+                        <TableCell>
+                          <Badge className={`${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')} hover:${stageColor(app.stages.find(s => s.stageName === app.currentStage)?.status ?? 'Not Started')} text-[11px]`}>
+                            {app.currentStage}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={`${statusColor(app.status)} hover:${statusColor(app.status)} text-[11px]`}>
+                            {app.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right text-sm font-medium tabular-nums">
+                          {formatINR(app.proposedInvestment)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={`${priorityColor(app.priority)} hover:${priorityColor(app.priority)} text-[11px]`}>
+                            {app.priority}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{slaBadge(app.slaRemaining)}</TableCell>
+                        <TableCell className="text-xs font-bold">
+                          {app.assignedOfficer?.name || '—'}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="ghost" size="icon" className="h-8 w-8"
+                            onClick={() => navigateTo('application-detail', { id: app.id })}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
               {/* Pagination */}
-              <div className="flex items-center justify-between px-4 py-3 border-t">
+              <div className="flex items-center justify-between px-4 py-3 border-t shrink-0">
                 <p className="text-sm text-muted-foreground">
                   Showing <span className="font-medium">{from}</span> to <span className="font-medium">{to}</span> of{' '}
                   <span className="font-medium">{data.total}</span> applications

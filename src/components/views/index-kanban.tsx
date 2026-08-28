@@ -150,7 +150,7 @@ function StageSection({ stage, items, navigateTo }: { stage: string, items: AppI
   )
 }
 
-export function WorkflowKanban({ hideHeader, tabsControl }: { hideHeader?: boolean, tabsControl?: React.ReactNode } = {}) {
+export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
   const { navigateTo } = useAppLayout()
   const [stages, setStages] = useState<string[]>(DEFAULT_STAGES)
   const [apps, setApps] = useState<AppItem[]>([])
@@ -234,7 +234,7 @@ export function WorkflowKanban({ hideHeader, tabsControl }: { hideHeader?: boole
           </Button>
         </div>
       )}
-      {tabsControl && <div className="shrink-0">{tabsControl}</div>}
+      {/* Removed tabsControl */}
 
       <div className="w-full flex-1 min-w-0 overflow-y-auto pr-4 space-y-8 pb-8 pt-2">
         {activeStages.map(({ stage, items }) => (

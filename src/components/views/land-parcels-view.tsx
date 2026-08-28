@@ -793,7 +793,7 @@ export function LandParcelsView() {
                 />
               </div>
               <Select value={status || 'All'} onValueChange={(v) => setStatus(v === 'All' ? '' : v)}>
-                <SelectTrigger className="w-[120px] h-8 text-xs">
+                <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}>
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -805,7 +805,7 @@ export function LandParcelsView() {
                 </SelectContent>
               </Select>
               <Select value={zone || 'All'} onValueChange={(v) => setZone(v === 'All' ? '' : v)}>
-                <SelectTrigger className="w-[140px] h-8 text-xs">
+                <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!zone && zone !== 'All'}>
                   <SelectValue placeholder="Zone" />
                 </SelectTrigger>
                 <SelectContent>

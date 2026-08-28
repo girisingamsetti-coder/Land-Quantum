@@ -111,7 +111,7 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
         <div>{tabsControl}</div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search cases..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
-          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'Open', 'Notice Issued', 'Decision Made', 'Completed', 'Cancelled'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
           {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
         </div>
       </div>
@@ -258,14 +258,14 @@ export function ReportsView() {
           <Input type="date" className="h-8 text-xs w-32" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
           <Input type="date" className="h-8 text-xs w-32" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
           <Select value={filters.phase} onValueChange={(v) => setFilters({ ...filters, phase: v })}>
-            <SelectTrigger className="h-8 text-xs w-[130px]"><SelectValue placeholder="Phase" /></SelectTrigger>
+            <SelectTrigger className="h-8 text-xs w-[130px]" data-active={filters.phase !== 'ALL'}><SelectValue placeholder="Phase" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All phases</SelectItem>
               {meta?.phases?.map((p: any) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
-            <SelectTrigger className="h-8 text-xs w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="h-8 text-xs w-[130px]" data-active={filters.status !== 'ALL'}><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Any status</SelectItem>
               {meta?.caseStatuses?.map((s: any) => <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>)}
@@ -366,8 +366,8 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Action" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>)}</SelectContent></Select>
-          <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Module" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}</SelectContent></Select>
+          <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!action && action !== 'All'}><SelectValue placeholder="Action" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>)}</SelectContent></Select>
+          <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!module && module !== 'All'}><SelectValue placeholder="Module" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}</SelectContent></Select>
           {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setAction(''); setModule('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
         </div>
       </div>
@@ -418,7 +418,7 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
         <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search users..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
-          <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Role" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}</SelectContent></Select>
+          <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!role && role !== 'All'}><SelectValue placeholder="Role" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}</SelectContent></Select>
           {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setRole(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
         </div>
       </div>
@@ -656,8 +656,8 @@ export function RiskAlertsView() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Severity" /></SelectTrigger><SelectContent>{['All', 'Critical', 'High', 'Medium', 'Low'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Alert Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>
+          <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!severityFilter && severityFilter !== 'All'}><SelectValue placeholder="Severity" /></SelectTrigger><SelectContent>{['All', 'Critical', 'High', 'Medium', 'Low'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!typeFilter && typeFilter !== 'All'}><SelectValue placeholder="Alert Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>
           {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setSeverityFilter(''); setTypeFilter('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
         </div>
       </div>

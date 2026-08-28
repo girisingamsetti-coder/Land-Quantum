@@ -658,8 +658,8 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold whitespace-nowrap rounded-md transition-all',
                     activeTab === tab.id
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm outline outline-2 outline-primary outline-offset-[-1px]'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-1px]'
                   )}
                 >
                   {tab.label}
@@ -1196,10 +1196,10 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
               className="pl-7 pr-3 h-7 w-[160px] md:w-[180px] rounded-md border bg-background text-[11px] outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
             />
           </div>
-          <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}><SelectTrigger className="w-[125px] h-7 text-[11px]"><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]"><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]"><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{DASH_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]"><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}><SelectTrigger className="w-[125px] h-7 text-[11px]" data-active={filterSector !== 'All Sectors'}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]" data-active={filterStage !== 'All Stages'}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]" data-active={filterStatus !== 'All Status'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{DASH_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
+          <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]" data-active={filterPriority !== 'All Priorities'}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
           {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterStatus !== 'All Statuses' || filterPriority !== 'All Priorities') && (
             <Button variant="ghost" size="sm" className="h-7 text-[11px] gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3 w-3" /> Clear</Button>
           )}

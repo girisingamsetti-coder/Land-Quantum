@@ -52,17 +52,14 @@ const MOCK_DEALS_ROWS = [
   { id: 'APCRDA-2024-0025', applicant: 'Aurobindo Textiles', sector: 'Textiles', investment: '₹450 Cr', area: '16 ac', appliedOn: '18 Oct 2024', stage: 'Order & Offer', sla: '22 days', priority: 'Normal', status: 'Approved', dealStatus: 'Active', lead: 'S. Rao' },
 ]
 
-export function DealsApplicationsTable({ onNavigate }: { onNavigate: (id: string) => void }) {
+export function DealsApplicationsTable({ search, filterSector, filterStage, filterDealStatus, filterPriority, onNavigate }: { search: string, filterSector: string, filterStage: string, filterDealStatus: string, filterPriority: string, onNavigate: (id: string) => void }) {
   const [rows, setRows] = useState(MOCK_DEALS_ROWS)
-  const [search, setSearch] = useState('')
-  const [filterSector, setFilterSector] = useState('All Sectors')
-  const [filterStage, setFilterStage] = useState('All Stages')
-  const [filterDealStatus, setFilterDealStatus] = useState('All Deal Statuses')
-  const [filterPriority, setFilterPriority] = useState('All Priorities')
   const [sortCol, setSortCol] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 16
+
+  useEffect(() => { setPage(1) }, [search, filterSector, filterStage, filterDealStatus, filterPriority])
 
   // Fetch real applications and prepend
   useEffect(() => {
@@ -139,37 +136,8 @@ export function DealsApplicationsTable({ onNavigate }: { onNavigate: (id: string
     </th>
   )
 
-  const resetFilters = () => {
-    setSearch('')
-    setFilterSector('All Sectors')
-    setFilterStage('All Stages')
-    setFilterDealStatus('All Deal Statuses')
-    setFilterPriority('All Priorities')
-    setPage(1)
-  }
-
   return (
     <Card className="shadow-sm flex-1 flex flex-col min-h-0">
-      <CardHeader className="px-4 py-1 border-b flex flex-row items-center justify-between space-y-0 gap-3">
-        <CardTitle className="text-sm font-bold tracking-tight shrink-0">Deals Pipeline</CardTitle>
-        <div className="flex flex-wrap items-center justify-end gap-2 flex-1">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-            <input
-              value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
-              placeholder="Search..."
-              className="pl-7 pr-3 h-7 w-[160px] md:w-[180px] rounded-md border bg-background text-xs outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
-            />
-          </div>
-          <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}><SelectTrigger className="w-[125px] h-7 text-xs"><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-xs"><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterDealStatus} onValueChange={(v) => { setFilterDealStatus(v); setPage(1) }}><SelectTrigger className="w-[125px] h-7 text-xs"><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-xs"><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterDealStatus !== 'All Deal Statuses' || filterPriority !== 'All Priorities') && (
-            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3 w-3" /> Clear</Button>
-          )}
-        </div>
-      </CardHeader>
       <div className="overflow-x-auto overflow-y-auto flex-1">
         <table className="w-full text-sm relative">
           <thead className="bg-muted border-b sticky top-0 z-10 shadow-sm">
@@ -547,18 +515,19 @@ function DealsTable({ deals }: { deals: Deal[] }) {
 export function DealsView() {
   const { navigateTo } = useAppLayout()
   const [search, setSearch] = useState('')
-  const [stageFilter, setStageFilter] = useState<string>('All')
-  const [viewMode, setViewMode] = useState<'pipeline' | 'table'>('pipeline')
+  const [filterSector, setFilterSector] = useState('All Sectors')
+  const [filterStage, setFilterStage] = useState('All Stages')
+  const [filterDealStatus, setFilterDealStatus] = useState('All Deal Statuses')
+  const [filterPriority, setFilterPriority] = useState('All Priorities')
   const [newDealOpen, setNewDealOpen] = useState(false)
 
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase()
-    return MOCK_DEALS.filter(d => {
-      const matchSearch = !q || d.dealName.toLowerCase().includes(q) || d.investor.toLowerCase().includes(q) || d.sector.toLowerCase().includes(q)
-      const matchStage = stageFilter === 'All' || d.stage === stageFilter
-      return matchSearch && matchStage
-    })
-  }, [search, stageFilter])
+  const resetFilters = () => {
+    setSearch('')
+    setFilterSector('All Sectors')
+    setFilterStage('All Stages')
+    setFilterDealStatus('All Deal Statuses')
+    setFilterPriority('All Priorities')
+  }
 
   const totalDeals = MOCK_DEALS.length
   const totalPipeline = MOCK_DEALS.filter(d => d.stage !== 'Closed' && d.stage !== 'Lost').reduce((s, d) => s + d.investmentCr, 0)
@@ -568,10 +537,36 @@ export function DealsView() {
   const weightedValue = MOCK_DEALS.filter(d => d.stage !== 'Lost').reduce((s, d) => s + d.investmentCr * d.probability / 100, 0)
 
   return (
-    <div className="flex flex-col gap-4 p-4 h-[calc(100vh-4rem)] lg:h-[calc(100vh-3.5rem)] min-h-0">
+    <div className="flex flex-col gap-2 p-4 h-[calc(100vh-4rem)] lg:h-[calc(100vh-3.5rem)] min-h-0">
+      <div className="flex flex-col gap-0 shrink-0">
+        <h1 className="text-2xl font-bold tracking-tight leading-none mb-1">Deals</h1>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
+          <p className="text-sm text-muted-foreground hidden lg:block">
+            Track deals pipeline and performance.
+          </p>
+          <div className="flex flex-wrap items-center justify-end gap-2 flex-1">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search..."
+                className="pl-8 pr-3 h-8 w-[160px] md:w-[180px] rounded-md border bg-background text-xs outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+              />
+            </div>
+            <Select value={filterSector} onValueChange={(v) => setFilterSector(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterSector !== 'All Sectors'}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterStage} onValueChange={(v) => setFilterStage(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterStage !== 'All Stages'}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterDealStatus} onValueChange={(v) => setFilterDealStatus(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterDealStatus !== 'All Deal Statuses'}><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterPriority !== 'All Priorities'}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterDealStatus !== 'All Deal Statuses' || filterPriority !== 'All Priorities') && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
+            )}
+            <Button size="sm" className="gap-1.5 shrink-0 h-8 text-xs ml-2" onClick={() => setNewDealOpen(true)}><Plus className="h-4 w-4" /> New Deal</Button>
+          </div>
+        </div>
+      </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {[
           { label: 'Total Deals', value: totalDeals, sub: `${activeCount} active`, icon: Briefcase, color: 'bg-indigo-500' },
           { label: 'Pipeline Value', value: `₹${fmt(totalPipeline)} Cr`, sub: 'Excl. closed & lost', icon: TrendingUp, color: 'bg-violet-500' },
@@ -595,9 +590,15 @@ export function DealsView() {
         ))}
       </div>
 
-      {/* Main Card */}
       {/* Deals Table */}
-      <DealsApplicationsTable onNavigate={navigateTo} />
+      <DealsApplicationsTable 
+        search={search}
+        filterSector={filterSector}
+        filterStage={filterStage}
+        filterDealStatus={filterDealStatus}
+        filterPriority={filterPriority}
+        onNavigate={navigateTo} 
+      />
 
       <NewDealDialog open={newDealOpen} onClose={() => setNewDealOpen(false)} />
     </div>

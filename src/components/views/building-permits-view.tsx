@@ -215,7 +215,7 @@ export function BuildingPermitsView() {
             <Input placeholder="Search ID or Applicant..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
-            <SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               {['All', 'Approved', 'Under Review', 'Rejected'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
             </SelectContent>
