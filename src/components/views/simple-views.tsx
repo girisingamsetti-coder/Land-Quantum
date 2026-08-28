@@ -38,10 +38,10 @@ function severityColor(s: string) {
 }
 
 function severityTileColor(s: string) {
-  if (s === 'Critical') return { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-700', iconBg: 'bg-red-100', iconText: 'text-red-600' }
-  if (s === 'High') return { bg: 'bg-orange-50', border: 'border-orange-100', text: 'text-orange-700', iconBg: 'bg-orange-100', iconText: 'text-orange-600' }
-  if (s === 'Medium') return { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-700', iconBg: 'bg-amber-100', iconText: 'text-amber-600' }
-  return { bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-700', iconBg: 'bg-blue-100', iconText: 'text-blue-600' }
+  if (s === 'Critical') return { bg: 'bg-gradient-to-r from-red-50 to-white/50', border: 'border-red-100', text: 'text-red-700', iconBg: 'bg-red-100', iconText: 'text-red-600' }
+  if (s === 'High') return { bg: 'bg-gradient-to-r from-orange-50 to-white/50', border: 'border-orange-100', text: 'text-orange-700', iconBg: 'bg-orange-100', iconText: 'text-orange-600' }
+  if (s === 'Medium') return { bg: 'bg-gradient-to-r from-amber-50 to-white/50', border: 'border-amber-100', text: 'text-amber-700', iconBg: 'bg-amber-100', iconText: 'text-amber-600' }
+  return { bg: 'bg-gradient-to-r from-blue-50 to-white/50', border: 'border-blue-100', text: 'text-blue-700', iconBg: 'bg-blue-100', iconText: 'text-blue-600' }
 }
 
 // Filter bar component

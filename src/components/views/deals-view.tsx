@@ -572,12 +572,12 @@ export function DealsView() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {[
-          { label: 'Total Deals', value: totalDeals, sub: `${activeCount} active`, icon: Briefcase, color: 'bg-indigo-500' },
-          { label: 'Pipeline Value', value: `₹${fmt(totalPipeline)} Cr`, sub: 'Excl. closed & lost', icon: TrendingUp, color: 'bg-violet-500' },
-          { label: 'Weighted Forecast', value: `₹${fmt(Math.round(weightedValue))} Cr`, sub: 'Probability-adjusted', icon: Target, color: 'bg-blue-500' },
-          { label: 'Deals Closed', value: closedCount, sub: `₹${fmt(closedValue)} Cr won`, icon: CheckCircle2, color: 'bg-emerald-500' },
+          { label: 'Total Deals', value: totalDeals, sub: `${activeCount} active`, icon: Briefcase, color: 'bg-indigo-500', bgClass: 'bg-gradient-to-r from-indigo-50 to-white/50' },
+          { label: 'Pipeline Value', value: `₹${fmt(totalPipeline)} Cr`, sub: 'Excl. closed & lost', icon: TrendingUp, color: 'bg-violet-500', bgClass: 'bg-gradient-to-r from-violet-50 to-white/50' },
+          { label: 'Weighted Forecast', value: `₹${fmt(Math.round(weightedValue))} Cr`, sub: 'Probability-adjusted', icon: Target, color: 'bg-blue-500', bgClass: 'bg-gradient-to-r from-blue-50 to-white/50' },
+          { label: 'Deals Closed', value: closedCount, sub: `₹${fmt(closedValue)} Cr won`, icon: CheckCircle2, color: 'bg-emerald-500', bgClass: 'bg-gradient-to-r from-emerald-50 to-white/50' },
         ].map(s => (
-          <Card key={s.label} className="py-2.5 border border-transparent hover:border-slate-300 shadow-sm hover:shadow-md transition-all cursor-pointer">
+          <Card key={s.label} className={cn("py-2.5 border border-transparent hover:border-slate-300 shadow-sm hover:shadow-md transition-all cursor-pointer", s.bgClass)}>
             <CardContent className="px-3 py-0">
               <div className="flex items-center gap-3">
                 <div className={cn('rounded-lg p-2 shrink-0', s.color)}>

@@ -50,11 +50,11 @@ export function ConstructionView() {
       <div><h1 className="text-2xl font-bold tracking-tight">Construction Monitoring</h1><p className="text-sm text-muted-foreground">Track construction progress and milestones for allotted projects</p></div>
       {data && <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          {label:'Total Projects', val:data.summary.total, Icon:Building, color:'slate', border:'border-slate-100', bg:'bg-slate-50/50', iconBg:'bg-slate-100', iconText:'text-slate-600', valColor:''},
-          {label:'In Progress', val:data.summary.inProgress, Icon:HardHat, color:'amber', border:'border-amber-100', bg:'bg-amber-50/50', iconBg:'bg-amber-100', iconText:'text-amber-600', valColor:'text-amber-700'},
-          {label:'Delayed', val:data.summary.delayed, Icon:AlertCircle, color:'red', border:'border-red-100', bg:'bg-red-50/50', iconBg:'bg-red-100', iconText:'text-red-600', valColor:'text-red-700'},
-          {label:'Not Started', val:data.summary.notStarted, Icon:Clock, color:'blue', border:'border-blue-100', bg:'bg-blue-50/50', iconBg:'bg-blue-100', iconText:'text-blue-600', valColor:'text-blue-700'},
-          {label:'Completed', val:data.summary.completed, Icon:CheckCircle2, color:'emerald', border:'border-emerald-100', bg:'bg-emerald-50/50', iconBg:'bg-emerald-100', iconText:'text-emerald-600', valColor:'text-emerald-700'},
+          {label:'Total Projects', val:data.summary.total, Icon:Building, color:'slate', border:'border-slate-100', bg:'bg-gradient-to-r from-slate-50 to-white/50', iconBg:'bg-slate-100', iconText:'text-slate-600', valColor:''},
+          {label:'In Progress', val:data.summary.inProgress, Icon:HardHat, color:'amber', border:'border-amber-100', bg:'bg-gradient-to-r from-amber-50 to-white/50', iconBg:'bg-amber-100', iconText:'text-amber-600', valColor:'text-amber-700'},
+          {label:'Delayed', val:data.summary.delayed, Icon:AlertCircle, color:'red', border:'border-red-100', bg:'bg-gradient-to-r from-red-50 to-white/50', iconBg:'bg-red-100', iconText:'text-red-600', valColor:'text-red-700'},
+          {label:'Not Started', val:data.summary.notStarted, Icon:Clock, color:'blue', border:'border-blue-100', bg:'bg-gradient-to-r from-blue-50 to-white/50', iconBg:'bg-blue-100', iconText:'text-blue-600', valColor:'text-blue-700'},
+          {label:'Completed', val:data.summary.completed, Icon:CheckCircle2, color:'emerald', border:'border-emerald-100', bg:'bg-gradient-to-r from-emerald-50 to-white/50', iconBg:'bg-emerald-100', iconText:'text-emerald-600', valColor:'text-emerald-700'},
         ].map(s=>(
           <Card key={s.label} className={cn('border', s.border, s.bg, 'cursor-pointer transition-all hover:shadow-md', status === s.label && 'ring-2 ring-offset-1')} onClick={() => setStatus(status === s.label ? '' : s.label)}>
             <CardContent className="p-4">
