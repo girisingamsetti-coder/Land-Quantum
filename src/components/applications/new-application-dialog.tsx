@@ -200,6 +200,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
     if (step === 1) {
       if (!form.enquiryName.trim()) newErrors.enquiryName = 'Required'
       if (!form.organizationName.trim()) newErrors.organizationName = 'Required'
+      if (!form.sector.trim()) newErrors.sector = 'Required'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -259,11 +260,12 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
           <Input id={`enquiry-name-${stepNumber}`} placeholder="Project/Enquiry Name" value={form.enquiryName} onChange={e => set('enquiryName', e.target.value)} className={cn('h-9 text-sm', errors.enquiryName && 'border-destructive')} />
           {errors.enquiryName && <p className="text-[11px] text-destructive">{errors.enquiryName}</p>}
         </Field>
-        <Field label="Sector">
+        <Field label="Sector" required>
           <Select value={form.sector} onValueChange={v => set('sector', v)}>
-            <SelectTrigger id={`sector-${stepNumber}`} className="h-9 text-sm bg-muted/20"><SelectValue placeholder="Select sector" /></SelectTrigger>
+            <SelectTrigger id={`sector-${stepNumber}`} className={cn('h-9 text-sm bg-muted/20', errors.sector && 'border-destructive')}><SelectValue placeholder="Select sector" /></SelectTrigger>
             <SelectContent>{SECTORS.map(s => <SelectItem key={s} value={s} className="text-sm">{s}</SelectItem>)}</SelectContent>
           </Select>
+          {errors.sector && <p className="text-[11px] text-destructive mt-1">{errors.sector}</p>}
         </Field>
       </div>
       <div className="grid grid-cols-2 gap-6">
