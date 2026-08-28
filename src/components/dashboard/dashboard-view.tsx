@@ -1332,7 +1332,7 @@ export function DashboardView() {
   return (
     <div className="flex flex-col gap-2 pt-1.5">
       {/* Header */}
-      <div className="flex items-center justify-between shrink-0 px-5 py-1 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
+      <div className="flex items-center justify-between shrink-0 px-5 py-4 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
         <div>
           <h1 className="text-[15px] font-bold text-slate-800 flex items-center gap-1">
             Good Afternoon <span className="text-sm">👋</span>
@@ -1340,101 +1340,6 @@ export function DashboardView() {
           <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1 font-medium">
             <Calendar className="h-3 w-3 text-slate-400" />
             <span>Saturday, 22 August 2026</span>
-          </div>
-        </div>
-
-        {/* Modern Filters */}
-        <div className="flex items-center gap-2.5">
-          {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-3 font-medium rounded-full">
-              Clear
-            </Button>
-          )}
-
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search dashboard..."
-              className="pl-8 pr-3 h-8 w-40 xl:w-48 rounded-full border border-slate-200 bg-white text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-400 shadow-sm transition-all"
-            />
-          </div>
-
-          <div className={cn("relative flex items-center gap-2 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.date ? "border-primary/30" : "border-slate-200")}>
-            <Calendar className={cn("h-3.5 w-3.5", filters.date ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.date ? 'text-primary' : 'text-slate-600')}>{filters.date || 'Date'}</span>
-            <select value={filters.date} onChange={e => setFilters(f => ({ ...f, date: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Dates</option>
-              <option value="Today">Today</option>
-              <option value="This Week">This Week</option>
-              <option value="This Month">This Month</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.parcel ? "border-primary/30" : "border-slate-200")}>
-            <LandPlot className={cn("h-3.5 w-3.5", filters.parcel ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.parcel ? 'text-primary' : 'text-slate-600')}>{filters.parcel || 'All Parcels'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
-            <select value={filters.parcel} onChange={e => setFilters(f => ({ ...f, parcel: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Parcels</option>
-              <option value="Available">Available</option>
-              <option value="Allotted">Allotted</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.app ? "border-primary/30" : "border-slate-200")}>
-            <FileText className={cn("h-3.5 w-3.5", filters.app ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.app ? 'text-primary' : 'text-slate-600')}>{filters.app || 'All Applications'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
-            <select value={filters.app} onChange={e => setFilters(f => ({ ...f, app: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Applications</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.stage ? "border-primary/30" : "border-slate-200")}>
-            <LayoutList className={cn("h-3.5 w-3.5", filters.stage ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.stage ? 'text-primary' : 'text-slate-600')}>{filters.stage || 'All Stages'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
-            <select value={filters.stage} onChange={e => setFilters(f => ({ ...f, stage: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Stages</option>
-              <option value="Intake">Intake</option>
-              <option value="DPR Review">DPR Review</option>
-              <option value="Govt Approval">Govt Approval</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.project ? "border-primary/30" : "border-slate-200")}>
-            <HardHat className={cn("h-3.5 w-3.5", filters.project ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.project ? 'text-primary' : 'text-slate-600')}>{filters.project || 'All Projects'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
-            <select value={filters.project} onChange={e => setFilters(f => ({ ...f, project: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Projects</option>
-              <option value="Active">Active</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.sector ? "border-primary/30" : "border-slate-200")}>
-            <Building2 className={cn("h-3.5 w-3.5", filters.sector ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.sector ? 'text-primary' : 'text-slate-600')}>{filters.sector || 'All Sectors'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
-            <select value={filters.sector} onChange={e => setFilters(f => ({ ...f, sector: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Sectors</option>
-              <option value="Commercial">Commercial</option>
-              <option value="Education">Education</option>
-              <option value="Financial Institutions">Financial Institutions</option>
-              <option value="Food Processing">Food Processing</option>
-              <option value="Government Organisations">Government Organisations</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Hospitality">Hospitality</option>
-              <option value="IT/ITES">IT/ITES</option>
-              <option value="Industrial">Industrial</option>
-              <option value="Logistics">Logistics</option>
-              <option value="NGOs">NGOs</option>
-              <option value="Others">Others</option>
-              <option value="Pharmaceutical">Pharmaceutical</option>
-              <option value="Political Parties">Political Parties</option>
-              <option value="Sports">Sports</option>
-              <option value="Textiles">Textiles</option>
-            </select>
           </div>
         </div>
       </div>
@@ -1518,6 +1423,102 @@ export function DashboardView() {
           color="bg-gradient-to-br from-emerald-500 to-green-600"
         />
       </div>
+
+      {/* Modern Filters Card */}
+      <Card className="p-1.5 border shadow-sm my-1">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search dashboard..."
+              className="pl-8 h-8 text-xs w-full rounded-md border-0 bg-transparent outline-none focus:ring-0 placeholder:text-muted-foreground transition-all"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={filters.date} onValueChange={v => setFilters(f => ({ ...f, date: v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.date}>
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Dates" className="text-xs">Date: All</SelectItem>
+                <SelectItem value="Today" className="text-xs">Today</SelectItem>
+                <SelectItem value="This Week" className="text-xs">This Week</SelectItem>
+                <SelectItem value="This Month" className="text-xs">This Month</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.parcel} onValueChange={v => setFilters(f => ({ ...f, parcel: v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.parcel}>
+                <SelectValue placeholder="Parcels" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Parcels" className="text-xs">Parcels: All</SelectItem>
+                <SelectItem value="Available" className="text-xs">Available</SelectItem>
+                <SelectItem value="Allotted" className="text-xs">Allotted</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.app} onValueChange={v => setFilters(f => ({ ...f, app: v }))}>
+              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={!!filters.app}>
+                <SelectValue placeholder="Applications" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Applications" className="text-xs">Apps: All</SelectItem>
+                <SelectItem value="Pending" className="text-xs">Pending</SelectItem>
+                <SelectItem value="Approved" className="text-xs">Approved</SelectItem>
+                <SelectItem value="Rejected" className="text-xs">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.stage} onValueChange={v => setFilters(f => ({ ...f, stage: v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.stage}>
+                <SelectValue placeholder="Stages" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Stages" className="text-xs">Stages: All</SelectItem>
+                <SelectItem value="Intake" className="text-xs">Intake</SelectItem>
+                <SelectItem value="DPR Review" className="text-xs">DPR Review</SelectItem>
+                <SelectItem value="Govt Approval" className="text-xs">Govt Approval</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.project} onValueChange={v => setFilters(f => ({ ...f, project: v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.project}>
+                <SelectValue placeholder="Projects" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Projects" className="text-xs">Projects: All</SelectItem>
+                <SelectItem value="Active" className="text-xs">Active</SelectItem>
+                <SelectItem value="Completed" className="text-xs">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.sector} onValueChange={v => setFilters(f => ({ ...f, sector: v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.sector}>
+                <SelectValue placeholder="Sectors" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Sectors" className="text-xs">Sectors: All</SelectItem>
+                <SelectItem value="Commercial" className="text-xs">Commercial</SelectItem>
+                <SelectItem value="Education" className="text-xs">Education</SelectItem>
+                <SelectItem value="Financial Institutions" className="text-xs">Financial Institutions</SelectItem>
+                <SelectItem value="Food Processing" className="text-xs">Food Processing</SelectItem>
+                <SelectItem value="Government Organisations" className="text-xs">Government Organisations</SelectItem>
+                <SelectItem value="Healthcare" className="text-xs">Healthcare</SelectItem>
+                <SelectItem value="Hospitality" className="text-xs">Hospitality</SelectItem>
+                <SelectItem value="IT/ITES" className="text-xs">IT/ITES</SelectItem>
+                <SelectItem value="Industrial" className="text-xs">Industrial</SelectItem>
+                <SelectItem value="Logistics" className="text-xs">Logistics</SelectItem>
+                <SelectItem value="NGOs" className="text-xs">NGOs</SelectItem>
+                <SelectItem value="Others" className="text-xs">Others</SelectItem>
+                <SelectItem value="Pharmaceutical" className="text-xs">Pharmaceutical</SelectItem>
+                <SelectItem value="Political Parties" className="text-xs">Political Parties</SelectItem>
+                <SelectItem value="Sports" className="text-xs">Sports</SelectItem>
+                <SelectItem value="Textiles" className="text-xs">Textiles</SelectItem>
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={clearFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
+            )}
+          </div>
+        </div>
+      </Card>
 
       {/* Pipeline Stage Cards */}
       <div>
@@ -1660,7 +1661,7 @@ export function DashboardView() {
         <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-semibold">Investment by sector</CardTitle>
-            <CardDescription className="text-[10px]">Committed rupees, largest first (â‚¹ Cr)</CardDescription>
+            <CardDescription className="text-[10px]">Committed rupees, largest first (₹ Cr)</CardDescription>
           </CardHeader>
           <CardContent className="px-3 py-0">
             <ChartContainer config={investmentConfig} className="h-[160px] w-full">
