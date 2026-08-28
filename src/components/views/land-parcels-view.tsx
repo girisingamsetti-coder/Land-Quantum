@@ -761,10 +761,9 @@ export function LandParcelsView() {
               <Card
                 key={st}
                 className={cn(
-                  'py-2.5 border cursor-pointer transition-all hover:shadow-md',
-                  style.border,
+                  'py-2.5 border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
                   style.bg,
-                  status === st && 'ring-2 ring-offset-1'
+                  status === st && 'outline outline-1 outline-primary outline-offset-[-1px]'
                 )}
                 onClick={() => setStatus(status === st ? '' : st)}
               >
