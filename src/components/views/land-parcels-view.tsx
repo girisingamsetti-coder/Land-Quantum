@@ -362,11 +362,14 @@ const DEFAULT_AMARAVATI_LANDS: any[] = [
 ]
 
 export function LandParcelsView() {
-  const [activeTab, setActiveTab] = useState('gis')
+  const [activeTab, setActiveTab] = useState('lands')
   const [data, setData] = useState<any>({ parcels: DEFAULT_AMARAVATI_LANDS, total: DEFAULT_AMARAVATI_LANDS.length })
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState('')
   const [zone, setZone] = useState('')
+  const [landUse, setLandUse] = useState('')
+  const [allotmentMode, setAllotmentMode] = useState('')
+  const [fsiFar, setFsiFar] = useState('')
   const [search, setSearch] = useState('')
   const [selectedParcel, setSelectedParcel] = useState<any>(null)
 
@@ -420,6 +423,15 @@ export function LandParcelsView() {
     if (zone && zone !== 'All') {
       list = list.filter((p: any) => p.zone?.name?.toLowerCase().includes(zone.toLowerCase()) || p.zone?.id === zone)
     }
+    if (landUse && landUse !== 'All') {
+      list = list.filter((p: any) => p.landUse?.name?.toLowerCase().includes(landUse.toLowerCase()) || p.landUse?.id === landUse)
+    }
+    if (allotmentMode && allotmentMode !== 'All') {
+      list = list.filter((p: any) => p.allotmentMode?.name?.toLowerCase().includes(allotmentMode.toLowerCase()) || p.allotmentMode?.id === allotmentMode)
+    }
+    if (fsiFar && fsiFar !== 'All') {
+      list = list.filter((p: any) => p.fsiFar === fsiFar)
+    }
     if (search) {
       const s = search.toLowerCase()
       list = list.filter(
@@ -431,7 +443,7 @@ export function LandParcelsView() {
       )
     }
     return list
-  }, [parcelsList, status, zone, search])
+  }, [parcelsList, status, zone, landUse, allotmentMode, fsiFar, search])
 
   const currentBbox = activeLandmark
     ? activeLandmark.bbox
@@ -442,31 +454,25 @@ export function LandParcelsView() {
 
   return (
     <div className="space-y-5 pb-12">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Amaravati Capital City Land Management</h1>
-          <p className="text-sm text-muted-foreground">
-            Geographical GIS map of Amaravati City and comprehensive land inventory records
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs px-3 py-1 font-medium bg-background border-primary/30 text-primary">
-            <Compass className="h-3.5 w-3.5 mr-1.5" /> Amaravati Capital Region &middot; APCRDA
-          </Badge>
-        </div>
-      </div>
-
       {/* 2 Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-4">
-        <TabsList className="grid w-full sm:w-[380px] grid-cols-2 p-1 bg-muted/80">
-          <TabsTrigger value="gis" className="text-xs font-semibold flex items-center gap-2">
-            <Layers className="h-3.5 w-3.5" /> GIS Map
-          </TabsTrigger>
-          <TabsTrigger value="lands" className="text-xs font-semibold flex items-center gap-2">
-            <Building2 className="h-3.5 w-3.5" /> Lands Details
-          </TabsTrigger>
-        </TabsList>
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Amaravati Capital City Land Management</h1>
+            <p className="text-sm text-muted-foreground">
+              Geographical GIS map of Amaravati City and comprehensive land inventory records
+            </p>
+          </div>
+          <TabsList className="grid w-full sm:w-[380px] grid-cols-2 p-1 bg-muted/80 shrink-0">
+            <TabsTrigger value="lands" className="text-xs font-semibold flex items-center gap-2">
+              <Building2 className="h-3.5 w-3.5" /> Lands Details
+            </TabsTrigger>
+            <TabsTrigger value="gis" className="text-xs font-semibold flex items-center gap-2">
+              <Layers className="h-3.5 w-3.5" /> GIS Map
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ============================================================== */}
         {/* TAB 1: AMARAVATI MAP WITH IN-MAP DETAILS HUD */}
@@ -755,6 +761,8 @@ export function LandParcelsView() {
         {/* TAB 2: LANDS DETAILS */}
         {/* ============================================================== */}
         <TabsContent value="lands" className="space-y-4">
+
+
           {/* Status KPI Tiles */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {Object.entries(statusStyles).map(([st, style]) => (
@@ -775,83 +783,111 @@ export function LandParcelsView() {
             ))}
           </div>
 
-          {/* Filter Toolbar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Filter className="h-3.5 w-3.5" />
-              <span className="text-xs font-semibold">Filters</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-              <div className="relative max-w-xs w-full sm:w-auto">
+          {/* Filter Toolbar Card */}
+          <Card className="p-1.5 border shadow-sm mb-3">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+              <div className="relative w-full sm:flex-1 mr-auto">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   placeholder="Search ID, survey, zone..."
-                  className="pl-8 h-8 text-xs"
+                  className="pl-8 h-8 text-xs w-full"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <Select value={status || 'All'} onValueChange={(v) => setStatus(v === 'All' ? '' : v)}>
-                <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {['All', 'Draft', 'Under Review', 'Approved', 'Published', 'Reserved', 'Under Application', 'Allotted', 'On Hold', 'Withdrawn'].map((s) => (
-                    <SelectItem key={s} value={s} className="text-xs">
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={zone || 'All'} onValueChange={(v) => setZone(v === 'All' ? '' : v)}>
-                <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!zone && zone !== 'All'}>
-                  <SelectValue placeholder="Zone" />
-                </SelectTrigger>
-                <SelectContent>
-                  {['All', ...(data?.zones || []).map((z: any) => z.name)].map((s, i) => (
-                    <SelectItem
-                      key={s}
-                      value={i === 0 ? 'All' : data?.zones?.find((z: any) => z.name === s)?.id || s}
-                      className="text-xs"
-                    >
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {(status || zone || search) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 text-xs gap-1 text-muted-foreground"
-                  onClick={() => {
-                    setStatus('')
-                    setZone('')
-                    setSearch('')
-                  }}
-                >
-                  <X className="h-3.5 w-3.5" /> Clear
-                </Button>
-              )}
+              <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+                <Select value={status || 'All'} onValueChange={(v) => setStatus(v === 'All' ? '' : v)}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">Status: All</SelectItem>
+                    {['Draft', 'Under Review', 'Approved', 'Published', 'Reserved', 'Under Application', 'Allotted', 'On Hold', 'Withdrawn'].map((s) => (
+                      <SelectItem key={s} value={s} className="text-xs">
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={zone || 'All'} onValueChange={(v) => setZone(v === 'All' ? '' : v)}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!zone && zone !== 'All'}>
+                    <SelectValue placeholder="Zone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">Zone: All</SelectItem>
+                    {(data?.zones?.length ? data.zones.map((z: any) => z.name) : Array.from(new Set(parcelsList.map((p: any) => p.zone?.name).filter(Boolean)))).map((s: any) => (
+                      <SelectItem
+                        key={s}
+                        value={data?.zones?.find((z: any) => z.name === s)?.id || s}
+                        className="text-xs"
+                      >
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={landUse || 'All'} onValueChange={(v) => setLandUse(v === 'All' ? '' : v)}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!landUse && landUse !== 'All'}>
+                    <SelectValue placeholder="Land Use" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">Land Use: All</SelectItem>
+                    {Array.from(new Set(parcelsList.map((p: any) => p.landUse?.name).filter(Boolean))).map((s: any) => (
+                      <SelectItem key={s} value={s} className="text-xs">
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={allotmentMode || 'All'} onValueChange={(v) => setAllotmentMode(v === 'All' ? '' : v)}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!allotmentMode && allotmentMode !== 'All'}>
+                    <SelectValue placeholder="Allotment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">Allotment: All</SelectItem>
+                    {Array.from(new Set(parcelsList.map((p: any) => p.allotmentMode?.name).filter(Boolean))).map((s: any) => (
+                      <SelectItem key={s} value={s} className="text-xs">
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={fsiFar || 'All'} onValueChange={(v) => setFsiFar(v === 'All' ? '' : v)}>
+                  <SelectTrigger className="w-[100px] h-8 text-xs" data-active={!!fsiFar && fsiFar !== 'All'}>
+                    <SelectValue placeholder="FSI / FAR" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">FSI: All</SelectItem>
+                    {Array.from(new Set(parcelsList.map((p: any) => p.fsiFar).filter(Boolean))).sort().map((s: any) => (
+                      <SelectItem key={s} value={s} className="text-xs">
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {(status || zone || landUse || allotmentMode || fsiFar || search) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs gap-1 text-muted-foreground"
+                    onClick={() => {
+                      setStatus('')
+                      setZone('')
+                      setLandUse('')
+                      setAllotmentMode('')
+                      setFsiFar('')
+                      setSearch('')
+                    }}
+                  >
+                    <X className="h-3.5 w-3.5" /> Clear
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          </Card>
 
           {/* Land Parcels Table Card */}
           <Card className="border shadow-sm overflow-hidden">
-            <CardHeader className="p-4 pb-3 border-b bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 space-y-0">
-              <div>
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Building2 className="h-3.5 w-3.5 text-primary" /> Amaravati Land Inventory Register
-                </CardTitle>
-                <CardDescription className="text-xs mt-0.5">
-                  Complete cadastre register with survey numbers, land use allocations, extents & valuation
-                </CardDescription>
-              </div>
-              <Badge variant="outline" className="text-xs bg-background font-mono self-start sm:self-auto">
-                Showing {filteredLands.length} of {parcelsList.length} Parcels
-              </Badge>
-            </CardHeader>
-
             <CardContent className="px-3 py-0">
               {loading ? (
                 <div className="p-4 space-y-2">

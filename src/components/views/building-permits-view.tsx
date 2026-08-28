@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Filter, Search, FileText, CheckCircle2, Clock, XCircle, Building2, MapPin, Calendar, History, FileCheck, Landmark, UploadCloud } from 'lucide-react'
+import { Filter, Search, FileText, CheckCircle2, Clock, XCircle, Building2, MapPin, Calendar, History, FileCheck, Landmark, UploadCloud, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
@@ -144,29 +144,37 @@ const mockPermits = [
 export function BuildingPermitsView() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
+  const [type, setType] = useState('')
+  const [zone, setZone] = useState('')
+  const [stage, setStage] = useState('')
+  const [year, setYear] = useState('')
   const [selectedPermit, setSelectedPermit] = useState<typeof mockPermits[0] | null>(null)
 
   const filtered = useMemo(() => {
     return mockPermits.filter(p => {
       if (status && p.status !== status) return false
+      if (type && p.type !== type) return false
+      if (zone && p.zone !== zone) return false
+      if (stage && p.stages[p.currentStage] !== stage) return false
+      if (year && !p.date.startsWith(year)) return false
       if (search) {
         const s = search.toLowerCase()
         return p.id.toLowerCase().includes(s) || p.applicant.toLowerCase().includes(s)
       }
       return true
     })
-  }, [search, status])
+  }, [search, status, type, zone, stage, year])
 
-  const activeFilters = [status, search].filter(Boolean).length
+  const activeFilters = [status, type, zone, stage, year, search].filter(Boolean).length
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-2">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Building Permits</h1>
         <p className="text-sm text-muted-foreground">Manage and track building permits for Amaravati City, Andhra Pradesh.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="py-2.5 bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="px-3 py-0 flex items-center gap-3">
             <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg shrink-0"><FileText className="h-3.5 w-3.5" /></div>
@@ -205,30 +213,59 @@ export function BuildingPermitsView() {
         </Card>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-muted-foreground">
-          <Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <div className="relative max-w-xs w-full sm:w-auto">
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input placeholder="Search ID or Applicant..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} />
+            <Input placeholder="Search ID or Applicant..." className="pl-8 h-8 text-xs w-full" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
-          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
-            <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger>
-            <SelectContent>
-              {['All', 'Approved', 'Under Review', 'Rejected'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setSearch('') }}>Clear</Button>}
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">Status: All</SelectItem>
+                {['Approved', 'Under Review', 'Rejected'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={type || 'All'} onValueChange={v => setType(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[110px] h-8 text-xs" data-active={!!type && type !== 'All'}><SelectValue placeholder="Type" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">Type: All</SelectItem>
+                {['Commercial', 'Residential', 'Industrial', 'Mixed Use'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={zone || 'All'} onValueChange={v => setZone(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!zone && zone !== 'All'}><SelectValue placeholder="Zone" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">Zone: All</SelectItem>
+                {['Zone A — Core', 'Zone B — Growth', 'Zone C — Industrial', 'Zone D — Residential'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={stage || 'All'} onValueChange={v => setStage(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!stage && stage !== 'All'}><SelectValue placeholder="Stage" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">Stage: All</SelectItem>
+                {['Submitted', 'Initial Review', 'NOC Verification', 'Final Review', 'Approved'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={year || 'All'} onValueChange={v => setYear(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[95px] h-8 text-xs" data-active={!!year && year !== 'All'}><SelectValue placeholder="Year" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">Year: All</SelectItem>
+                {['2024', '2023'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => { setStatus(''); setType(''); setZone(''); setStage(''); setYear(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+          </div>
         </div>
-      </div>
+      </Card>
 
       {/* Main Stage View Area */}
-      <Card className="mb-6 overflow-hidden border-2">
-        <CardContent className="h-[430px] overflow-auto p-4 bg-muted/5">
+      <Card className="overflow-hidden border-2">
+        <CardContent className="h-[480px] overflow-auto p-2 bg-muted/5">
           {/* 6 column grid to meet requirements (12 items visible = 6 cols x 2 rows) */}
-          <div className="grid grid-cols-6 gap-4 items-stretch min-w-[1000px]">
+          <div className="grid grid-cols-6 gap-2 items-stretch min-w-[1000px]">
           {filtered.map((p) => (
             <Card 
               key={p.id} 
@@ -277,7 +314,6 @@ export function BuildingPermitsView() {
       <Separator />
 
       <div>
-        <h2 className="text-xl font-bold tracking-tight mb-4">Permits List</h2>
         <Card>
           <CardContent className="p-0">
             <Table>

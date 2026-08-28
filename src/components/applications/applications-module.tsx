@@ -11,7 +11,7 @@ import { MyWorkQueue, CancellationsView } from '@/components/views/simple-views'
 import { WorkflowKanban } from '@/components/views/index-kanban'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
+import { Card } from '@/components/ui/card'
 const STATUS_OPTIONS = ['All', 'Draft', 'Submitted', 'Under Review', 'Clarification Required', 'Approved', 'Rejected', 'Deferred', 'Withdrawn', 'Cancelled', 'Completed']
 const STAGE_OPTIONS = [
   'All', 'Application', 'Eligibility', 'DPR Review', 'Economic Review', 'LASC',
@@ -56,18 +56,34 @@ export function ApplicationsModule() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col space-y-1 p-4 md:p-6 pb-0 md:pb-0 bg-muted/30 pt-4">
-      <div className="flex flex-col gap-2 shrink-0">
+    <div className="flex-1 w-full flex flex-col space-y-1 px-2 py-4 md:px-2 pb-0 md:pb-0 bg-muted/30 pt-4">
+      <div className="flex flex-col gap-0 shrink-0">
         <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground hidden lg:block">
             Manage all land allotment applications, view your personal work queue, and track workflow stages.
           </p>
-          <div className="flex flex-wrap items-center gap-2 justify-end">
-            <div className="relative w-40">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder="Search..." className="pl-8 h-8 text-xs bg-white" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-            </div>
+          <div className="flex items-center justify-end ml-auto">
+            <Button
+              size="sm"
+              className="gap-1.5 shrink-0 h-8 text-xs"
+              onClick={() => setShowNewDialog(true)}
+            >
+              <Plus className="h-4 w-4" />
+              New Application
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm mb-2 mt-2">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input placeholder="Search..." className="pl-8 h-8 text-xs bg-white w-full" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
                 <SelectValue placeholder="Status" />
@@ -94,23 +110,14 @@ export function ApplicationsModule() {
             </Select>
 
             {hasFilters && (
-              <Button variant="outline" size="sm" className="h-8 text-xs gap-1 text-red-500 border-red-200 hover:text-red-600 hover:bg-red-50 hover:border-red-300" onClick={resetFilters}>
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
                 <X className="h-3.5 w-3.5" /> Clear
               </Button>
             )}
-
-            <Button
-              size="sm"
-              className="gap-1.5 shrink-0 h-8 text-xs ml-2"
-              onClick={() => setShowNewDialog(true)}
-            >
-              <Plus className="h-4 w-4" />
-              New Application
-            </Button>
           </div>
         </div>
-      </div>
-
+      </Card>
+      
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
         <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1 mb-0 rounded-none h-auto">
           <TabsTrigger value="all" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
@@ -126,20 +133,20 @@ export function ApplicationsModule() {
             <Ban className="w-4 h-4 mr-2 text-purple-500" /> <b>Cancellations</b>
           </TabsTrigger>
         </TabsList>
-        <div className="flex-1 overflow-hidden mt-0">
-          <TabsContent value="all" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden ${activeTab !== 'all' ? 'hidden' : ''}`}>
+        <div className="flex-1 flex flex-col min-h-0 mt-0">
+          <TabsContent value="all" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 ${activeTab !== 'all' ? 'hidden' : ''}`}>
             <ApplicationsList key={listKey} hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
 
-          <TabsContent value="queue" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden ${activeTab !== 'queue' ? 'hidden' : ''}`}>
+          <TabsContent value="queue" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 ${activeTab !== 'queue' ? 'hidden' : ''}`}>
             <ApplicationsList key={`queue-${listKey}`} viewType="queue" hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
 
-          <TabsContent value="kanban" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden pb-2 ${activeTab !== 'kanban' ? 'hidden' : ''}`}>
+          <TabsContent value="kanban" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 pb-2 ${activeTab !== 'kanban' ? 'hidden' : ''}`}>
             <WorkflowKanban hideHeader />
           </TabsContent>
 
-          <TabsContent value="cancellations" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
+          <TabsContent value="cancellations" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
             <ApplicationsList key={`cancellations-${listKey}`} viewType="cancellations" hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
         </div>

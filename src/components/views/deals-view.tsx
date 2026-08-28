@@ -539,23 +539,8 @@ export function DealsView() {
           <p className="text-sm text-muted-foreground hidden lg:block">
             Track deals pipeline and performance.
           </p>
-          <div className="flex flex-wrap items-center justify-end gap-2 flex-1">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <input
-                value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Search..."
-                className="pl-8 pr-3 h-8 w-[160px] md:w-[180px] rounded-md border bg-background text-xs outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
-              />
-            </div>
-            <Select value={filterSector} onValueChange={(v) => setFilterSector(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterSector !== 'All Sectors'}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            <Select value={filterStage} onValueChange={(v) => setFilterStage(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterStage !== 'All Stages'}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            <Select value={filterDealStatus} onValueChange={(v) => setFilterDealStatus(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterDealStatus !== 'All Deal Statuses'}><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterPriority !== 'All Priorities'}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterDealStatus !== 'All Deal Statuses' || filterPriority !== 'All Priorities') && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
-            )}
-            <Button size="sm" className="gap-1.5 shrink-0 h-8 text-xs ml-2" onClick={() => setNewDealOpen(true)}><Plus className="h-4 w-4" /> New Deal</Button>
+          <div className="flex items-center justify-end ml-auto">
+            <Button size="sm" className="gap-1.5 shrink-0 h-8 text-xs" onClick={() => setNewDealOpen(true)}><Plus className="h-4 w-4" /> New Deal</Button>
           </div>
         </div>
       </div>
@@ -584,6 +569,30 @@ export function DealsView() {
           </Card>
         ))}
       </div>
+
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search deals..."
+              className="pl-8 h-8 text-xs w-full"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={filterSector} onValueChange={(v) => setFilterSector(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterSector !== 'All Sectors'}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterStage} onValueChange={(v) => setFilterStage(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterStage !== 'All Stages'}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterDealStatus} onValueChange={(v) => setFilterDealStatus(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterDealStatus !== 'All Deal Statuses'}><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterPriority !== 'All Priorities'}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterDealStatus !== 'All Deal Statuses' || filterPriority !== 'All Priorities') && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
+            )}
+          </div>
+        </div>
+      </Card>
 
       {/* Deals Table */}
       <DealsApplicationsTable 

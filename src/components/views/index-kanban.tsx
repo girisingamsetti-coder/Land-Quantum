@@ -220,7 +220,7 @@ export function WorkflowKanban({ hideHeader }: { hideHeader?: boolean } = {}) {
   const activeStages = grouped.length > 0 ? grouped : stages.slice(0, 6).map(s => ({ stage: s, items: [] }))
 
   return (
-    <div className="space-y-4 h-full flex flex-col pb-4">
+    <div className="space-y-4 h-full flex flex-col pb-4 flex-1 min-h-0">
       {!hideHeader && (
         <div className="flex items-center justify-between shrink-0 mb-4">
           <div>

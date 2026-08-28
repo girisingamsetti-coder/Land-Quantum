@@ -171,7 +171,7 @@ export function ApplicationsList({
   const [selectedStatCard, setSelectedStatCard] = useState<string | null>(null)
   const mode = 'All' // Mode is always All for now
   const [page, setPage] = useState(1)
-  const pageSize = 100
+  const pageSize = 12
 
   // Reset page when filters change
   useEffect(() => {
@@ -211,7 +211,7 @@ export function ApplicationsList({
   const to = data ? Math.min(data.page * data.pageSize, data.total) : 0
 
   return (
-    <div className="space-y-1 flex-1 w-full flex flex-col">
+    <div className="space-y-1 flex-1 w-full flex flex-col min-h-0">
       {/* Header */}
       {!hideHeader && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -403,7 +403,22 @@ export function ApplicationsList({
                 </Table>
               </div>
 
-
+              <div className="flex items-center justify-between px-4 py-2 border-t bg-muted/20 shrink-0">
+                <div className="text-xs text-muted-foreground">
+                  Showing <span className="font-medium text-foreground">{from}</span> to <span className="font-medium text-foreground">{to}</span> of <span className="font-medium text-foreground">{data.total}</span> entries
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-1 px-2 text-xs font-medium">
+                    Page {page} of {totalPages}
+                  </div>
+                  <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>
+                    Next
+                  </Button>
+                </div>
+              </div>
             </>
           )}
         </CardContent>

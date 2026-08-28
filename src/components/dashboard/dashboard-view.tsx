@@ -686,24 +686,28 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
             </div>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0 ml-4">
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                <input
+
+        </CardHeader>
+        <div className="p-2 bg-muted/5">
+          <Card className="p-1.5 border shadow-sm mb-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+              <div className="relative w-full sm:flex-1 mr-auto">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
                   type="text"
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(1) }}
                   placeholder="Search by lead, applicant, sector, plot..."
-                  className="pl-7 pr-3 h-7 w-[200px] xl:w-64 rounded-md border bg-background text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-muted-foreground/60"
+                  className="pl-8 h-8 text-xs w-full"
                 />
               </div>
+              <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5" onClick={handleCSV}>
+                  <Download className="h-3.5 w-3.5" /> Export CSV
+                </Button>
+              </div>
             </div>
-            <Button variant="outline" size="sm" className="h-7 text-[11px] gap-1.5" onClick={handleCSV}>
-              <Download className="h-3 w-3" /> Export
-            </Button>
-          </div>
-        </CardHeader>
+          </Card>
 
         {activeTab === 'cases' ? (
           <>
@@ -1056,6 +1060,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
             </div>
           </div>
         )}
+        </div>
       </Card>
     </div>
   )
