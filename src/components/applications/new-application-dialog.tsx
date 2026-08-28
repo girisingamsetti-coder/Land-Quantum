@@ -197,6 +197,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
   const [errors, setErrors] = useState<Partial<FormData>>({})
   const [submitting, setSubmitting] = useState(false)
   const [successApp, setSuccessApp] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const set = (field: keyof FormData, value: string | string[] | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -222,6 +223,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
   const handleSubmit = async () => {
     if (!validateStep()) return
     setSubmitting(true)
+    setSubmitError(null)
     try {
       const res = await fetch('/api/applications', {
         method: 'POST',
@@ -233,10 +235,10 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
         setSuccessApp(json.data.application.applicationNumber)
         onCreated?.(json.data.application.applicationNumber)
       } else {
-        setErrors({ organizationName: json.error || 'Failed to create application' })
+        setSubmitError(json.message || json.error || 'Failed to submit application. Please try again.')
       }
     } catch {
-      setErrors({ organizationName: 'Network error, please try again' })
+      setSubmitError('Network error. Please check your connection and try again.')
     } finally {
       setSubmitting(false)
     }
@@ -250,6 +252,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
       setErrors({})
       setSuccessApp(null)
       setSubmitting(false)
+      setSubmitError(null)
     }, 300)
   }
 
@@ -781,18 +784,23 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                 {step > 1 && <ChevronLeft className="h-3.5 w-3.5" />}
                 {step === 1 ? 'Cancel' : 'Back'}
               </Button>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Step {step} of {STEPS.length}</span>
-                {step < STEPS.length ? (
-                  <Button size="sm" onClick={next} className="gap-1">
-                    Next <ChevronRight className="h-3.5 w-3.5" />
-                  </Button>
-                ) : (
-                  <Button size="sm" onClick={handleSubmit} disabled={submitting} className="gap-1.5">
-                    {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-                    {submitting ? 'Submitting...' : 'Submit Application'}
-                  </Button>
+              <div className="flex flex-col items-end gap-1">
+                {submitError && (
+                  <p className="text-xs text-destructive text-right max-w-xs">{submitError}</p>
                 )}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Step {step} of {STEPS.length}</span>
+                  {step < STEPS.length ? (
+                    <Button size="sm" onClick={next} className="gap-1">
+                      Next <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  ) : (
+                    <Button size="sm" onClick={handleSubmit} disabled={submitting} className="gap-1.5">
+                      {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                      {submitting ? 'Submitting...' : 'Submit Application'}
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
