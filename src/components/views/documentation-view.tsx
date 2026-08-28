@@ -380,21 +380,21 @@ export function DocumentationView() {
           <Card
             key={s.label}
             className={cn(
-              'border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
+              'py-2.5 border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
               s.bg,
               statusFilter === s.filterVal && 'outline outline-1 outline-primary outline-offset-[-1px]'
             )}
             onClick={() => setStatusFilter(statusFilter === s.filterVal ? '' : s.filterVal)}
           >
-            <CardContent className="p-4">
+            <CardContent className="px-3 py-0">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{s.label}</p>
-                  <p className={cn('text-2xl font-bold mt-1 tabular-nums', s.valColor)}>{s.val}</p>
-                  <p className="text-[11px] text-muted-foreground mt-1">{s.sub}</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">{s.label}</p>
+                  <p className={cn('text-lg font-bold tabular-nums leading-tight mt-1 truncate', s.valColor)}>{s.val}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{s.sub}</p>
                 </div>
-                <div className={cn('rounded-lg p-2.5 shadow-xs', s.iconBg)}>
-                  <s.Icon className={cn('h-5 w-5', s.iconText)} />
+                <div className={cn('rounded-lg p-2 shrink-0 shadow-xs', s.iconBg)}>
+                  <s.Icon className={cn('h-3.5 w-3.5', s.iconText)} />
                 </div>
               </div>
             </CardContent>
@@ -475,7 +475,7 @@ export function DocumentationView() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="px-3 py-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -644,7 +644,7 @@ export function DocumentationView() {
 
                 <div className="h-72 bg-muted/20 flex flex-col items-center justify-center p-6 text-center space-y-3">
                   <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <FileText className="h-8 w-8" />
+                    <FileText className="h-3.5 w-3.5" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold">{selectedDoc.name}</p>

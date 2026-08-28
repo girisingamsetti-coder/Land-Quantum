@@ -113,7 +113,7 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
         </div>
       </div>
       <Card>
-        <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div> :
+        <CardContent className="px-3 py-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div> :
           <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
             {filtered.map((c: any) => (
               <TableRow key={c.id}>
@@ -220,14 +220,14 @@ export function ReportsView() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" /> Print
+            <Printer className="h-3.5 w-3.5 mr-2" /> Print
           </Button>
           <Button variant="outline" size="sm" disabled={exporting === 'csv'} onClick={() => exportAs('csv')}>
-            {exporting === 'csv' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileSpreadsheet className="h-4 w-4 mr-2" />}
+            {exporting === 'csv' ? <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5 mr-2" />}
             CSV
           </Button>
           <Button size="sm" disabled={exporting === 'pdf'} onClick={() => exportAs('pdf')}>
-            {exporting === 'pdf' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileDown className="h-4 w-4 mr-2" />}
+            {exporting === 'pdf' ? <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" /> : <FileDown className="h-3.5 w-3.5 mr-2" />}
             PDF
           </Button>
         </div>
@@ -250,7 +250,7 @@ export function ReportsView() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <Input type="date" className="h-8 text-xs w-32" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
           <Input type="date" className="h-8 text-xs w-32" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
@@ -280,11 +280,11 @@ export function ReportsView() {
 
           {isLoading ? (
             <div className="p-8 flex justify-center items-center">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
             </div>
           ) : !report ? (
             <div className="p-8 flex flex-col items-center justify-center text-muted-foreground">
-              <BarChart3 className="h-8 w-8 mb-2" />
+              <BarChart3 className="h-3.5 w-3.5 mb-2" />
               <p>Select a report</p>
             </div>
           ) : (
@@ -361,7 +361,7 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Audit Trail</h1><p className="text-sm text-muted-foreground">Immutable record of all system actions and changes</p></div>}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!action && action !== 'All'}><SelectValue placeholder="Action" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>)}</SelectContent></Select>
           <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!module && module !== 'All'}><SelectValue placeholder="Module" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}</SelectContent></Select>
@@ -369,7 +369,7 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
         </div>
       </div>
       <Card>
-        <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div> :
+        <CardContent className="px-3 py-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div> :
           <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
             {filtered.map((l: any) => (<TableRow key={l.id}>
               <TableCell className="text-[11px] tabular-nums text-muted-foreground whitespace-nowrap">{new Date(l.createdAt).toLocaleString('en-IN')}</TableCell>
@@ -412,7 +412,7 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">User Management</h1><p className="text-sm text-muted-foreground">Manage system users, roles, and department assignments</p></div>}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search users..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
           <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!role && role !== 'All'}><SelectValue placeholder="Role" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}</SelectContent></Select>
@@ -420,7 +420,7 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
         </div>
       </div>
       <Card>
-        <CardContent className="p-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div> :
+        <CardContent className="px-3 py-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div> :
           <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
             {filtered.map((u: any) => (<TableRow key={u.id}>
               <TableCell className="text-sm font-medium">{u.name}</TableCell>
@@ -444,8 +444,8 @@ export function DepartmentsView({ hideHeader }: { hideHeader?: boolean } = {}) {
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Departments & Roles</h1><p className="text-sm text-muted-foreground">Manage organizational structure and role-based access</p></div>}
       <div className="grid md:grid-cols-2 gap-4">
-        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className=" text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
-        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="p-0"><Table><TableBody>{data?.roles?.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="px-3 py-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className=" text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="px-3 py-0"><Table><TableBody>{data?.roles?.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
       </div>
     </div>
   )
@@ -460,7 +460,7 @@ export function SettingsView() {
     <div className="space-y-4">
       <div><h1 className="text-2xl font-bold tracking-tight">Admin Settings</h1><p className="text-sm text-muted-foreground">Configure workflow stages, SLA targets, and system settings</p></div>
       <Tabs defaultValue="workflow" className="flex flex-col h-full"><TabsList className="flex-wrap h-auto"><TabsTrigger value="workflow">Workflow Stages</TabsTrigger><TabsTrigger value="sla">SLA Configuration</TabsTrigger><TabsTrigger value="system">System Settings</TabsTrigger><TabsTrigger value="users">Users</TabsTrigger><TabsTrigger value="departments">Departments & Roles</TabsTrigger><TabsTrigger value="audit">Audit Trail</TabsTrigger></TabsList>
-        <TabsContent value="workflow"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>#</TableHead><TableHead>Stage</TableHead><TableHead>Owner Role</TableHead><TableHead>SLA (days)</TableHead><TableHead>Optional</TableHead><TableHead>Active</TableHead></TableRow></TableHeader><TableBody>
+        <TabsContent value="workflow"><Card><CardContent className="px-3 py-0"><Table><TableHeader><TableRow><TableHead>#</TableHead><TableHead>Stage</TableHead><TableHead>Owner Role</TableHead><TableHead>SLA (days)</TableHead><TableHead>Optional</TableHead><TableHead>Active</TableHead></TableRow></TableHeader><TableBody>
           {data?.stages?.map((s: any) => (<TableRow key={s.id}>
             <TableCell className="text-xs tabular-nums">{s.stageOrder}</TableCell>
             <TableCell className="text-sm font-medium">{s.stageName}</TableCell>
@@ -470,10 +470,10 @@ export function SettingsView() {
             <TableCell>{s.isActive ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <XCircle className="h-3.5 w-3.5 text-red-500" />}</TableCell>
           </TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="sla"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead>SLA (days)</TableHead></TableRow></TableHeader><TableBody>
+        <TabsContent value="sla"><Card><CardContent className="px-3 py-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead>SLA (days)</TableHead></TableRow></TableHeader><TableBody>
           {data?.stages?.map((s: any) => (<TableRow key={s.id}><TableCell className="text-sm">{s.stageName}</TableCell><TableCell className="text-sm font-bold tabular-nums">{s.slaDays} days</TableCell></TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="system"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Key</TableHead><TableHead>Value</TableHead><TableHead>Category</TableHead><TableHead>Label</TableHead></TableRow></TableHeader><TableBody>
+        <TabsContent value="system"><Card><CardContent className="px-3 py-0"><Table><TableHeader><TableRow><TableHead>Key</TableHead><TableHead>Value</TableHead><TableHead>Category</TableHead><TableHead>Label</TableHead></TableRow></TableHeader><TableBody>
           {data?.settings?.map((s: any) => (<TableRow key={s.id}><TableCell className=" text-xs">{s.key}</TableCell><TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell><TableCell className="text-xs">{s.label}</TableCell></TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
         <TabsContent value="users"><UsersView hideHeader /></TabsContent>
@@ -504,7 +504,7 @@ export function GISView() {
 
       <div className="grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2"><Card className="overflow-hidden"><div className="py-2.5 bg-gradient-to-br from-emerald-50 via-white to-emerald-100 p-6 min-h-[400px]">
-          <div className="text-center text-muted-foreground mb-4"><Map className="h-8 w-8 mx-auto mb-2" /><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
+          <div className="text-center text-muted-foreground mb-4"><Map className="h-3.5 w-3.5 mx-auto mb-2" /><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
           <div className="grid grid-cols-5 gap-2">{filtered.map((p) => (
             <div key={p.id} className="rounded border-2 p-2 hover:shadow-md transition-shadow" style={{ borderColor: colorMap[p.status] || '#9ca3af' }} title={`${p.plotId}\n${p.zone?.name}\n${p.status}`}>
               <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }} /><p className="text-[7px]  truncate font-medium">{p.plotId.replace('APCRDA-P-', '')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
@@ -533,11 +533,11 @@ export function MyWorkQueue({ hideHeader, tabsControl }: { hideHeader?: boolean,
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
       {tabsControl && <div className="mb-4">{tabsControl}</div>}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-3.5 w-3.5 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-3.5 w-3.5 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-3.5 w-3.5 text-rose-600" /></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-3.5 w-3.5 text-blue-600" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.assignedApps?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-3.5 w-3.5 text-amber-600" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.assignedStages?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-3.5 w-3.5 text-rose-600" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.grievances?.length || 0}</p></CardContent></Card>
       </div>
-      <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="p-0">
+      <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="px-3 py-0">
         {loading ? <div className="p-4"><Skeleton className="h-12 w-full" /></div> :
           data?.assignedStages?.length === 0 ? <p className="text-sm text-muted-foreground p-4">No pending actions</p> :
             <Table><TableHeader><TableRow><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Stage</TableHead></TableRow></TableHeader><TableBody>
@@ -633,15 +633,15 @@ export function RiskAlertsView() {
           const tc = severityTileColor(sev)
           const count = RISK_ALERTS.filter(a => a.severity === sev).length
           return (
-            <Card key={sev} className={cn('border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
-              <CardContent className="p-4">
+            <Card key={sev} className={cn('py-2.5 border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
+              <CardContent className="px-3 py-0">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{sev}</p>
-                    <p className={cn('text-2xl font-bold mt-1 tabular-nums', tc.text)}>{count}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">{sev}</p>
+                    <p className={cn('text-lg font-bold tabular-nums leading-tight mt-1 truncate', tc.text)}>{count}</p>
                   </div>
-                  <div className={cn('rounded-lg p-2', tc.iconBg)}>
-                    <AlertCircle className={cn('h-4 w-4', tc.iconText)} />
+                  <div className={cn('rounded-lg p-2 shrink-0', tc.iconBg)}>
+                    <AlertCircle className={cn('h-3.5 w-3.5', tc.iconText)} />
                   </div>
                 </div>
               </CardContent>
@@ -651,7 +651,7 @@ export function RiskAlertsView() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!severityFilter && severityFilter !== 'All'}><SelectValue placeholder="Severity" /></SelectTrigger><SelectContent>{['All', 'Critical', 'High', 'Medium', 'Low'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
           <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!typeFilter && typeFilter !== 'All'}><SelectValue placeholder="Alert Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>

@@ -461,10 +461,10 @@ export function LandParcelsView() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-4">
         <TabsList className="grid w-full sm:w-[380px] grid-cols-2 p-1 bg-muted/80">
           <TabsTrigger value="gis" className="text-xs font-semibold flex items-center gap-2">
-            <Layers className="h-4 w-4" /> GIS Map
+            <Layers className="h-3.5 w-3.5" /> GIS Map
           </TabsTrigger>
           <TabsTrigger value="lands" className="text-xs font-semibold flex items-center gap-2">
-            <Building2 className="h-4 w-4" /> Lands Details
+            <Building2 className="h-3.5 w-3.5" /> Lands Details
           </TabsTrigger>
         </TabsList>
 
@@ -648,7 +648,7 @@ export function LandParcelsView() {
             </CardHeader>
 
             {/* Card Content - 3 Rows Visible with Internal Scroll */}
-            <CardContent className="p-3">
+            <CardContent className="px-3 py-0">
               {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {Array.from({ length: 15 }).map((_, i) => (
@@ -761,16 +761,16 @@ export function LandParcelsView() {
               <Card
                 key={st}
                 className={cn(
-                  'border cursor-pointer transition-all hover:shadow-md',
+                  'py-2.5 border cursor-pointer transition-all hover:shadow-md',
                   style.border,
                   style.bg,
                   status === st && 'ring-2 ring-offset-1'
                 )}
                 onClick={() => setStatus(status === st ? '' : st)}
               >
-                <CardContent className="py-2 px-3">
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{st}</p>
-                  <p className={cn('text-xl font-bold mt-0.5 tabular-nums', style.color)}>{statusCounts[st] || 0}</p>
+                <CardContent className="px-3 py-0 flex flex-col justify-center">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">{st}</p>
+                  <p className={cn('text-lg font-bold tabular-nums leading-tight mt-1 truncate', style.color)}>{statusCounts[st] || 0}</p>
                 </CardContent>
               </Card>
             ))}
@@ -779,7 +779,7 @@ export function LandParcelsView() {
           {/* Filter Toolbar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
             <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Filter className="h-4 w-4" />
+              <Filter className="h-3.5 w-3.5" />
               <span className="text-xs font-semibold">Filters</span>
             </div>
             <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
@@ -853,7 +853,7 @@ export function LandParcelsView() {
               </Badge>
             </CardHeader>
 
-            <CardContent className="p-0">
+            <CardContent className="px-3 py-0">
               {loading ? (
                 <div className="p-4 space-y-2">
                   {Array.from({ length: 8 }).map((_, i) => (
@@ -949,7 +949,7 @@ export function LandParcelsView() {
             <SheetHeader className="p-4 border-b bg-background text-left flex flex-row items-start justify-between space-y-0">
               <div>
                 <SheetTitle className="flex items-center gap-2">
-                  <MapIcon className="h-5 w-5 text-muted-foreground" />
+                  <MapIcon className="h-3.5 w-3.5 text-muted-foreground" />
                   Plot Cadastral Map: {selectedParcel.plotId}
                 </SheetTitle>
                 <SheetDescription>

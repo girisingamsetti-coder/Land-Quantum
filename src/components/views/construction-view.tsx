@@ -57,10 +57,10 @@ export function ConstructionView() {
           {label:'Completed', val:data.summary.completed, Icon:CheckCircle2, color:'emerald', border:'border-emerald-100', bg:'bg-gradient-to-r from-emerald-50 to-white/50', iconBg:'bg-emerald-100', iconText:'text-emerald-600', valColor:'text-emerald-700'},
         ].map(s=>(
           <Card key={s.label} className={cn('border border-transparent', s.bg, 'cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', status === s.label && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setStatus(status === s.label ? '' : s.label)}>
-            <CardContent className="p-4">
+            <CardContent className="px-3 py-0">
               <div className="flex items-start justify-between">
-                <div><p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{s.label}</p><p className={cn('text-2xl font-bold mt-1 tabular-nums', s.valColor)}>{s.val}</p></div>
-                <div className={cn('rounded-lg p-2', s.iconBg)}><s.Icon className={cn('h-4 w-4', s.iconText)}/></div>
+                <div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">{s.label}</p><p className={cn('text-lg font-bold tabular-nums leading-tight mt-1 truncate', s.valColor)}>{s.val}</p></div>
+                <div className={cn('rounded-lg p-2 shrink-0', s.iconBg)}><s.Icon className={cn('h-3.5 w-3.5', s.iconText)}/></div>
               </div>
             </CardContent>
           </Card>
@@ -68,7 +68,7 @@ export function ConstructionView() {
       </div>}
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-4 w-4" /><span className="text-xs font-semibold">Filters</span></div>
+        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
         <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
           <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'In Progress', 'Delayed', 'Not Started', 'Completed'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
           {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => setStatus('')}><X className="h-3.5 w-3.5" /> Clear</Button>}
@@ -105,11 +105,11 @@ export function ConstructionView() {
         <Card className="mt-8">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" />
+              <Target className="h-3.5 w-3.5 text-primary" />
               <CardTitle>Project Milestones Tracking</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="px-3 py-0">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
