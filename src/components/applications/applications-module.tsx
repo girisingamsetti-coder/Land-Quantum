@@ -55,6 +55,49 @@ export function ApplicationsModule() {
     setListKey(k => k + 1)
   }
 
+  const filterUI = (
+    <Card className="p-1.5 border shadow-sm mb-2 mt-2">
+      <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+        <div className="relative w-full sm:flex-1 mr-auto">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input placeholder="Search..." className="pl-8 h-8 text-xs bg-white w-full" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+        </div>
+        <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Status' : s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={stage} onValueChange={setStage}>
+            <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
+              <SelectValue placeholder="Stage" />
+            </SelectTrigger>
+            <SelectContent>
+              {STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Stage' : s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={sector} onValueChange={setSector}>
+            <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={sector !== 'All'}>
+              <SelectValue placeholder="Sector" />
+            </SelectTrigger>
+            <SelectContent>
+              {SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Sector' : s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          {hasFilters && (
+            <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+              <X className="h-3.5 w-3.5" /> Clear
+            </Button>
+          )}
+        </div>
+      </div>
+    </Card>
+  )
+
   return (
     <div className="flex-1 w-full flex flex-col space-y-1 px-2 py-4 md:px-2 pb-0 md:pb-0 bg-muted/30 pt-4">
       <div className="flex flex-col gap-0 shrink-0">
@@ -75,48 +118,6 @@ export function ApplicationsModule() {
           </div>
         </div>
       </div>
-
-      {/* Filter Toolbar Card */}
-      <Card className="p-1.5 border shadow-sm mb-2 mt-2">
-        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
-          <div className="relative w-full sm:flex-1 mr-auto">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input placeholder="Search..." className="pl-8 h-8 text-xs bg-white w-full" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-          </div>
-          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Status' : s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Select value={stage} onValueChange={setStage}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
-                <SelectValue placeholder="Stage" />
-              </SelectTrigger>
-              <SelectContent>
-                {STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Stage' : s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Select value={sector} onValueChange={setSector}>
-              <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={sector !== 'All'}>
-                <SelectValue placeholder="Sector" />
-              </SelectTrigger>
-              <SelectContent>
-                {SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Sector' : s}</SelectItem>)}
-              </SelectContent>
-            </Select>
-
-            {hasFilters && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
-                <X className="h-3.5 w-3.5" /> Clear
-              </Button>
-            )}
-          </div>
-        </div>
-      </Card>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
         <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1 mb-0 rounded-none h-auto">
@@ -135,11 +136,11 @@ export function ApplicationsModule() {
         </TabsList>
         <div className="flex-1 flex flex-col min-h-0 mt-0">
           <TabsContent value="all" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 ${activeTab !== 'all' ? 'hidden' : ''}`}>
-            <ApplicationsList key={listKey} hideHeader search={search} status={status} stage={stage} sector={sector} />
+            <ApplicationsList key={listKey} hideHeader search={search} status={status} stage={stage} sector={sector} filterNode={filterUI} />
           </TabsContent>
 
           <TabsContent value="queue" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 ${activeTab !== 'queue' ? 'hidden' : ''}`}>
-            <ApplicationsList key={`queue-${listKey}`} viewType="queue" hideHeader search={search} status={status} stage={stage} sector={sector} />
+            <ApplicationsList key={`queue-${listKey}`} viewType="queue" hideHeader search={search} status={status} stage={stage} sector={sector} filterNode={filterUI} />
           </TabsContent>
 
           <TabsContent value="kanban" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 pb-2 ${activeTab !== 'kanban' ? 'hidden' : ''}`}>
@@ -147,7 +148,7 @@ export function ApplicationsModule() {
           </TabsContent>
 
           <TabsContent value="cancellations" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden min-h-0 ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
-            <ApplicationsList key={`cancellations-${listKey}`} viewType="cancellations" hideHeader search={search} status={status} stage={stage} sector={sector} />
+            <ApplicationsList key={`cancellations-${listKey}`} viewType="cancellations" hideHeader search={search} status={status} stage={stage} sector={sector} filterNode={filterUI} />
           </TabsContent>
         </div>
       </Tabs>

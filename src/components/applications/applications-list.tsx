@@ -156,6 +156,7 @@ export function ApplicationsList({
   status = 'All',
   stage = 'All',
   sector = 'All',
+  filterNode
 }: {
   hideHeader?: boolean;
   viewType?: 'all' | 'queue' | 'kanban' | 'cancellations';
@@ -163,6 +164,7 @@ export function ApplicationsList({
   status?: string;
   stage?: string;
   sector?: string;
+  filterNode?: React.ReactNode;
 } = {}) {
   const { navigateTo } = useAppLayout()
 
@@ -307,6 +309,8 @@ export function ApplicationsList({
           </CardContent>
         </Card>
       </div>
+
+      {filterNode}
 
       {/* Table */}
       <Card className="py-0 overflow-hidden flex-1 flex flex-col min-h-0">
