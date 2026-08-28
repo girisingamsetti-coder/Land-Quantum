@@ -61,6 +61,9 @@ interface FormData {
   registeredAddress: string
   
   // Organization Profile
+  entityType: string
+  dateOfIncorporation: string
+  registrationNumber: string
   representativeName: string
   designation: string
   contactPhone: string
@@ -125,6 +128,7 @@ interface FormData {
 const INITIAL_FORM: FormData = {
   sector: '', subSector: '',
   enquiryName: '', organizationName: '', registeredAddress: '',
+  entityType: '', dateOfIncorporation: '', registrationNumber: '',
   representativeName: '', designation: '', contactPhone: '', contactEmail: '',
   additionalContacts: [],
   organizationBackground: '', projectVision: '', utilizationPlan: '', areaAllocation: '',
@@ -297,7 +301,22 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
         </div>
         {!collapsedSections.has('org-details') && (
           <div className="pt-4 grid grid-cols-2 gap-6">
-            {/* Can add extra org details here if needed */}
+            <Field label="Entity Type">
+              <Select value={form.entityType} onValueChange={v => set('entityType', v)}>
+                <SelectTrigger id={`entity-type-${stepNumber}`} className="h-9 text-sm bg-muted/20">
+                  <SelectValue placeholder="Select entity type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {['Private Limited', 'Public Limited', 'Partnership', 'Proprietorship', 'LLP', 'Trust', 'Society', 'Other'].map(s => <SelectItem key={s} value={s} className="text-sm">{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Date of Incorporation">
+              <Input type="date" value={form.dateOfIncorporation} onChange={e => set('dateOfIncorporation', e.target.value)} className="h-9 text-sm bg-muted/20" />
+            </Field>
+            <Field label="Registration / CIN Number">
+              <Input placeholder="Registration Number" value={form.registrationNumber} onChange={e => set('registrationNumber', e.target.value)} className="h-9 text-sm bg-muted/20" />
+            </Field>
           </div>
         )}
       </div>
