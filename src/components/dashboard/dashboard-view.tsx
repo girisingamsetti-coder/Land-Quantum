@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
 import {
   ChartContainer, ChartTooltip, ChartTooltipContent,
 } from '@/components/ui/chart'
@@ -76,11 +77,11 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
 }) {
   const bgClass = color.includes('teal') ? 'bg-gradient-to-r from-teal-50 to-white/50'
     : color.includes('indigo') ? 'bg-gradient-to-r from-indigo-50 to-white/50'
-    : color.includes('amber') || color.includes('orange') ? 'bg-gradient-to-r from-amber-50 to-white/50'
-    : color.includes('purple') || color.includes('violet') ? 'bg-gradient-to-r from-purple-50 to-white/50'
-    : color.includes('blue') ? 'bg-gradient-to-r from-blue-50 to-white/50'
-    : color.includes('emerald') || color.includes('green') ? 'bg-gradient-to-r from-emerald-50 to-white/50'
-    : 'bg-gradient-to-r from-slate-50 to-white/50'
+      : color.includes('amber') || color.includes('orange') ? 'bg-gradient-to-r from-amber-50 to-white/50'
+        : color.includes('purple') || color.includes('violet') ? 'bg-gradient-to-r from-purple-50 to-white/50'
+          : color.includes('blue') ? 'bg-gradient-to-r from-blue-50 to-white/50'
+            : color.includes('emerald') || color.includes('green') ? 'bg-gradient-to-r from-emerald-50 to-white/50'
+              : 'bg-gradient-to-r from-slate-50 to-white/50'
 
   return (
     <Card className={cn("py-2.5 overflow-hidden border border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] shadow-sm hover:shadow-md transition-all cursor-pointer", bgClass)}>
@@ -709,357 +710,357 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
             </div>
           </Card>
 
-        {activeTab === 'cases' ? (
-          <>
-            {/* Table */}
+          {activeTab === 'cases' ? (
+            <>
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-[11px]">
+                  <thead className="bg-muted/40">
+                    <tr>
+                      {th('Lead', 'id', 'min-w-[150px]')}
+                      {th('Applicant', 'applicant', 'min-w-[180px]')}
+                      {th('Sector', 'sector', 'min-w-[150px]')}
+                      {th('Theme city', 'themeCity', 'min-w-[120px]')}
+                      {th('Plot', 'plot', 'min-w-[60px]')}
+                      {th('Step', 'step', 'min-w-[170px]')}
+                      {th('Status', 'status', 'min-w-[100px]')}
+                      {th('Investment', 'investmentNum', 'min-w-[90px] text-right')}
+                      {th('Jobs', 'jobs', 'min-w-[55px] text-right')}
+                      {th('Acres', 'acres', 'min-w-[55px] text-right')}
+                      {th('Age', 'ageDays', 'min-w-[55px] text-right')}
+                      {th('Expected by', 'expectedBy', 'min-w-[110px]')}
+                      {th('Applied', 'applied', 'min-w-[110px]')}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {pageData.length === 0 ? (
+                      <tr><td colSpan={13} className="text-center py-8 text-muted-foreground text-xs">No results found</td></tr>
+                    ) : pageData.map((row) => (
+                      <tr key={row.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => onNavigateToApp(row.id)}>
+                        <td className="px-2 py-2">
+                          <span className=" text-[10px] text-primary font-semibold hover:underline">{row.id}</span>
+                        </td>
+                        <td className="px-2 py-2 text-[11px] max-w-[200px]">
+                          <span className="truncate block">{row.applicant}</span>
+                        </td>
+                        <td className="px-2 py-2 text-[11px] text-muted-foreground">{row.sector}</td>
+                        <td className="px-2 py-2 text-[11px]">{row.themeCity}</td>
+                        <td className="px-2 py-2  text-[10px] text-muted-foreground">{row.plot}</td>
+                        <td className="px-2 py-2 text-[11px] text-muted-foreground max-w-[200px]">
+                          <span className="truncate block">{row.step}</span>
+                        </td>
+                        <td className="px-2 py-2">{statusBadge(row.status)}</td>
+                        <td className="px-2 py-2 text-right font-semibold tabular-nums">{row.investment}</td>
+                        <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs.toLocaleString('en-IN')}</td>
+                        <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres}</td>
+                        <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.ageDays} d</td>
+                        <td className="px-2 py-2">
+                          {row.isLate ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Badge variant="destructive" className="text-[9px] py-0 px-1">Late</Badge>
+                              <span className="text-red-600 font-semibold text-[10px]">{row.expectedBy}</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground">{row.expectedBy}</span>
+                          )}
+                        </td>
+                        <td className="px-2 py-2 text-[11px] text-muted-foreground">{row.applied}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : activeTab === 'dates' ? (
             <div className="overflow-x-auto">
               <table className="w-full text-[11px]">
-                <thead className="bg-muted/40">
-                  <tr>
-                    {th('Lead', 'id', 'min-w-[150px]')}
-                    {th('Applicant', 'applicant', 'min-w-[180px]')}
-                    {th('Sector', 'sector', 'min-w-[150px]')}
-                    {th('Theme city', 'themeCity', 'min-w-[120px]')}
-                    {th('Plot', 'plot', 'min-w-[60px]')}
-                    {th('Step', 'step', 'min-w-[170px]')}
-                    {th('Status', 'status', 'min-w-[100px]')}
-                    {th('Investment', 'investmentNum', 'min-w-[90px] text-right')}
-                    {th('Jobs', 'jobs', 'min-w-[55px] text-right')}
-                    {th('Acres', 'acres', 'min-w-[55px] text-right')}
-                    {th('Age', 'ageDays', 'min-w-[55px] text-right')}
-                    {th('Expected by', 'expectedBy', 'min-w-[110px]')}
-                    {th('Applied', 'applied', 'min-w-[110px]')}
-                  </tr>
-                </thead>
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lead</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Applicant</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Event</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Days away</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Stage</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Priority</th>
+                </tr></thead>
                 <tbody className="divide-y">
-                  {pageData.length === 0 ? (
-                    <tr><td colSpan={13} className="text-center py-8 text-muted-foreground text-xs">No results found</td></tr>
-                  ) : pageData.map((row) => (
-                    <tr key={row.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => onNavigateToApp(row.id)}>
+                  {DATES_DATA.sort((a, b) => a.daysAway - b.daysAway).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
+                    <tr key={row.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-2 py-2  text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
+                      <td className="px-2 py-2 max-w-[180px]"><span className="truncate block">{row.applicant}</span></td>
+                      <td className="px-2 py-2">{row.event}</td>
+                      <td className="px-2 py-2 whitespace-nowrap">{row.date}</td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        {row.daysAway < 0
+                          ? <span className="text-red-600 font-semibold">{Math.abs(row.daysAway)}d overdue</span>
+                          : row.daysAway <= 7 ? <span className="text-orange-600 font-semibold">{row.daysAway} d</span>
+                            : <span className="text-muted-foreground">{row.daysAway} d</span>}
+                      </td>
+                      <td className="px-2 py-2 text-muted-foreground">{row.stage}</td>
                       <td className="px-2 py-2">
-                        <span className=" text-[10px] text-primary font-semibold hover:underline">{row.id}</span>
+                        <Badge variant="outline" className={cn('text-[9px] py-0',
+                          row.priority === 'High' ? 'bg-red-50 text-red-700 border-red-200'
+                            : row.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : 'bg-slate-100 text-slate-600 border-slate-200')}>
+                          {row.priority}
+                        </Badge>
                       </td>
-                      <td className="px-2 py-2 text-[11px] max-w-[200px]">
-                        <span className="truncate block">{row.applicant}</span>
-                      </td>
-                      <td className="px-2 py-2 text-[11px] text-muted-foreground">{row.sector}</td>
-                      <td className="px-2 py-2 text-[11px]">{row.themeCity}</td>
-                      <td className="px-2 py-2  text-[10px] text-muted-foreground">{row.plot}</td>
-                      <td className="px-2 py-2 text-[11px] text-muted-foreground max-w-[200px]">
-                        <span className="truncate block">{row.step}</span>
-                      </td>
-                      <td className="px-2 py-2">{statusBadge(row.status)}</td>
-                      <td className="px-2 py-2 text-right font-semibold tabular-nums">{row.investment}</td>
-                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs.toLocaleString('en-IN')}</td>
-                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres}</td>
-                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.ageDays} d</td>
-                      <td className="px-2 py-2">
-                        {row.isLate ? (
-                          <span className="inline-flex items-center gap-1">
-                            <Badge variant="destructive" className="text-[9px] py-0 px-1">Late</Badge>
-                            <span className="text-red-600 font-semibold text-[10px]">{row.expectedBy}</span>
-                          </span>
-                        ) : (
-                          <span className="text-[11px] text-muted-foreground">{row.expectedBy}</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-2 text-[11px] text-muted-foreground">{row.applied}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </>
-        ) : activeTab === 'dates' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lead</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Applicant</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Event</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Days away</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Stage</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Priority</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {DATES_DATA.sort((a, b) => a.daysAway - b.daysAway).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
-                  <tr key={row.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2  text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
-                    <td className="px-2 py-2 max-w-[180px]"><span className="truncate block">{row.applicant}</span></td>
-                    <td className="px-2 py-2">{row.event}</td>
-                    <td className="px-2 py-2 whitespace-nowrap">{row.date}</td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      {row.daysAway < 0
-                        ? <span className="text-red-600 font-semibold">{Math.abs(row.daysAway)}d overdue</span>
-                        : row.daysAway <= 7 ? <span className="text-orange-600 font-semibold">{row.daysAway} d</span>
-                          : <span className="text-muted-foreground">{row.daysAway} d</span>}
-                    </td>
-                    <td className="px-2 py-2 text-muted-foreground">{row.stage}</td>
-                    <td className="px-2 py-2">
-                      <Badge variant="outline" className={cn('text-[9px] py-0',
-                        row.priority === 'High' ? 'bg-red-50 text-red-700 border-red-200'
-                          : row.priority === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : 'bg-slate-100 text-slate-600 border-slate-200')}>
-                        {row.priority}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : activeTab === 'money' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lead</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Applicant</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Amount</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Due date</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Days</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Penalty accrued</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {MONEY_DATA.sort((a, b) => a.daysNum - b.daysNum).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
-                  <tr key={row.id} className={cn('hover:bg-muted/30 transition-colors', row.isOverdue && 'bg-red-50/40 dark:bg-red-950/10')}>
-                    <td className="px-2 py-2  text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
-                    <td className="px-2 py-2 max-w-[180px]"><span className="truncate block">{row.applicant}</span></td>
-                    <td className="px-2 py-2">{row.type}</td>
-                    <td className="px-2 py-2 text-right font-semibold tabular-nums">{row.amount}</td>
-                    <td className="px-2 py-2 whitespace-nowrap">
-                      {row.isOverdue
-                        ? <><Badge variant="destructive" className="text-[9px] py-0 px-1 mr-1">Late</Badge><span className="text-red-600 font-semibold">{row.dueDate}</span></>
-                        : <span className="text-muted-foreground">{row.dueDate}</span>}
-                    </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      {row.isOverdue
-                        ? <span className="text-red-600 font-semibold">{Math.abs(row.daysNum)}d overdue</span>
-                        : <span className="text-muted-foreground">{row.daysNum} d</span>}
-                    </td>
-                    <td className="px-2 py-2 text-[11px]">
-                      {row.penaltyAccrued ? <span className="text-red-600 font-semibold">{row.penaltyAccrued}</span> : <span className="text-muted-foreground">—</span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : activeTab === 'sectors' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[180px]">Sector</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">In progress</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Approved</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Turned down</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Avg age (d)</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {SECTORS_DATA.sort((a, b) => b.investmentCr - a.investmentCr).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
-                  <tr key={row.sector} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2 font-medium">{row.sector}</td>
-                    <td className="px-2 py-2 text-right tabular-nums font-semibold">{row.cases}</td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      <span className="inline-flex items-center gap-1 justify-end">
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-500 inline-block" />{row.inProgress}
-                      </span>
-                    </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      <span className="inline-flex items-center gap-1 justify-end">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />{row.approved}
-                      </span>
-                    </td>
-                    <td className="px-2 py-2 text-right tabular-nums">
-                      {row.turnedDown > 0 ? <span className="text-red-600">{row.turnedDown}</span> : <span className="text-muted-foreground">0</span>}
-                    </td>
-                    <td className="px-2 py-2 text-right tabular-nums font-semibold">{row.investmentCr.toLocaleString('en-IN')}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs.toLocaleString('en-IN')}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.avgAge}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : activeTab === 'cities' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[140px]">Theme city</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total plots</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Allotted</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[120px]">Utilisation</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {CITIES_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => {
-                  const pct = Math.round((row.allotted / (row.totalPlots || 1)) * 100)
-                  return (
-                    <tr key={row.city} className="hover:bg-muted/30 transition-colors">
-                      <td className="px-2 py-2 font-medium">{row.city}</td>
-                      <td className="px-2 py-2 text-right tabular-nums">{row.totalPlots}</td>
-                      <td className="px-2 py-2 text-right tabular-nums text-emerald-600 font-semibold">{row.available}</td>
+          ) : activeTab === 'money' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lead</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Applicant</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Amount</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Due date</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Days</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Penalty accrued</th>
+                </tr></thead>
+                <tbody className="divide-y">
+                  {MONEY_DATA.sort((a, b) => a.daysNum - b.daysNum).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
+                    <tr key={row.id} className={cn('hover:bg-muted/30 transition-colors', row.isOverdue && 'bg-red-50/40 dark:bg-red-950/10')}>
+                      <td className="px-2 py-2  text-[10px] text-primary font-semibold">{row.caseId.slice(-11)}</td>
+                      <td className="px-2 py-2 max-w-[180px]"><span className="truncate block">{row.applicant}</span></td>
+                      <td className="px-2 py-2">{row.type}</td>
+                      <td className="px-2 py-2 text-right font-semibold tabular-nums">{row.amount}</td>
+                      <td className="px-2 py-2 whitespace-nowrap">
+                        {row.isOverdue
+                          ? <><Badge variant="destructive" className="text-[9px] py-0 px-1 mr-1">Late</Badge><span className="text-red-600 font-semibold">{row.dueDate}</span></>
+                          : <span className="text-muted-foreground">{row.dueDate}</span>}
+                      </td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        {row.isOverdue
+                          ? <span className="text-red-600 font-semibold">{Math.abs(row.daysNum)}d overdue</span>
+                          : <span className="text-muted-foreground">{row.daysNum} d</span>}
+                      </td>
+                      <td className="px-2 py-2 text-[11px]">
+                        {row.penaltyAccrued ? <span className="text-red-600 font-semibold">{row.penaltyAccrued}</span> : <span className="text-muted-foreground">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : activeTab === 'sectors' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[180px]">Sector</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">In progress</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Approved</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Turned down</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Avg age (d)</th>
+                </tr></thead>
+                <tbody className="divide-y">
+                  {SECTORS_DATA.sort((a, b) => b.investmentCr - a.investmentCr).slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
+                    <tr key={row.sector} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-2 py-2 font-medium">{row.sector}</td>
+                      <td className="px-2 py-2 text-right tabular-nums font-semibold">{row.cases}</td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        <span className="inline-flex items-center gap-1 justify-end">
+                          <span className="h-1.5 w-1.5 rounded-full bg-blue-500 inline-block" />{row.inProgress}
+                        </span>
+                      </td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        <span className="inline-flex items-center gap-1 justify-end">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />{row.approved}
+                        </span>
+                      </td>
+                      <td className="px-2 py-2 text-right tabular-nums">
+                        {row.turnedDown > 0 ? <span className="text-red-600">{row.turnedDown}</span> : <span className="text-muted-foreground">0</span>}
+                      </td>
+                      <td className="px-2 py-2 text-right tabular-nums font-semibold">{row.investmentCr.toLocaleString('en-IN')}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs.toLocaleString('en-IN')}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.avgAge}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : activeTab === 'cities' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[140px]">Theme city</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total plots</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Allotted</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[120px]">Utilisation</th>
+                </tr></thead>
+                <tbody className="divide-y">
+                  {CITIES_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => {
+                    const pct = Math.round((row.allotted / (row.totalPlots || 1)) * 100)
+                    return (
+                      <tr key={row.city} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-2 py-2 font-medium">{row.city}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{row.totalPlots}</td>
+                        <td className="px-2 py-2 text-right tabular-nums text-emerald-600 font-semibold">{row.available}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{row.allotted}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{row.cases}</td>
+                        <td className="px-2 py-2 text-right tabular-nums font-semibold">{row.investmentCr > 0 ? row.investmentCr.toLocaleString('en-IN') : '—'}</td>
+                        <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs > 0 ? row.jobs.toLocaleString('en-IN') : '—'}</td>
+                        <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres > 0 ? row.acres : '—'}</td>
+                        <td className="px-2 py-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[60px]">
+                              <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="text-[10px] tabular-nums text-muted-foreground w-7 text-right">{pct}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : activeTab === 'allotment' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Category</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Plots</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total acres</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Allotted</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Avg plot (ac)</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[120px]">Utilisation</th>
+                </tr></thead>
+                <tbody className="divide-y">
+                  {ALLOTMENT_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
+                    <tr key={row.category} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-2 py-2 font-medium">{row.category}</td>
+                      <td className="px-2 py-2 text-right tabular-nums">{row.plots}</td>
+                      <td className="px-2 py-2 text-right tabular-nums">{row.totalAcres}</td>
                       <td className="px-2 py-2 text-right tabular-nums">{row.allotted}</td>
-                      <td className="px-2 py-2 text-right tabular-nums">{row.cases}</td>
-                      <td className="px-2 py-2 text-right tabular-nums font-semibold">{row.investmentCr > 0 ? row.investmentCr.toLocaleString('en-IN') : '—'}</td>
-                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs > 0 ? row.jobs.toLocaleString('en-IN') : '—'}</td>
-                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres > 0 ? row.acres : '—'}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-emerald-600 font-semibold">{row.available}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.avgPlotAcres.toFixed(1)}</td>
                       <td className="px-2 py-2">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[60px]">
-                            <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
+                            <div className="h-full rounded-full" style={{ width: `${row.utilizationPct}%`, background: row.utilizationPct >= 70 ? '#22c55e' : row.utilizationPct >= 50 ? '#f59e0b' : '#94a3b8' }} />
                           </div>
-                          <span className="text-[10px] tabular-nums text-muted-foreground w-7 text-right">{pct}%</span>
+                          <span className="text-[10px] tabular-nums text-muted-foreground w-7 text-right">{row.utilizationPct}%</span>
                         </div>
                       </td>
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : activeTab === 'allotment' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Category</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Plots</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total acres</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Allotted</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Avg plot (ac)</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[120px]">Utilisation</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {ALLOTMENT_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
-                  <tr key={row.category} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2 font-medium">{row.category}</td>
-                    <td className="px-2 py-2 text-right tabular-nums">{row.plots}</td>
-                    <td className="px-2 py-2 text-right tabular-nums">{row.totalAcres}</td>
-                    <td className="px-2 py-2 text-right tabular-nums">{row.allotted}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-emerald-600 font-semibold">{row.available}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.avgPlotAcres.toFixed(1)}</td>
-                    <td className="px-2 py-2">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[60px]">
-                          <div className="h-full rounded-full" style={{ width: `${row.utilizationPct}%`, background: row.utilizationPct >= 70 ? '#22c55e' : row.utilizationPct >= 50 ? '#f59e0b' : '#94a3b8' }} />
-                        </div>
-                        <span className="text-[10px] tabular-nums text-muted-foreground w-7 text-right">{row.utilizationPct}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : activeTab === 'plots' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Plot ID</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Theme city</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[180px]">Allottee</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Sector</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Agreement date</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {PLOTS_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
-                  <tr key={row.plotId} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2  text-[10px] font-semibold text-primary">{row.plotId}</td>
-                    <td className="px-2 py-2">{row.city}</td>
-                    <td className="px-2 py-2 text-right tabular-nums">{row.acres}</td>
-                    <td className="px-2 py-2">
-                      <Badge variant="outline" className={cn('text-[9px] py-0',
-                        row.status === 'Available' ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : row.status === 'Allotted' ? 'bg-blue-50 text-blue-700 border-blue-200'
-                            : row.status === 'Reserved' ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-slate-100 text-slate-600 border-slate-200')}>
-                        {row.status}
-                      </Badge>
-                    </td>
-                    <td className="px-2 py-2 text-muted-foreground max-w-[200px]"><span className="truncate block">{row.allottee ?? '—'}</span></td>
-                    <td className="px-2 py-2 text-muted-foreground">{row.sector ?? '—'}</td>
-                    <td className="px-2 py-2 text-muted-foreground">{row.agreementDate ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : activeTab === 'investors' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[11px]">
-              <thead className="bg-muted/40"><tr>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-10">#</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Investor</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Primary sector</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
-                <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
-                <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Latest status</th>
-              </tr></thead>
-              <tbody className="divide-y">
-                {INVESTORS_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
-                  <tr key={row.rank} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-2 py-2 text-right">
-                      <span className={cn('inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold',
-                        row.rank === 1 ? 'bg-amber-100 text-amber-700'
-                          : row.rank === 2 ? 'bg-slate-100 text-slate-600'
-                            : row.rank === 3 ? 'bg-orange-100 text-orange-700'
-                              : 'bg-muted text-muted-foreground')}>{row.rank}</span>
-                    </td>
-                    <td className="px-2 py-2 font-medium max-w-[220px]"><span className="truncate block">{row.investor}</span></td>
-                    <td className="px-2 py-2 text-right tabular-nums">{row.cases}</td>
-                    <td className="px-2 py-2 text-muted-foreground">{row.primarySector}</td>
-                    <td className="px-2 py-2 text-right tabular-nums font-bold text-primary">{row.totalInvestmentCr.toLocaleString('en-IN')}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs.toLocaleString('en-IN')}</td>
-                    <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres}</td>
-                    <td className="px-2 py-2">
-                      <Badge variant="outline" className={cn('text-[9px] py-0',
-                        row.latestStatus === 'In progress' ? 'bg-blue-50 text-blue-700 border-blue-200'
-                          : row.latestStatus === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : row.latestStatus === 'Turned down' ? 'bg-red-50 text-red-700 border-red-200'
-                              : 'bg-slate-100 text-slate-600 border-slate-200')}>
-                        {row.latestStatus}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="py-8 text-center text-muted-foreground text-xs">No data</div>
-        )}
-
-        {/* Global Pagination Footer */}
-        {totalRecords > 0 && (
-          <div className="flex items-center justify-between px-3 py-2 border-t">
-            <p className="text-[10px] text-muted-foreground">
-              Page {page} of {totalPages} &middot; {totalRecords} records
-            </p>
-            <div className="flex items-center gap-1">
-              <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-                <ChevronLeft className="h-3 w-3 mr-0.5" /> Previous
-              </Button>
-              <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-                Next <ArrowRight className="h-3 w-3 ml-0.5" />
-              </Button>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        )}
+          ) : activeTab === 'plots' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Plot ID</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Theme city</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[180px]">Allottee</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Sector</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Agreement date</th>
+                </tr></thead>
+                <tbody className="divide-y">
+                  {PLOTS_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
+                    <tr key={row.plotId} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-2 py-2  text-[10px] font-semibold text-primary">{row.plotId}</td>
+                      <td className="px-2 py-2">{row.city}</td>
+                      <td className="px-2 py-2 text-right tabular-nums">{row.acres}</td>
+                      <td className="px-2 py-2">
+                        <Badge variant="outline" className={cn('text-[9px] py-0',
+                          row.status === 'Available' ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : row.status === 'Allotted' ? 'bg-blue-50 text-blue-700 border-blue-200'
+                              : row.status === 'Reserved' ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : 'bg-slate-100 text-slate-600 border-slate-200')}>
+                          {row.status}
+                        </Badge>
+                      </td>
+                      <td className="px-2 py-2 text-muted-foreground max-w-[200px]"><span className="truncate block">{row.allottee ?? '—'}</span></td>
+                      <td className="px-2 py-2 text-muted-foreground">{row.sector ?? '—'}</td>
+                      <td className="px-2 py-2 text-muted-foreground">{row.agreementDate ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : activeTab === 'investors' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px]">
+                <thead className="bg-muted/40"><tr>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider w-10">#</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[200px]">Investor</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Leads</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[160px]">Primary sector</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Investment (₹ Cr)</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Jobs</th>
+                  <th className="px-2 py-2 text-right text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Acres</th>
+                  <th className="px-2 py-2 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Latest status</th>
+                </tr></thead>
+                <tbody className="divide-y">
+                  {INVESTORS_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map(row => (
+                    <tr key={row.rank} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-2 py-2 text-right">
+                        <span className={cn('inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold',
+                          row.rank === 1 ? 'bg-amber-100 text-amber-700'
+                            : row.rank === 2 ? 'bg-slate-100 text-slate-600'
+                              : row.rank === 3 ? 'bg-orange-100 text-orange-700'
+                                : 'bg-muted text-muted-foreground')}>{row.rank}</span>
+                      </td>
+                      <td className="px-2 py-2 font-medium max-w-[220px]"><span className="truncate block">{row.investor}</span></td>
+                      <td className="px-2 py-2 text-right tabular-nums">{row.cases}</td>
+                      <td className="px-2 py-2 text-muted-foreground">{row.primarySector}</td>
+                      <td className="px-2 py-2 text-right tabular-nums font-bold text-primary">{row.totalInvestmentCr.toLocaleString('en-IN')}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.jobs.toLocaleString('en-IN')}</td>
+                      <td className="px-2 py-2 text-right tabular-nums text-muted-foreground">{row.acres}</td>
+                      <td className="px-2 py-2">
+                        <Badge variant="outline" className={cn('text-[9px] py-0',
+                          row.latestStatus === 'In progress' ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : row.latestStatus === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : row.latestStatus === 'Turned down' ? 'bg-red-50 text-red-700 border-red-200'
+                                : 'bg-slate-100 text-slate-600 border-slate-200')}>
+                          {row.latestStatus}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-muted-foreground text-xs">No data</div>
+          )}
+
+          {/* Global Pagination Footer */}
+          {totalRecords > 0 && (
+            <div className="flex items-center justify-between px-3 py-2 border-t">
+              <p className="text-[10px] text-muted-foreground">
+                Page {page} of {totalPages} &middot; {totalRecords} records
+              </p>
+              <div className="flex items-center gap-1">
+                <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+                  <ChevronLeft className="h-3 w-3 mr-0.5" /> Previous
+                </Button>
+                <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
+                  Next <ArrowRight className="h-3 w-3 ml-0.5" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     </div>
@@ -1332,7 +1333,7 @@ export function DashboardView() {
   return (
     <div className="flex flex-col gap-2 pt-1.5">
       {/* Header */}
-      <div className="flex items-center justify-between shrink-0 px-5 py-4 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
+      <div className="flex items-center justify-between shrink-0 px-5 py-1 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
         <div>
           <h1 className="text-[15px] font-bold text-slate-800 flex items-center gap-1">
             Good Afternoon <span className="text-sm">👋</span>
@@ -1340,6 +1341,101 @@ export function DashboardView() {
           <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1 font-medium">
             <Calendar className="h-3 w-3 text-slate-400" />
             <span>Saturday, 22 August 2026</span>
+          </div>
+        </div>
+
+        {/* Modern Filters */}
+        <div className="flex items-center gap-2.5">
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-3 font-medium rounded-full">
+              Clear
+            </Button>
+          )}
+
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search dashboard..."
+              className="pl-8 pr-3 h-8 w-40 xl:w-48 rounded-full border border-slate-200 bg-white text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-400 shadow-sm transition-all"
+            />
+          </div>
+
+          <div className={cn("relative flex items-center gap-2 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.date ? "border-primary/30" : "border-slate-200")}>
+            <Calendar className={cn("h-3.5 w-3.5", filters.date ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.date ? 'text-primary' : 'text-slate-600')}>{filters.date || 'Date'}</span>
+            <select value={filters.date} onChange={e => setFilters(f => ({ ...f, date: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Dates</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
+            </select>
+          </div>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.parcel ? "border-primary/30" : "border-slate-200")}>
+            <LandPlot className={cn("h-3.5 w-3.5", filters.parcel ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.parcel ? 'text-primary' : 'text-slate-600')}>{filters.parcel || 'All Parcels'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <select value={filters.parcel} onChange={e => setFilters(f => ({ ...f, parcel: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Parcels</option>
+              <option value="Available">Available</option>
+              <option value="Allotted">Allotted</option>
+            </select>
+          </div>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.app ? "border-primary/30" : "border-slate-200")}>
+            <FileText className={cn("h-3.5 w-3.5", filters.app ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.app ? 'text-primary' : 'text-slate-600')}>{filters.app || 'All Applications'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <select value={filters.app} onChange={e => setFilters(f => ({ ...f, app: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Applications</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.stage ? "border-primary/30" : "border-slate-200")}>
+            <LayoutList className={cn("h-3.5 w-3.5", filters.stage ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.stage ? 'text-primary' : 'text-slate-600')}>{filters.stage || 'All Stages'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <select value={filters.stage} onChange={e => setFilters(f => ({ ...f, stage: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Stages</option>
+              <option value="Intake">Intake</option>
+              <option value="DPR Review">DPR Review</option>
+              <option value="Govt Approval">Govt Approval</option>
+            </select>
+          </div>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.project ? "border-primary/30" : "border-slate-200")}>
+            <HardHat className={cn("h-3.5 w-3.5", filters.project ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.project ? 'text-primary' : 'text-slate-600')}>{filters.project || 'All Projects'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <select value={filters.project} onChange={e => setFilters(f => ({ ...f, project: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Projects</option>
+              <option value="Active">Active</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.sector ? "border-primary/30" : "border-slate-200")}>
+            <Building2 className={cn("h-3.5 w-3.5", filters.sector ? 'text-primary' : 'text-teal-600')} />
+            <span className={cn("font-semibold", filters.sector ? 'text-primary' : 'text-slate-600')}>{filters.sector || 'All Sectors'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <select value={filters.sector} onChange={e => setFilters(f => ({ ...f, sector: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <option value="">All Sectors</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Education">Education</option>
+              <option value="Financial Institutions">Financial Institutions</option>
+              <option value="Food Processing">Food Processing</option>
+              <option value="Government Organisations">Government Organisations</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Hospitality">Hospitality</option>
+              <option value="IT/ITES">IT/ITES</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Logistics">Logistics</option>
+              <option value="NGOs">NGOs</option>
+              <option value="Others">Others</option>
+              <option value="Pharmaceutical">Pharmaceutical</option>
+              <option value="Political Parties">Political Parties</option>
+              <option value="Sports">Sports</option>
+              <option value="Textiles">Textiles</option>
+            </select>
           </div>
         </div>
       </div>
@@ -1423,102 +1519,6 @@ export function DashboardView() {
           color="bg-gradient-to-br from-emerald-500 to-green-600"
         />
       </div>
-
-      {/* Modern Filters Card */}
-      <Card className="p-1.5 border shadow-sm my-1">
-        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
-          <div className="relative w-full sm:flex-1 mr-auto">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search dashboard..."
-              className="pl-8 h-8 text-xs w-full rounded-md border-0 bg-transparent outline-none focus:ring-0 placeholder:text-muted-foreground transition-all"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
-            <Select value={filters.date} onValueChange={v => setFilters(f => ({ ...f, date: v }))}>
-              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.date}>
-                <SelectValue placeholder="Date" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Dates" className="text-xs">Date: All</SelectItem>
-                <SelectItem value="Today" className="text-xs">Today</SelectItem>
-                <SelectItem value="This Week" className="text-xs">This Week</SelectItem>
-                <SelectItem value="This Month" className="text-xs">This Month</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.parcel} onValueChange={v => setFilters(f => ({ ...f, parcel: v }))}>
-              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.parcel}>
-                <SelectValue placeholder="Parcels" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Parcels" className="text-xs">Parcels: All</SelectItem>
-                <SelectItem value="Available" className="text-xs">Available</SelectItem>
-                <SelectItem value="Allotted" className="text-xs">Allotted</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.app} onValueChange={v => setFilters(f => ({ ...f, app: v }))}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={!!filters.app}>
-                <SelectValue placeholder="Applications" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Applications" className="text-xs">Apps: All</SelectItem>
-                <SelectItem value="Pending" className="text-xs">Pending</SelectItem>
-                <SelectItem value="Approved" className="text-xs">Approved</SelectItem>
-                <SelectItem value="Rejected" className="text-xs">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.stage} onValueChange={v => setFilters(f => ({ ...f, stage: v }))}>
-              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.stage}>
-                <SelectValue placeholder="Stages" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Stages" className="text-xs">Stages: All</SelectItem>
-                <SelectItem value="Intake" className="text-xs">Intake</SelectItem>
-                <SelectItem value="DPR Review" className="text-xs">DPR Review</SelectItem>
-                <SelectItem value="Govt Approval" className="text-xs">Govt Approval</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.project} onValueChange={v => setFilters(f => ({ ...f, project: v }))}>
-              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.project}>
-                <SelectValue placeholder="Projects" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Projects" className="text-xs">Projects: All</SelectItem>
-                <SelectItem value="Active" className="text-xs">Active</SelectItem>
-                <SelectItem value="Completed" className="text-xs">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filters.sector} onValueChange={v => setFilters(f => ({ ...f, sector: v }))}>
-              <SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={!!filters.sector}>
-                <SelectValue placeholder="Sectors" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Sectors" className="text-xs">Sectors: All</SelectItem>
-                <SelectItem value="Commercial" className="text-xs">Commercial</SelectItem>
-                <SelectItem value="Education" className="text-xs">Education</SelectItem>
-                <SelectItem value="Financial Institutions" className="text-xs">Financial Institutions</SelectItem>
-                <SelectItem value="Food Processing" className="text-xs">Food Processing</SelectItem>
-                <SelectItem value="Government Organisations" className="text-xs">Government Organisations</SelectItem>
-                <SelectItem value="Healthcare" className="text-xs">Healthcare</SelectItem>
-                <SelectItem value="Hospitality" className="text-xs">Hospitality</SelectItem>
-                <SelectItem value="IT/ITES" className="text-xs">IT/ITES</SelectItem>
-                <SelectItem value="Industrial" className="text-xs">Industrial</SelectItem>
-                <SelectItem value="Logistics" className="text-xs">Logistics</SelectItem>
-                <SelectItem value="NGOs" className="text-xs">NGOs</SelectItem>
-                <SelectItem value="Others" className="text-xs">Others</SelectItem>
-                <SelectItem value="Pharmaceutical" className="text-xs">Pharmaceutical</SelectItem>
-                <SelectItem value="Political Parties" className="text-xs">Political Parties</SelectItem>
-                <SelectItem value="Sports" className="text-xs">Sports</SelectItem>
-                <SelectItem value="Textiles" className="text-xs">Textiles</SelectItem>
-              </SelectContent>
-            </Select>
-            {hasFilters && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={clearFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
-            )}
-          </div>
-        </div>
-      </Card>
 
       {/* Pipeline Stage Cards */}
       <div>
@@ -1661,7 +1661,7 @@ export function DashboardView() {
         <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-semibold">Investment by sector</CardTitle>
-            <CardDescription className="text-[10px]">Committed rupees, largest first (₹ Cr)</CardDescription>
+            <CardDescription className="text-[10px]">Committed rupees, largest first (â‚¹ Cr)</CardDescription>
           </CardHeader>
           <CardContent className="px-3 py-0">
             <ChartContainer config={investmentConfig} className="h-[160px] w-full">
