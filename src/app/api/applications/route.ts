@@ -40,8 +40,13 @@ export async function GET(request: Request) {
     const mode = searchParams.get('mode') ?? ''
     const zone = searchParams.get('zone') ?? ''
     const excludeStages = searchParams.get('excludeStages') === 'true'
+    const viewType = searchParams.get('viewType') ?? ''
 
     const where: Prisma.ApplicationWhereInput = {}
+
+    if (viewType === 'cancellations') {
+      where.status = 'Cancelled'
+    }
 
     // Global search
     if (search) {
