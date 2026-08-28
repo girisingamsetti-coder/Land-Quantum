@@ -212,7 +212,7 @@ function DetailCard({ title, description, children, icon: Icon, onEdit }: {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            {Icon && <Icon className="h-4 w-4 text-emerald-600" />}
+            {Icon && <Icon className="h-3.5 w-3.5 text-emerald-600" />}
             <CardTitle className="text-sm font-semibold">{title}</CardTitle>
           </div>
           {onEdit && (

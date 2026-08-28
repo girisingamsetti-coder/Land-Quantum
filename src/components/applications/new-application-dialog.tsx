@@ -391,28 +391,28 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Background of the Organization</span>
-              <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+              <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
             </div>
             <Field label="Background (Optional)"><Textarea placeholder="Provide a brief background of the organization..." value={form.organizationBackground || ''} onChange={e => set('organizationBackground', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Development Plan / Vision of the Project</span>
-              <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+              <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
             </div>
             <Field label="Project Vision (Optional)"><Textarea placeholder="Describe the development plan or vision of the project..." value={form.projectVision || ''} onChange={e => set('projectVision', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Utilization Plan of the Area</span>
-              <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+              <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
             </div>
             <Field label="Utilization Plan (Optional)"><Textarea placeholder="How do you plan to utilize the allocated area?" value={form.utilizationPlan || ''} onChange={e => set('utilizationPlan', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Area Allocation by Use Type</span>
-              <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+              <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
             </div>
             <Field label="Area Allocation (Optional)"><Textarea placeholder="Break down area allocation by use type..." value={form.areaAllocation || ''} onChange={e => set('areaAllocation', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
           </div>
@@ -427,7 +427,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
         <DialogHeader className="pb-4 border-b shrink-0">
           <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
-              <Plus className="h-4 w-4 text-primary" />
+              <Plus className="h-3.5 w-3.5 text-primary" />
             </div>
             New Application
           </DialogTitle>
@@ -507,10 +507,10 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                       <div className="border-t pt-4">
                         <div className="flex items-center justify-between mb-4 cursor-pointer group">
                           <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                            <Users className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                             <span className="text-sm font-medium text-foreground">Jobs Breakdown</span>
                           </div>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         <div className="grid grid-cols-3 gap-6 mb-6">
                           <Field label="Permanent Employees"><Input type="number" placeholder="0" value={form.permanentEmployees} onChange={e => set('permanentEmployees', e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
@@ -550,7 +550,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                     <div className="space-y-6 flex-1 overflow-y-auto pr-2">
                       <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                         <span className="text-sm font-medium text-foreground">Construction Timeline & Development Plan</span>
-                        <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                        <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                       </div>
                       <Field label="Time Required for Construction (Optional)">
                         <Input placeholder="e.g., 24 months" value={form.constructionTimeline} onChange={e => set('constructionTimeline', e.target.value)} className="h-9 text-sm bg-muted/20" />
@@ -664,21 +664,21 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Funding Breakup</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         <Field label="How will this project be funded? (Optional)"><Textarea placeholder="Describe the funding structure (equity, debt, grants, etc.)..." value={form.projectFunding || ''} onChange={e => set('projectFunding', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
                       </div>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Special Requirements</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         <Field label="Special Requirements from APCRDA (Optional)"><Textarea placeholder="Any special requirements from APCRDA..." value={form.specialRequirements || ''} onChange={e => set('specialRequirements', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
                       </div>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Joint Ventures</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         <Field label="Joint Ventures (if any) (Optional)"><Textarea placeholder="Details of any joint ventures..." value={form.jointVentures || ''} onChange={e => set('jointVentures', e.target.value)} className="text-sm resize-none bg-muted/20" rows={3} /></Field>
                       </div>
@@ -700,7 +700,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Promoter Information</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         
                         <div className="grid grid-cols-2 gap-6">
@@ -735,7 +735,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Development Activities</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         
                         <div className="grid grid-cols-3 gap-4">
@@ -831,7 +831,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Tax Compliance</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                           <Field label="GST Number"><Input placeholder="GST Number" value={form.gstNumber} onChange={e => set('gstNumber', e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>
@@ -856,7 +856,7 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                       <div className="space-y-4">
                         <div className="flex items-center justify-between border-b pb-2 cursor-pointer group">
                           <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Operational Track Record</span>
-                          <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground rotate-90" />
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                           <Field label="Years in Operation"><Input type="number" placeholder="0" value={form.yearsInOperation} onChange={e => set('yearsInOperation', e.target.value)} className="h-9 text-sm bg-muted/20" /></Field>

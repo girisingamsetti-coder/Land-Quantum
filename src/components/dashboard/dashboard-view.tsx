@@ -197,13 +197,13 @@ const PIPELINE_STAGES: PipelineStage[] = [
 function PipelineCard({ stage }: { stage: PipelineStage }) {
   const Icon = stage.icon
   return (
-    <Card className="bg-gradient-to-r from-emerald-50/50 to-white/50 border border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
+    <Card className="py-2.5 bg-gradient-to-r from-emerald-50/50 to-white/50 border border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
       <CardContent className="px-2 pt-2 pb-2">
         {/* Top Section */}
         <div className="flex items-center justify-between mb-4 mt-1">
           <div className="flex items-center gap-2.5">
-            <div className="rounded-xl bg-emerald-50 p-2">
-              <Icon className="h-5 w-5 text-emerald-600" />
+            <div className="rounded-lg bg-emerald-50 p-2 shrink-0">
+              <Icon className="h-3.5 w-3.5 text-emerald-600" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 leading-tight m-0">{stage.title}</h3>
@@ -211,7 +211,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
             </div>
           </div>
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-100">
-            <ChevronRight className="h-4 w-4 text-slate-400" />
+            <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
           </div>
         </div>
 

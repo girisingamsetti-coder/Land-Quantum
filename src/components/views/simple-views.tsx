@@ -48,7 +48,7 @@ function severityTileColor(s: string) {
 function FilterBar({ children, activeCount, onClear }: { children: React.ReactNode; activeCount: number; onClear: () => void }) {
   return (
     <Card>
-      <CardContent className="p-3 flex flex-wrap gap-2 items-center">
+      <CardContent className="px-3 py-0 flex flex-wrap gap-2 items-center">
         <div className="flex items-center gap-1.5 text-muted-foreground mr-1">
           <Filter className="h-3.5 w-3.5" />
           <span className="text-xs font-medium">Filters</span>
@@ -467,7 +467,7 @@ export function SettingsView() {
             <TableCell className="text-xs">{s.ownerRole}</TableCell>
             <TableCell className="text-xs tabular-nums">{s.slaDays}</TableCell>
             <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
-            <TableCell>{s.isActive ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <XCircle className="h-4 w-4 text-red-500" />}</TableCell>
+            <TableCell>{s.isActive ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <XCircle className="h-3.5 w-3.5 text-red-500" />}</TableCell>
           </TableRow>))}
         </TableBody></Table></CardContent></Card></TabsContent>
         <TabsContent value="sla"><Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead>SLA (days)</TableHead></TableRow></TableHeader><TableBody>
@@ -503,7 +503,7 @@ export function GISView() {
       <div><h1 className="text-2xl font-bold tracking-tight">GIS Land Map</h1><p className="text-sm text-muted-foreground">Interactive map visualization of land parcels (mock layer)</p></div>
 
       <div className="grid md:grid-cols-3 gap-4">
-        <div className="md:col-span-2"><Card className="overflow-hidden"><div className="bg-gradient-to-br from-emerald-50 via-white to-emerald-100 p-6 min-h-[400px]">
+        <div className="md:col-span-2"><Card className="overflow-hidden"><div className="py-2.5 bg-gradient-to-br from-emerald-50 via-white to-emerald-100 p-6 min-h-[400px]">
           <div className="text-center text-muted-foreground mb-4"><Map className="h-8 w-8 mx-auto mb-2" /><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
           <div className="grid grid-cols-5 gap-2">{filtered.map((p) => (
             <div key={p.id} className="rounded border-2 p-2 hover:shadow-md transition-shadow" style={{ borderColor: colorMap[p.status] || '#9ca3af' }} title={`${p.plotId}\n${p.zone?.name}\n${p.status}`}>
@@ -533,9 +533,9 @@ export function MyWorkQueue({ hideHeader, tabsControl }: { hideHeader?: boolean,
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
       {tabsControl && <div className="mb-4">{tabsControl}</div>}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-4 w-4 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-4 w-4 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-4 w-4 text-rose-600" /></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-3.5 w-3.5 text-blue-600" /></div></div><p className="text-2xl font-bold mt-2 text-blue-700 tabular-nums">{data?.assignedApps?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-3.5 w-3.5 text-amber-600" /></div></div><p className="text-2xl font-bold mt-2 text-amber-700 tabular-nums">{data?.assignedStages?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="p-4"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-3.5 w-3.5 text-rose-600" /></div></div><p className="text-2xl font-bold mt-2 text-rose-700 tabular-nums">{data?.grievances?.length || 0}</p></CardContent></Card>
       </div>
       <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="p-0">
         {loading ? <div className="p-4"><Skeleton className="h-12 w-full" /></div> :

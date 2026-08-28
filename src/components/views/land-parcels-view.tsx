@@ -551,7 +551,7 @@ export function LandParcelsView() {
               <div className="absolute top-3 right-3 z-10 bg-slate-900/95 backdrop-blur-md p-3.5 rounded-xl border border-slate-700/80 shadow-2xl text-white max-w-[250px] hidden md:block">
                 <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2 mb-2.5">
                   <div className="flex items-center gap-1.5">
-                    <Sparkles className="h-4 w-4 text-emerald-400" />
+                    <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
                     <h3 className="font-bold text-xs">Amaravati Capital Facts</h3>
                   </div>
                   <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30">APCRDA</span>
@@ -621,7 +621,7 @@ export function LandParcelsView() {
             <CardHeader className="p-3.5 pb-2.5 border-b bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 space-y-0">
               <div>
                 <CardTitle className="text-sm font-bold tracking-tight flex items-center gap-2 text-foreground">
-                  <Building2 className="h-4 w-4 text-primary" /> Amaravati Land Parcel Records
+                  <Building2 className="h-3.5 w-3.5 text-primary" /> Amaravati Land Parcel Records
                 </CardTitle>
                 <CardDescription className="text-xs mt-0.5">
                   Verified land parcels across Amaravati Capital City &middot; 3 rows visible &middot; Scroll inside to view all
@@ -842,7 +842,7 @@ export function LandParcelsView() {
             <CardHeader className="p-4 pb-3 border-b bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 space-y-0">
               <div>
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-primary" /> Amaravati Land Inventory Register
+                  <Building2 className="h-3.5 w-3.5 text-primary" /> Amaravati Land Inventory Register
                 </CardTitle>
                 <CardDescription className="text-xs mt-0.5">
                   Complete cadastre register with survey numbers, land use allocations, extents & valuation

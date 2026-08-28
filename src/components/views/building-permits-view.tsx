@@ -167,39 +167,39 @@ export function BuildingPermitsView() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-blue-100 text-blue-600 rounded-lg"><FileText className="h-6 w-6" /></div>
+        <Card className="py-2.5 bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0 flex items-center gap-3">
+            <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg shrink-0"><FileText className="h-3.5 w-3.5" /></div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Permits</p>
-              <h3 className="text-2xl font-bold">1,248</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Total Permits</p>
+              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">1,248</h3>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-emerald-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg"><CheckCircle2 className="h-6 w-6" /></div>
+        <Card className="py-2.5 bg-gradient-to-r from-emerald-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0 flex items-center gap-3">
+            <div className="p-2 bg-emerald-100/50 text-emerald-600 rounded-lg shrink-0"><CheckCircle2 className="h-3.5 w-3.5" /></div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Approved</p>
-              <h3 className="text-2xl font-bold">842</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Approved</p>
+              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">842</h3>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-amber-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-amber-100 text-amber-600 rounded-lg"><Clock className="h-6 w-6" /></div>
+        <Card className="py-2.5 bg-gradient-to-r from-amber-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0 flex items-center gap-3">
+            <div className="p-2 bg-amber-100/50 text-amber-600 rounded-lg shrink-0"><Clock className="h-3.5 w-3.5" /></div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Under Review</p>
-              <h3 className="text-2xl font-bold">315</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Under Review</p>
+              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">315</h3>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-red-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-red-100 text-red-600 rounded-lg"><XCircle className="h-6 w-6" /></div>
+        <Card className="py-2.5 bg-gradient-to-r from-red-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0 flex items-center gap-3">
+            <div className="p-2 bg-red-100/50 text-red-600 rounded-lg shrink-0"><XCircle className="h-3.5 w-3.5" /></div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Rejected</p>
-              <h3 className="text-2xl font-bold">91</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Rejected</p>
+              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">91</h3>
             </div>
           </CardContent>
         </Card>

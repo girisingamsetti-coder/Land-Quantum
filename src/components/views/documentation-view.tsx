@@ -506,7 +506,7 @@ export function DocumentationView() {
                       </TableCell>
                       <TableCell className="text-xs">
                         <div className="flex items-start gap-2.5">
-                          <FileText className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <FileText className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
                           <div>
                             <p className="font-medium text-foreground leading-tight hover:underline cursor-pointer" onClick={() => setSelectedDoc(d)}>
                               {d.name}
@@ -623,7 +623,7 @@ export function DocumentationView() {
               {selectedDoc.remarks && (
                 <div className="p-4 rounded-lg bg-amber-50/50 border border-amber-200/80 text-amber-900 text-xs leading-relaxed space-y-1">
                   <p className="font-semibold flex items-center gap-1.5">
-                    <AlertCircle className="h-4 w-4 text-amber-600" /> Compliance & Audit Remarks:
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-600" /> Compliance & Audit Remarks:
                   </p>
                   <p className="text-muted-foreground">{selectedDoc.remarks}</p>
                 </div>
@@ -633,7 +633,7 @@ export function DocumentationView() {
               <div className="border rounded-xl bg-card overflow-hidden shadow-xs">
                 <div className="p-3 bg-muted/50 border-b flex items-center justify-between text-xs">
                   <span className="font-semibold flex items-center gap-2">
-                    <FileCheck className="h-4 w-4 text-primary" /> Digital Document Viewer & Validation
+                    <FileCheck className="h-3.5 w-3.5 text-primary" /> Digital Document Viewer & Validation
                   </span>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
