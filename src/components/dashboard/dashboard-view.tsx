@@ -1260,16 +1260,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
           </tbody>
         </table>
       </div>
-      <div className="px-4 py-1.5 border-t flex items-center justify-between bg-muted/20">
-        <div className="text-[11px] text-muted-foreground">
-          Showing {paged.length > 0 ? (page - 1) * PAGE_SIZE + 1 : 0} to {Math.min(page * PAGE_SIZE, sorted.length)} of {sorted.length} entries
-        </div>
-        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-          <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-1 rounded hover:bg-muted disabled:opacity-30 border bg-background flex items-center gap-1 px-2 shadow-sm transition-colors"><ChevronLeft className="h-3 w-3" /> Prev</button>
-          <span className="px-2 font-medium">Page {page} of {totalPages}</span>
-          <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="p-1 rounded hover:bg-muted disabled:opacity-30 border bg-background flex items-center gap-1 px-2 shadow-sm transition-colors">Next <ChevronRight className="h-3 w-3" /></button>
-        </div>
-      </div>
+
     </Card>
   )
 }

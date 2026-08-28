@@ -403,32 +403,7 @@ export function ApplicationsList({
                 </Table>
               </div>
 
-              {/* Pagination */}
-              <div className="flex items-center justify-between px-4 py-3 border-t shrink-0">
-                <p className="text-sm text-muted-foreground">
-                  Showing <span className="font-medium">{from}</span> to <span className="font-medium">{to}</span> of{' '}
-                  <span className="font-medium">{data.total}</span> applications
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline" size="sm" className="h-8 gap-1"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    Prev
-                  </Button>
-                  <span className="text-sm font-medium px-2">Page {page} of {totalPages}</span>
-                  <Button
-                    variant="outline" size="sm" className="h-8 gap-1"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    Next
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
+
             </>
           )}
         </CardContent>
