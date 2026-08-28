@@ -546,20 +546,21 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
           const mapped = data.data.applications.map((app: any) => {
             const ageDays = Math.floor((Date.now() - new Date(app.createdAt).getTime()) / (1000 * 60 * 60 * 24))
             const applied = new Date(app.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            const investmentCr = app.proposedInvestment ? Number(app.proposedInvestment) / 10000000 : null
             return {
               id: app.applicationNumber,
-              applicant: app.applicant?.organizationName || 'Unknown',
+              applicant: app.applicant?.organizationName || 'N/A',
               sector: app.sector || 'N/A',
-              themeCity: app.landParcel?.zone?.name || 'TBD',
-              plot: app.landParcel?.plotId || 'TBD',
+              themeCity: app.landParcel?.zone?.name || 'N/A',
+              plot: app.landParcel?.plotId || 'N/A',
               step: app.currentStage || 'Application',
-              status: app.status === 'Submitted' ? 'In progress' : app.status,
-              investment: `₹${app.proposedInvestment} Cr`,
-              investmentNum: app.proposedInvestment || 0,
+              status: app.status === 'Submitted' ? 'In progress' : (app.status || 'N/A'),
+              investment: investmentCr ? `₹${investmentCr.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` : 'N/A',
+              investmentNum: investmentCr || 0,
               jobs: app.employmentCommitment || 0,
               acres: app.landParcel?.extentAcres || 0,
               ageDays,
-              expectedBy: app.slaDueDate ? new Date(app.slaDueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+              expectedBy: app.slaDueDate ? new Date(app.slaDueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A',
               isLate: app.slaRemaining !== null && app.slaRemaining < 0,
               applied
             }
@@ -570,7 +571,11 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
       .catch(err => console.error('Failed to fetch real applications', err))
   }, [])
 
-  const combinedCases = useMemo(() => [...realCases, ...ALL_CASES], [realCases])
+  const combinedCases = useMemo(() => {
+    const ids = new Set(realCases.map(r => r.id))
+    const dedupedMock = ALL_CASES.filter(c => !ids.has(c.id))
+    return [...realCases, ...dedupedMock]
+  }, [realCases])
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -1110,18 +1115,22 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
         if (data.success && data.data?.applications?.length) {
           const mapped = data.data.applications.map((a: any) => ({
             id: a.applicationNumber,
-            applicant: a.applicant?.organizationName || 'Unknown',
-            sector: a.sector || '—',
-            investment: a.proposedInvestment ? `₹${(Number(a.proposedInvestment) / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` : '—',
-            area: a.landParcel?.extentAcres ? `${a.landParcel.extentAcres} ac` : '—',
+            applicant: a.applicant?.organizationName || 'N/A',
+            sector: a.sector || 'N/A',
+            investment: a.proposedInvestment ? `₹${(Number(a.proposedInvestment) / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` : 'N/A',
+            area: a.landParcel?.extentAcres ? `${a.landParcel.extentAcres} ac` : 'N/A',
             appliedOn: new Date(a.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
             stage: a.currentStage || 'Application',
-            sla: a.slaRemaining != null ? (a.slaRemaining < 0 ? 'Overdue' : `${a.slaRemaining} days`) : '—',
+            sla: a.slaRemaining != null ? (a.slaRemaining < 0 ? 'Overdue' : `${a.slaRemaining} days`) : 'N/A',
             priority: a.priority || 'Normal',
             status: a.status || 'Submitted',
-            lead: a.assignedOfficer?.name || '—',
+            lead: a.assignedOfficer?.name || 'N/A',
           }))
-          setRows(prev => [...mapped, ...prev])
+          setRows(prev => {
+            const existingIds = new Set(prev.map(r => r.id))
+            const unique = mapped.filter((r: any) => !existingIds.has(r.id))
+            return [...unique, ...prev]
+          })
         }
       })
       .catch(() => { })
