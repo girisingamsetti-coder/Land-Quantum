@@ -244,7 +244,7 @@ export function ApplicationsList({
             <div className="p-3 bg-primary/10 rounded-full shrink-0">
               <FileText className="h-5 w-5 text-primary" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Total Applications</p>
               <h3 className="text-xl font-bold truncate">1,248</h3>
             </div>
@@ -258,7 +258,7 @@ export function ApplicationsList({
             <div className="p-3 bg-blue-500/10 rounded-full shrink-0">
               <PieChart className="h-5 w-5 text-blue-500" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Active Sectors</p>
               <h3 className="text-xl font-bold truncate">14</h3>
             </div>
@@ -272,7 +272,7 @@ export function ApplicationsList({
             <div className="p-3 bg-emerald-500/10 rounded-full shrink-0">
               <Activity className="h-5 w-5 text-emerald-500" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Approved Status</p>
               <h3 className="text-xl font-bold truncate">892</h3>
             </div>
@@ -286,7 +286,7 @@ export function ApplicationsList({
             <div className="p-3 bg-amber-500/10 rounded-full shrink-0">
               <Clock className="h-5 w-5 text-amber-500" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Pending Review</p>
               <h3 className="text-xl font-bold truncate">124</h3>
             </div>
@@ -300,7 +300,7 @@ export function ApplicationsList({
             <div className="p-3 bg-purple-500/10 rounded-full shrink-0">
               <IndianRupee className="h-5 w-5 text-purple-500" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Est. Investment</p>
               <h3 className="text-xl font-bold truncate">12.5k Cr</h3>
             </div>
