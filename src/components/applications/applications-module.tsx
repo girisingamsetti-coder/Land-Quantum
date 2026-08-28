@@ -56,7 +56,7 @@ export function ApplicationsModule() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col space-y-4 p-4 md:p-6 pb-0 md:pb-0 bg-muted/30 pt-4">
+    <div className="flex-1 w-full flex flex-col space-y-1 p-4 md:p-6 pb-0 md:pb-0 bg-muted/30 pt-4">
       <div className="flex flex-col gap-2 shrink-0">
         <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
