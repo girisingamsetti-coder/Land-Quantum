@@ -26,7 +26,7 @@ export function GrievancesView() {
 
   useEffect(() => { fetch('/api/grievances').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
 
-  const categories = useMemo(() => { if (!data?.grievances) return []; return [...new Set(data.grievances.map((g: any) => g.category).filter(Boolean))] }, [data])
+  const categories = useMemo(() => { if (!data?.grievances) return []; return [...new Set(data.grievances.map((g: any) => g.category).filter(Boolean))] as string[] }, [data])
   const activeFilters = [status, category, search].filter(Boolean).length
 
   const filtered = useMemo(() => {

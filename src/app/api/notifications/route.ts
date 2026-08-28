@@ -6,11 +6,11 @@ export async function GET() {
   try {
     const session = await requireAuth()
     const notifications = await db.notification.findMany({
-      where: { userId: session.userId },
+      where: { userId: session.id },
       orderBy: { createdAt: 'desc' },
       take: 50,
     })
-    const unread = await db.notification.count({ where: { userId: session.userId, isRead: false } })
+    const unread = await db.notification.count({ where: { userId: session.id, isRead: false } })
     return apiSuccess({ notifications, unread })
   } catch (error) {
     if (error && typeof error === 'object' && 'response' in error) return (error as any).response
@@ -22,7 +22,7 @@ export async function PUT(request: Request) {
   try {
     const session = await requireAuth()
     const { ids } = await request.json()
-    await db.notification.updateMany({ where: { id: { in: ids }, userId: session.userId }, data: { isRead: true } })
+    await db.notification.updateMany({ where: { id: { in: ids }, userId: session.id }, data: { isRead: true } })
     return apiSuccess({ updated: ids.length })
   } catch (error) {
     if (error && typeof error === 'object' && 'response' in error) return (error as any).response

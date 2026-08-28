@@ -6,8 +6,12 @@ export async function GET() {
   try {
     await requireAuth()
     const users = await db.user.findMany({
-      include: { role: true, department: true },
-      select: { id: true, email: true, name: true, designation: true, phone: true, isActive: true, lastLogin: true, failedAttempts: true, isLocked: true, createdAt: true, role: { name: true }, department: { name: true } },
+      select: {
+        id: true, email: true, name: true, designation: true, phone: true,
+        isActive: true, lastLogin: true, failedAttempts: true, isLocked: true, createdAt: true,
+        role: { select: { name: true } },
+        department: { select: { name: true } },
+      },
       orderBy: { createdAt: 'desc' },
     })
     const roles = await db.role.findMany({ orderBy: { name: 'asc' } })

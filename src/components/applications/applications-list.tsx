@@ -69,6 +69,7 @@ interface Application {
   allotmentMode: AppAllotmentMode | null
   assignedOfficer: AppOfficer | null
   stages: AppStage[]
+  sector: string | null
 }
 
 interface ApplicationsResponse {

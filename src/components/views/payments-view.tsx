@@ -28,7 +28,7 @@ export function PaymentsView() {
 
   useEffect(() => { fetch('/api/payments').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
 
-  const paymentTypes = useMemo(() => { if (!data?.payments) return []; return [...new Set(data.payments.map((p: any) => p.paymentType).filter(Boolean))] }, [data])
+  const paymentTypes = useMemo(() => { if (!data?.payments) return []; return [...new Set(data.payments.map((p: any) => p.paymentType).filter(Boolean))] as string[] }, [data])
 
   const activeFilters = [status, type, search].filter(Boolean).length
 

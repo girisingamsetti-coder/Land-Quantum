@@ -346,8 +346,8 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
 
   useEffect(() => { fetch('/api/audit-logs?pageSize=50').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
-  const actions = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.action))].sort() }, [data])
-  const modules = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.module).filter(Boolean))] }, [data])
+  const actions = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.action))].sort() as string[] }, [data])
+  const modules = useMemo(() => { if (!data?.logs) return []; return [...new Set(data.logs.map((l: any) => l.module).filter(Boolean))] as string[] }, [data])
 
   const filtered = useMemo(() => {
     if (!data?.logs) return []
@@ -395,7 +395,7 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
 
   useEffect(() => { fetch('/api/users').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
-  const roles = useMemo(() => { if (!data?.users) return []; return [...new Set(data.users.map((u: any) => u.role?.name).filter(Boolean))] }, [data])
+  const roles = useMemo(() => { if (!data?.users) return []; return [...new Set(data.users.map((u: any) => u.role?.name).filter(Boolean))] as string[] }, [data])
 
   const filtered = useMemo(() => {
     if (!data?.users) return []

@@ -83,7 +83,11 @@ export function DealsApplicationsTable({ search, filterSector, filterStage, filt
               lead: a.assignedOfficer?.name || '—',
               dealStatus: ['Active', 'Pending', 'Cancelled'][Math.floor(Math.random() * 3)],
             }))
-          setRows(prev => [...mapped, ...prev])
+          setRows(prev => {
+            const existingIds = new Set(prev.map(r => r.id))
+            const unique = mapped.filter((r: any) => !existingIds.has(r.id))
+            return [...unique, ...prev]
+          })
         }
       })
       .catch(() => { })
@@ -597,7 +601,7 @@ export function DealsView() {
         filterStage={filterStage}
         filterDealStatus={filterDealStatus}
         filterPriority={filterPriority}
-        onNavigate={navigateTo} 
+        onNavigate={(id: string) => navigateTo(id as any)} 
       />
 
       <NewDealDialog open={newDealOpen} onClose={() => setNewDealOpen(false)} />

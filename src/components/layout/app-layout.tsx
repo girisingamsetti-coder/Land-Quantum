@@ -61,8 +61,6 @@ export const LayoutContext = React.createContext<LayoutContextType>({
   globalFilters: { zone: '', status: '', dateRange: '' }, setGlobalFilters: () => { },
 })
 
-export { type View }
-
 interface NavItem {
   view: View; label: string; icon: React.ComponentType<{ className?: string }>
 }
