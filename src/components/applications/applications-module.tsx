@@ -113,17 +113,17 @@ export function ApplicationsModule() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
         <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1 mb-0 rounded-none h-auto">
-          <TabsTrigger value="all" className="border bg-gradient-to-l from-blue-50 to-white/50 rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <LayoutGrid className="w-4 h-4 mr-2 text-blue-600" /> <b>All Applications</b>
+          <TabsTrigger value="all" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <LayoutGrid className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>All Applications</b>
           </TabsTrigger>
-          <TabsTrigger value="queue" className="border bg-gradient-to-l from-emerald-50 to-white/50 rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <Inbox className="w-4 h-4 mr-2 text-emerald-600" /> <b>Work Queue</b>
+          <TabsTrigger value="queue" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <Inbox className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>Work Queue</b>
           </TabsTrigger>
-          <TabsTrigger value="kanban" className="border bg-gradient-to-l from-amber-50 to-white/50 rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <Kanban className="w-4 h-4 mr-2 text-amber-600" /> <b>Stage View</b>
+          <TabsTrigger value="kanban" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <Kanban className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>Stage View</b>
           </TabsTrigger>
-          <TabsTrigger value="cancellations" className="border bg-gradient-to-l from-purple-50 to-white/50 rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-600 hover:text-foreground">
-            <Ban className="w-4 h-4 mr-2 text-purple-600" /> <b>Cancellations</b>
+          <TabsTrigger value="cancellations" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <Ban className="w-4 h-4 mr-2 text-slate-400 data-[state=active]:text-slate-900" /> <b>Cancellations</b>
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 overflow-hidden mt-0">
