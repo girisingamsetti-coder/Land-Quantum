@@ -171,7 +171,7 @@ export function ApplicationsList({
   const [selectedStatCard, setSelectedStatCard] = useState<string | null>(null)
   const mode = 'All' // Mode is always All for now
   const [page, setPage] = useState(1)
-  const pageSize = 20
+  const pageSize = 11
 
   // Reset page when filters change
   useEffect(() => {

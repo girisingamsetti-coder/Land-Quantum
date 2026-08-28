@@ -127,11 +127,11 @@ export function ApplicationsModule() {
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 overflow-hidden mt-0">
-          <TabsContent value="all" forceMount className={`h-full flex flex-col m-0 overflow-hidden pr-2 pb-2 ${activeTab !== 'all' ? 'hidden' : ''}`}>
+          <TabsContent value="all" forceMount className={`h-full flex flex-col m-0 overflow-hidden ${activeTab !== 'all' ? 'hidden' : ''}`}>
             <ApplicationsList key={listKey} hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
 
-          <TabsContent value="queue" forceMount className={`h-full flex flex-col m-0 overflow-hidden pr-2 pb-2 ${activeTab !== 'queue' ? 'hidden' : ''}`}>
+          <TabsContent value="queue" forceMount className={`h-full flex flex-col m-0 overflow-hidden ${activeTab !== 'queue' ? 'hidden' : ''}`}>
             <ApplicationsList key={`queue-${listKey}`} viewType="queue" hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
 
@@ -139,7 +139,7 @@ export function ApplicationsModule() {
             <WorkflowKanban hideHeader />
           </TabsContent>
 
-          <TabsContent value="cancellations" forceMount className={`h-full flex flex-col m-0 overflow-hidden pr-2 pb-2 ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
+          <TabsContent value="cancellations" forceMount className={`h-full flex flex-col m-0 overflow-hidden ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
             <ApplicationsList key={`cancellations-${listKey}`} viewType="cancellations" hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
         </div>
