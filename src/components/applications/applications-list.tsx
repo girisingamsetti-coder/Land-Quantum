@@ -211,7 +211,7 @@ export function ApplicationsList({
   const to = data ? Math.min(data.page * data.pageSize, data.total) : 0
 
   return (
-    <div className="space-y-1 h-full flex flex-col">
+    <div className="space-y-1 flex-1 w-full flex flex-col">
       {/* Header */}
       {!hideHeader && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

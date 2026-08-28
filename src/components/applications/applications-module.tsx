@@ -56,7 +56,7 @@ export function ApplicationsModule() {
   }
 
   return (
-    <div className="space-y-4 flex flex-col h-[calc(100vh-80px)] overflow-hidden">
+    <div className="flex-1 w-full flex flex-col space-y-4 p-4 md:p-6 pb-0 md:pb-0 bg-muted/30 pt-4">
       <div className="flex flex-col gap-2 shrink-0">
         <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -127,19 +127,19 @@ export function ApplicationsModule() {
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 overflow-hidden mt-0">
-          <TabsContent value="all" forceMount className={`h-full flex flex-col m-0 overflow-hidden ${activeTab !== 'all' ? 'hidden' : ''}`}>
+          <TabsContent value="all" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden ${activeTab !== 'all' ? 'hidden' : ''}`}>
             <ApplicationsList key={listKey} hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
 
-          <TabsContent value="queue" forceMount className={`h-full flex flex-col m-0 overflow-hidden ${activeTab !== 'queue' ? 'hidden' : ''}`}>
+          <TabsContent value="queue" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden ${activeTab !== 'queue' ? 'hidden' : ''}`}>
             <ApplicationsList key={`queue-${listKey}`} viewType="queue" hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
 
-          <TabsContent value="kanban" forceMount className={`h-full flex flex-col m-0 overflow-hidden pb-2 ${activeTab !== 'kanban' ? 'hidden' : ''}`}>
+          <TabsContent value="kanban" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden pb-2 ${activeTab !== 'kanban' ? 'hidden' : ''}`}>
             <WorkflowKanban hideHeader />
           </TabsContent>
 
-          <TabsContent value="cancellations" forceMount className={`h-full flex flex-col m-0 overflow-hidden ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
+          <TabsContent value="cancellations" forceMount className={`flex-1 w-full flex flex-col m-0 overflow-hidden ${activeTab !== 'cancellations' ? 'hidden' : ''}`}>
             <ApplicationsList key={`cancellations-${listKey}`} viewType="cancellations" hideHeader search={search} status={status} stage={stage} sector={sector} />
           </TabsContent>
         </div>
