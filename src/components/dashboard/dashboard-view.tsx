@@ -74,8 +74,16 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
   icon: React.ElementType; color: string
   trend?: 'up' | 'down'; trendValue?: string
 }) {
+  const bgClass = color.includes('teal') ? 'bg-gradient-to-r from-teal-50 to-white/50'
+    : color.includes('indigo') ? 'bg-gradient-to-r from-indigo-50 to-white/50'
+    : color.includes('amber') || color.includes('orange') ? 'bg-gradient-to-r from-amber-50 to-white/50'
+    : color.includes('purple') || color.includes('violet') ? 'bg-gradient-to-r from-purple-50 to-white/50'
+    : color.includes('blue') ? 'bg-gradient-to-r from-blue-50 to-white/50'
+    : color.includes('emerald') || color.includes('green') ? 'bg-gradient-to-r from-emerald-50 to-white/50'
+    : 'bg-gradient-to-r from-slate-50 to-white/50'
+
   return (
-    <Card className="py-2.5 overflow-hidden border border-transparent hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 shadow-sm hover:shadow-md transition-all cursor-pointer">
+    <Card className={cn("py-2.5 overflow-hidden border border-transparent hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 shadow-sm hover:shadow-md transition-all cursor-pointer", bgClass)}>
       <CardContent className="px-3 py-0">
         <div className="flex justify-start items-center gap-3">
           <div className={cn('rounded-lg p-2 shrink-0', color)}>
@@ -189,7 +197,7 @@ const PIPELINE_STAGES: PipelineStage[] = [
 function PipelineCard({ stage }: { stage: PipelineStage }) {
   const Icon = stage.icon
   return (
-    <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all py-2 gap-0 cursor-pointer">
+    <Card className="bg-gradient-to-r from-emerald-50/50 to-white/50 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all py-2 gap-0 cursor-pointer">
       <CardContent className="px-2 pt-2 pb-2">
         {/* Top Section */}
         <div className="flex items-center justify-between mb-4 mt-1">
