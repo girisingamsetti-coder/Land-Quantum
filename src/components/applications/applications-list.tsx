@@ -237,7 +237,7 @@ export function ApplicationsList({
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-1 shrink-0 mb-1">
         <Card
-          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'total' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          className={cn("bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'total' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'total' ? null : 'total')}
         >
           <CardContent className="p-3 flex items-center gap-3">
@@ -251,7 +251,7 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'sectors' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          className={cn("bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'sectors' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'sectors' ? null : 'sectors')}
         >
           <CardContent className="p-3 flex items-center gap-3">
@@ -265,7 +265,7 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'approved' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          className={cn("bg-gradient-to-r from-emerald-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'approved' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'approved' ? null : 'approved')}
         >
           <CardContent className="p-3 flex items-center gap-3">
@@ -279,7 +279,7 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'pending' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          className={cn("bg-gradient-to-r from-amber-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'pending' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'pending' ? null : 'pending')}
         >
           <CardContent className="p-3 flex items-center gap-3">
@@ -293,7 +293,7 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'investment' && "outline outline-2 outline-primary outline-offset-[-2px]")}
+          className={cn("bg-gradient-to-r from-purple-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'investment' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'investment' ? null : 'investment')}
         >
           <CardContent className="p-3 flex items-center gap-3">
