@@ -240,9 +240,9 @@ export function ApplicationsList({
           className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'total' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'total' ? null : 'total')}
         >
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-primary/10 rounded-full shrink-0">
-              <FileText className="h-5 w-5 text-primary" />
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="p-2.5 bg-primary/10 rounded-full shrink-0">
+              <FileText className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Total Applications</p>
@@ -254,9 +254,9 @@ export function ApplicationsList({
           className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'sectors' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'sectors' ? null : 'sectors')}
         >
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-blue-500/10 rounded-full shrink-0">
-              <PieChart className="h-5 w-5 text-blue-500" />
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="p-2.5 bg-blue-500/10 rounded-full shrink-0">
+              <PieChart className="h-4 w-4 text-blue-500" />
             </div>
             <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Active Sectors</p>
@@ -268,9 +268,9 @@ export function ApplicationsList({
           className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'approved' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'approved' ? null : 'approved')}
         >
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/10 rounded-full shrink-0">
-              <Activity className="h-5 w-5 text-emerald-500" />
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="p-2.5 bg-emerald-500/10 rounded-full shrink-0">
+              <Activity className="h-4 w-4 text-emerald-500" />
             </div>
             <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Approved Status</p>
@@ -282,9 +282,9 @@ export function ApplicationsList({
           className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'pending' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'pending' ? null : 'pending')}
         >
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-amber-500/10 rounded-full shrink-0">
-              <Clock className="h-5 w-5 text-amber-500" />
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="p-2.5 bg-amber-500/10 rounded-full shrink-0">
+              <Clock className="h-4 w-4 text-amber-500" />
             </div>
             <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Pending Review</p>
@@ -296,9 +296,9 @@ export function ApplicationsList({
           className={cn("cursor-pointer transition-all hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-2px]", selectedStatCard === 'investment' && "outline outline-2 outline-primary outline-offset-[-2px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'investment' ? null : 'investment')}
         >
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 bg-purple-500/10 rounded-full shrink-0">
-              <IndianRupee className="h-5 w-5 text-purple-500" />
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="p-2.5 bg-purple-500/10 rounded-full shrink-0">
+              <IndianRupee className="h-4 w-4 text-purple-500" />
             </div>
             <div className="min-w-0 flex flex-col gap-1">
               <p className="text-sm font-bold text-foreground truncate">Est. Investment</p>
