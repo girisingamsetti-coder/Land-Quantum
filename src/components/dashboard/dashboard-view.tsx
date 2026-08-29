@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import {
   ChartContainer, ChartTooltip, ChartTooltipContent,
 } from '@/components/ui/chart'
-import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, AreaChart, Area, ComposedChart, Line, Legend } from 'recharts'
+import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, AreaChart, Area, ComposedChart, Line, Legend, CartesianGrid, LabelList } from 'recharts'
 import {
   FileText, LandPlot, IndianRupee, HardHat,
   TrendingUp, TrendingDown, Clock,
@@ -117,8 +117,11 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
 // Alert summary card (drill-down)
 const MOCK_ALERTS = [
   { id: '1', severity: 'Critical', type: 'SLA Breach', description: 'APCRDA-2024-0008 breached SLA at Economic Review', application: 'APCRDA-2024-0008', details: { stage: 'Economic Review', slaDays: 7, daysOverdue: 3, assignedTo: 'K. Padmavathi' } },
-  { id: '2', severity: 'High', type: 'Payment Overdue', description: 'Down payment for APCRDA-2024-0004 overdue by 15 days', application: 'APCRDA-2024-0004', details: { amountDue: 'â‚¹5,00,00,000', daysOverdue: 15, penaltyAccrued: 'â‚¹12,50,000' } },
+  { id: '2', severity: 'High', type: 'Payment Overdue', description: 'Down payment for APCRDA-2024-0004 overdue by 15 days', application: 'APCRDA-2024-0004', details: { amountDue: '₹5,00,00,000', daysOverdue: 15, penaltyAccrued: '₹12,50,000' } },
   { id: '3', severity: 'High', type: 'Construction Delayed', description: 'Amaravati Tech Hub 30% behind schedule', application: 'APCRDA-2024-0002', details: { physicalProgress: '22%', expectedProgress: '52%', delayDays: 45 } },
+  { id: '4', severity: 'Medium', type: 'Document Pending', description: 'NOC from revenue dept pending for APCRDA-2024-0011', application: 'APCRDA-2024-0011', details: { stage: 'Legal Vetting', pendingSince: '12 days', assignedTo: 'R. Suresh' } },
+  { id: '5', severity: 'Medium', type: 'Missing Signatures', description: 'Applicant signature missing on page 4', application: 'APCRDA-2024-0015', details: { assignedTo: 'M. Rao' } },
+  { id: '6', severity: 'Low', type: 'Inspection Due', description: 'Quarterly site inspection due for APCRDA-2024-0006', application: 'APCRDA-2024-0006', details: { lastInspection: '90 days ago', dueDate: 'Sep 5, 2024', inspector: 'M. Ravi' } },
 ]
 
 function severityStyle(s: string) {
@@ -131,18 +134,14 @@ function severityStyle(s: string) {
 function AlertSummaryCard({ alert, onDrillDown }: { alert: typeof MOCK_ALERTS[0]; onDrillDown: () => void }) {
   const s = severityStyle(alert.severity)
   return (
-    <div className={cn('rounded-md border border-l-3 p-2 cursor-pointer transition-all hover:shadow-sm', s.bg, s.border)} onClick={onDrillDown}>
-      <div className="flex items-start gap-2">
-        <AlertCircle className={cn('h-3.5 w-3.5 mt-0.5 shrink-0', s.icon)} />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge variant="outline" className={cn('text-[9px] py-0', s.badge)}>{alert.severity}</Badge>
-            <span className="text-[9px] text-muted-foreground ">{alert.application}</span>
-          </div>
-          <p className="text-[11px] mt-0.5 line-clamp-1">{alert.description}</p>
-        </div>
-        <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
-      </div>
+    <div
+      className={cn('rounded border-l-[3px] px-1.5 py-[3px] cursor-pointer transition-all hover:shadow-sm flex items-center gap-1.5 min-w-0', s.bg, s.border)}
+      onClick={onDrillDown}
+    >
+      <Badge variant="outline" className={cn('text-[8px] py-0 h-4 leading-none shrink-0 px-1', s.badge)}>{alert.severity}</Badge>
+      <span className="text-[8px] text-muted-foreground shrink-0 font-mono">{alert.application}</span>
+      <span className="text-[9px] truncate flex-1 leading-tight">{alert.description}</span>
+      <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
     </div>
   )
 }
@@ -368,7 +367,7 @@ const investmentData = [
   { sector: 'Political Parties', short: 'Political', amount: 600, color: '#ff7828' },
   { sector: 'Sports', short: 'Sports', amount: 1850, color: '#84cc16' },
   { sector: 'Textiles', short: 'Textiles', amount: 2750, color: '#0284c7' },
-]
+].sort((a, b) => b.amount - a.amount)
 
 function TrendWindowSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
@@ -583,6 +582,22 @@ const RECORD_TABS = [
   { id: 'investors', label: 'Top investors', count: 10 },
 ]
 
+const STATUS_OPTIONS = ['All', 'Draft', 'Submitted', 'Under Review', 'Clarification Required', 'Approved', 'Rejected', 'Deferred', 'Withdrawn', 'Cancelled', 'Completed']
+
+const STAGE_OPTIONS = [
+  'All', 'Application', 'Eligibility', 'DPR Review', 'Economic Review', 'LASC',
+  'GoM', 'Cabinet Sub-Committee', 'Authority Approval', 'Cabinet Approval',
+  'Government Order', 'LOI', 'Payment', 'Revised DPR', 'Agreement',
+  'Possession', 'Building Permission', 'Construction', 'Compliance',
+]
+
+const SECTOR_OPTIONS = [
+  'All Sectors', 'Commercial', 'Education', 'Financial Institutions',
+  'Food Processing', 'Government Organisations', 'Healthcare', 'Hospitality',
+  'IT/ITES', 'Industrial', 'Logistics', 'NGOs', 'Others',
+  'Pharmaceutical', 'Political Parties', 'Sports', 'Textiles',
+]
+
 type SortKey = keyof CaseRecord | null
 type SortDir = 'asc' | 'desc'
 
@@ -596,10 +611,31 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
 export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string) => void }) {
   const [activeTab, setActiveTab] = useState('cases')
   const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [status, setStatus] = useState('All')
+  const [stage, setStage] = useState('All')
+  const [sector, setSector] = useState('All Sectors')
   const [sortKey, setSortKey] = useState<SortKey>('ageDays')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 100
+  const PAGE_SIZE = 21
+
+  const handleSearch = () => {
+    setSearch(searchInput)
+    setPage(1)
+  }
+
+  const resetFilters = () => {
+    setSearchInput('')
+    setSearch('')
+    setStatus('All')
+    setStage('All')
+    setSector('All Sectors')
+    setPage(1)
+  }
+
+  const hasFilters = searchInput.trim() !== '' || search.trim() !== '' || status !== 'All' || stage !== 'All' || (sector !== 'All Sectors')
+
 
   const [realCases, setRealCases] = useState<CaseRecord[]>([])
 
@@ -650,15 +686,21 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
-    return combinedCases.filter(r =>
-      !q ||
-      r.id.toLowerCase().includes(q) ||
-      r.applicant.toLowerCase().includes(q) ||
-      r.sector.toLowerCase().includes(q) ||
-      r.plot.toLowerCase().includes(q) ||
-      r.themeCity.toLowerCase().includes(q)
-    )
-  }, [search])
+    return combinedCases.filter(r => {
+      const matchesSearch = !q ||
+        r.id.toLowerCase().includes(q) ||
+        r.applicant.toLowerCase().includes(q) ||
+        r.sector.toLowerCase().includes(q) ||
+        r.plot.toLowerCase().includes(q) ||
+        r.themeCity.toLowerCase().includes(q)
+      
+      const matchesStatus = status === 'All' || r.status === status || (status === 'Submitted' && r.status === 'In progress')
+      const matchesStage = stage === 'All' || (r.step && r.step.toLowerCase().includes(stage.toLowerCase()))
+      const matchesSector = sector === 'All Sectors' || r.sector === sector || (r.sector && r.sector.toLowerCase().includes(sector.split('/')[0].toLowerCase()))
+      
+      return matchesSearch && matchesStatus && matchesStage && matchesSector
+    })
+  }, [search, status, stage, sector, combinedCases])
 
   const sorted = useMemo(() => {
     if (!sortKey) return filtered
@@ -702,7 +744,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
 
   const th = (label: string, key: SortKey, extra = '') => (
     <th
-      className={cn('px-2 py-2 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-foreground transition-colors', extra)}
+      className={cn('px-2 py-2 text-left text-xs font-bold text-slate-800 uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-foreground transition-colors', extra)}
       onClick={() => handleSort(key)}
     >
       <div className="flex items-center gap-1">
@@ -724,7 +766,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
               {RECORD_TABS.map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => { setActiveTab(tab.id); setSearch(''); setPage(1) }}
+                  onClick={() => { setActiveTab(tab.id); resetFilters() }}
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold whitespace-nowrap rounded-md transition-all',
                     activeTab === tab.id
@@ -743,25 +785,55 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
             </div>
           </div>
 
-
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 shrink-0" onClick={handleCSV}>
+            <Download className="h-3.5 w-3.5" /> Export CSV
+          </Button>
         </CardHeader>
         <div className="p-2 bg-muted/5">
           <Card className="p-1.5 border shadow-sm mb-2">
-            <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
-              <div className="relative w-full sm:flex-1 mr-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full">
+              <div className="relative w-full flex-1">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   type="text"
-                  value={search}
-                  onChange={e => { setSearch(e.target.value); setPage(1) }}
-                  placeholder="Search by lead, applicant, sector, plot..."
-                  className="pl-8 h-8 text-xs w-full"
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                  placeholder="Search..."
+                  className="pl-8 h-8 text-xs bg-white w-full"
                 />
               </div>
-              <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
-                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5" onClick={handleCSV}>
-                  <Download className="h-3.5 w-3.5" /> Export CSV
-                </Button>
+              <div className="flex items-center gap-2 shrink-0">
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Status' : s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={stage} onValueChange={setStage}>
+                  <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
+                    <SelectValue placeholder="Stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Stage' : s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={sector} onValueChange={setSector}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={sector !== 'All' && sector !== 'All Sectors'}>
+                    <SelectValue placeholder="Sector" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+
+                {hasFilters && (
+                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+                    <X className="h-3.5 w-3.5" /> Clear
+                  </Button>
+                )}
               </div>
             </div>
           </Card>
@@ -1175,7 +1247,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
   const [sortCol, setSortCol] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 100
+  const PAGE_SIZE = 21
 
   // Fetch real applications and prepend
   useEffect(() => {
@@ -1238,10 +1310,12 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
 
   const totalPages = Math.ceil(sorted.length / PAGE_SIZE) || 1
   const paged = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const from = sorted.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1
+  const to = Math.min(page * PAGE_SIZE, sorted.length)
 
   const th = (label: string, key: string, cls = '') => (
     <th
-      className={cn('px-3 py-2 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider cursor-pointer select-none hover:text-foreground transition-colors whitespace-nowrap', cls)}
+      className={cn('px-3 py-2 text-left text-xs font-bold text-slate-800 uppercase tracking-wider cursor-pointer select-none hover:text-foreground transition-colors whitespace-nowrap', cls)}
       onClick={() => handleSort(key)}
     >
       <div className="flex items-center gap-1">
@@ -1262,68 +1336,115 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
     setPage(1)
   }
 
+  const hasFilters = search !== '' || filterStatus !== 'All Statuses' || filterStage !== 'All Stages' || filterSector !== 'All Sectors'
+
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="px-4 py-1 border-b flex flex-row items-center justify-between space-y-0 gap-3">
-        <CardTitle className="text-sm font-bold tracking-tight shrink-0">Applications</CardTitle>
-        <div className="flex flex-wrap items-center justify-end gap-2 flex-1">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+    <div className="space-y-2 w-full">
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <input
-              value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
+              type="text"
               placeholder="Search..."
-              className="pl-7 pr-3 h-7 w-[160px] md:w-[180px] rounded-md border bg-background text-[11px] outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+              className="pl-8 h-8 text-xs bg-white w-full border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             />
           </div>
-          <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}><SelectTrigger className="w-[125px] h-7 text-[11px]" data-active={filterSector !== 'All Sectors'}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]" data-active={filterStage !== 'All Stages'}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]" data-active={filterStatus !== 'All Status'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{DASH_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}><SelectTrigger className="w-[115px] h-7 text-[11px]" data-active={filterPriority !== 'All Priorities'}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-[11px]">{s}</SelectItem>)}</SelectContent></Select>
-          {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterStatus !== 'All Statuses' || filterPriority !== 'All Priorities') && (
-            <Button variant="ghost" size="sm" className="h-7 text-[11px] gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3 w-3" /> Clear</Button>
-          )}
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1) }}>
+              <SelectTrigger className="w-[120px] h-8 text-xs bg-white border-slate-200" data-active={filterStatus !== 'All Statuses'}>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {DASH_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Statuses' ? 'Status' : s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}>
+              <SelectTrigger className="w-[130px] h-8 text-xs bg-white border-slate-200" data-active={filterStage !== 'All Stages'}>
+                <SelectValue placeholder="Stage" />
+              </SelectTrigger>
+              <SelectContent>
+                {DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Stages' ? 'Stage' : s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white border-slate-200" data-active={filterSector !== 'All Sectors'}>
+                <SelectValue placeholder="All Sectors" />
+              </SelectTrigger>
+              <SelectContent>
+                {DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Sectors' ? 'All Sectors' : s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-      </CardHeader>
-      <div className="overflow-x-auto">
-        <table className="w-full text-[11px]">
-          <thead className="bg-muted/40 border-b">
-            <tr>
-              {th('Application ID', 'id', 'min-w-[160px]')}
-              {th('Applicant', 'applicant', 'min-w-[180px]')}
-              {th('Sector', 'sector', 'min-w-[130px]')}
-              {th('Investment', 'investment', 'min-w-[100px]')}
-              {th('Area', 'area', 'min-w-[70px]')}
-              {th('Applied On', 'appliedOn', 'min-w-[110px]')}
-              {th('Stage', 'stage', 'min-w-[130px]')}
-              {th('SLA', 'sla', 'min-w-[90px]')}
-              {th('Priority', 'priority', 'min-w-[80px]')}
-              {th('Status', 'status', 'min-w-[100px]')}
-              {th('Lead Manager', 'lead', 'min-w-[130px]')}
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {paged.length === 0 ? (
-              <tr><td colSpan={11} className="text-center py-8 text-muted-foreground text-xs">No results found</td></tr>
-            ) : paged.map(row => (
-              <tr key={row.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => onNavigate(row.id)}>
-                <td className="px-3 py-2 text-[10px] text-primary font-semibold">{row.id}</td>
-                <td className="px-3 py-2 max-w-[200px]"><span className="truncate block font-medium">{row.applicant}</span></td>
-                <td className="px-3 py-2 text-muted-foreground">{row.sector}</td>
-                <td className="px-3 py-2 font-semibold tabular-nums">{row.investment}</td>
-                <td className="px-3 py-2 text-muted-foreground tabular-nums">{row.area}</td>
-                <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{row.appliedOn}</td>
-                <td className="px-3 py-2 text-muted-foreground">{row.stage}</td>
-                <td className="px-3 py-2"><DashBadge value={row.sla} variant="sla" /></td>
-                <td className="px-3 py-2"><DashBadge value={row.priority} variant="priority" /></td>
-                <td className="px-3 py-2"><DashBadge value={row.status} variant="status" /></td>
-                <td className="px-3 py-2 text-muted-foreground">{row.lead}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      </Card>
 
-    </Card>
+      <Card className="shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-[11px]">
+            <thead className="bg-muted/40 border-b">
+              <tr>
+                {th('Application ID', 'id', 'min-w-[160px]')}
+                {th('Applicant', 'applicant', 'min-w-[180px]')}
+                {th('Sector', 'sector', 'min-w-[130px]')}
+                {th('Investment', 'investment', 'min-w-[100px]')}
+                {th('Area', 'area', 'min-w-[70px]')}
+                {th('Applied On', 'appliedOn', 'min-w-[110px]')}
+                {th('Stage', 'stage', 'min-w-[130px]')}
+                {th('SLA', 'sla', 'min-w-[90px]')}
+                {th('Priority', 'priority', 'min-w-[80px]')}
+                {th('Status', 'status', 'min-w-[100px]')}
+                {th('Lead Manager', 'lead', 'min-w-[130px]')}
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {paged.length === 0 ? (
+                <tr><td colSpan={11} className="text-center py-8 text-muted-foreground text-xs">No results found</td></tr>
+              ) : paged.map(row => (
+                <tr key={row.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => onNavigate(row.id)}>
+                  <td className="px-3 py-2 text-[10px] text-primary font-semibold">{row.id}</td>
+                  <td className="px-3 py-2 max-w-[200px]"><span className="truncate block font-medium">{row.applicant}</span></td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.sector}</td>
+                  <td className="px-3 py-2 font-semibold tabular-nums">{row.investment}</td>
+                  <td className="px-3 py-2 text-muted-foreground tabular-nums">{row.area}</td>
+                  <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{row.appliedOn}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.stage}</td>
+                  <td className="px-3 py-2"><DashBadge value={row.sla} variant="sla" /></td>
+                  <td className="px-3 py-2"><DashBadge value={row.priority} variant="priority" /></td>
+                  <td className="px-3 py-2"><DashBadge value={row.status} variant="status" /></td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.lead}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="flex items-center justify-between px-4 py-2 border-t bg-muted/20 shrink-0">
+          <div className="text-xs text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{from}</span> to <span className="font-medium text-foreground">{to}</span> of <span className="font-medium text-foreground">{sorted.length}</span> entries
+          </div>
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
+              Previous
+            </Button>
+            <div className="flex items-center gap-1 px-2 text-xs font-medium">
+              Page {page} of {totalPages}
+            </div>
+            <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>
+              Next
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
   )
 }
 
@@ -1583,66 +1704,15 @@ export function DashboardView() {
           {PIPELINE_STAGES.map((stage) => <PipelineCard key={stage.id} stage={stage} onNavigate={navigateTo} />)}
         </div>
       </div>
-      {/* Analytics Charts - 1. Investment by sector (40%), 2. Revenue Trend (30%), 3. Land Availability (30%) */}
+      {/* Analytics Charts - 1. Revenue Trend (30%), 2. Land Availability (30%), 3. Risk Alerts (40%) */}
       <div className="grid gap-2 grid-cols-1 lg:grid-cols-10">
-        {/* Investment by sector - 40% */}
-        <Card className="lg:col-span-4 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xs font-bold">Investment by sector</CardTitle>
-              <span className="text-[10px] text-muted-foreground">₹ Cr</span>
-            </div>
-          </CardHeader>
-          <CardContent className="px-3 pb-2 pt-0">
-            {/* Tall bar chart — labels stripped, bars fill the height */}
-            <ChartContainer config={investmentConfig} className="h-[148px] w-full">
-              <BarChart data={investmentData} margin={{ top: 6, right: 4, bottom: 2, left: -14 }} barSize={10}>
-                <XAxis type="category" dataKey="short" tickLine={false} axisLine={{ stroke: '#e2e8f0', strokeWidth: 1 }} tick={false} height={4} />
-                <YAxis type="number" domain={[0, 5200]} tickLine={false} axisLine={false} tick={{ fontSize: 8, fill: '#94a3b8' }} width={28} tickFormatter={(v) => `${v / 1000}k`} />
-                <ChartTooltip
-                  content={({ active, payload }) => {
-                    if (!active || !payload?.length) return null
-                    const d = payload[0].payload
-                    return (
-                      <div className="rounded-lg border bg-background px-2.5 py-1.5 shadow-md text-[11px]">
-                        <div className="flex items-center gap-1.5 font-bold">
-                          <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-                          <span>{d.sector}</span>
-                        </div>
-                        <p className="text-muted-foreground mt-0.5 font-medium">
-                          Investment: <span className="text-foreground font-bold">₹{d.amount.toLocaleString('en-IN')} Cr</span>
-                        </p>
-                      </div>
-                    )
-                  }}
-                />
-                <Bar dataKey="amount" radius={[5, 5, 0, 0]}>
-                  {investmentData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ChartContainer>
-            {/* Compact 2-row legend pinned directly below chart */}
-            <div className="grid grid-cols-8 gap-x-1 gap-y-0.5 mt-1.5">
-              {investmentData.map((item) => (
-                <div key={item.sector} className="flex items-center gap-0.5 min-w-0 group" title={item.sector}>
-                  <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                  <span className="text-[7px] font-medium text-muted-foreground truncate leading-tight group-hover:text-foreground transition-colors">
-                    {item.short}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Revenue Trend - 30% */}
-        <Card className="lg:col-span-3 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+        <Card className="flex flex-col lg:col-span-3 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Revenue Trend</CardTitle>
           </CardHeader>
-          <CardContent className="px-3 py-0">
+          <CardContent className="px-3 py-0 mt-auto">
             <ChartContainer config={revenueConfig} className="h-[160px] w-full">
               <AreaChart data={revenueTrend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                 <defs>
@@ -1661,12 +1731,12 @@ export function DashboardView() {
         </Card>
 
         {/* Land Availability Pie - 30% */}
-        <Card className="lg:col-span-3 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+        <Card className="flex flex-col lg:col-span-3 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Land Availability</CardTitle>
           </CardHeader>
-          <CardContent className="px-3 py-0 flex items-center justify-center">
-            <ChartContainer config={pieConfig} className="h-[160px] w-full">
+          <CardContent className="px-3 py-0 mt-auto flex flex-col items-center justify-end">
+            <ChartContainer config={pieConfig} className="h-[160px] w-full mt-auto">
               <PieChart>
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
@@ -1690,74 +1760,36 @@ export function DashboardView() {
             </ChartContainer>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Recent Apps + Risk Alerts */}
-      <div className="grid gap-1 lg:grid-cols-2">
-        {/* Recent Applications */}
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xs font-bold">Recent Applications</CardTitle>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('applications')}>
-                View all <ArrowRight className="h-2.5 w-2.5" />
+        {/* Risk Alerts - 40% */}
+        <Card className="lg:col-span-4 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+          <CardHeader className="px-2 pt-1 pb-0">
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-xs font-bold shrink-0">Risk Alerts</CardTitle>
+              {/* Severity counts inline */}
+              <div className="flex items-center gap-1 flex-1 justify-end flex-wrap mr-1">
+                {(['Critical', 'High', 'Medium', 'Low'] as const).map(sev => {
+                  const counts: Record<string, number> = { Critical: 1, High: 2, Medium: 2, Low: 1 }
+                  const styles: Record<string, string> = {
+                    Critical: 'bg-red-100 text-red-700',
+                    High: 'bg-orange-100 text-orange-700',
+                    Medium: 'bg-amber-100 text-amber-700',
+                    Low: 'bg-blue-100 text-blue-700',
+                  }
+                  return (
+                    <div key={sev} className={cn('flex items-center gap-0.5 rounded px-1 py-0 text-[8px] font-semibold whitespace-nowrap', styles[sev])}>
+                      {counts[sev]} {sev}
+                    </div>
+                  )
+                })}
+              </div>
+              <Button variant="ghost" size="sm" className="h-5 text-[9px] gap-1 px-1 shrink-0" onClick={() => navigateTo('risk-alerts')}>
+                View all <ArrowRight className="h-2 w-2" />
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="px-3 py-0">
-            <div className="space-y-1.5">
-              {recentApps.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-6">No applications yet</p>
-              ) : (
-                recentApps.map((app) => (
-                  <div key={app.id} className="flex items-center justify-between gap-2 rounded-md border p-2 hover:bg-muted/30 transition-colors cursor-pointer"
-                    onClick={() => navigateTo('application-detail', { id: app.id })}>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-medium truncate">{app.projectName || app.applicationNumber}</p>
-                      <p className="text-[10px] text-muted-foreground truncate">
-                        {app.applicant?.organizationName}{app.landParcel ? ` Â· ${app.landParcel.plotId}` : ''}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-4.5 shrink-0">
-                      <StatusBadge status={app.status} />
-                      <span className="text-[9px] text-muted-foreground">{formatDate(app.createdAt)}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Risk Alerts */}
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xs font-bold">Risk Alerts</CardTitle>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('risk-alerts')}>
-                View all <ArrowRight className="h-2.5 w-2.5" />
-              </Button>
-            </div>
-            {/* Severity counts */}
-            <div className="flex gap-1.5 mt-1">
-              {(['Critical', 'High', 'Medium', 'Low'] as const).map(sev => {
-                const counts: Record<string, number> = { Critical: 1, High: 2, Medium: 2, Low: 1 }
-                const styles: Record<string, string> = {
-                  Critical: 'bg-red-100 text-red-700',
-                  High: 'bg-orange-100 text-orange-700',
-                  Medium: 'bg-amber-100 text-amber-700',
-                  Low: 'bg-blue-100 text-blue-700',
-                }
-                return (
-                  <div key={sev} className={cn('flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-medium', styles[sev])}>
-                    {counts[sev]} {sev}
-                  </div>
-                )
-              })}
-            </div>
-          </CardHeader>
-          <CardContent className="px-3 py-0">
-            <div className="space-y-1.5">
+          <CardContent className="px-2 pt-0 pb-1">
+            <div className="space-y-1 max-h-[160px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full">
               {MOCK_ALERTS.map((alert) => (
                 <div key={alert.id}>
                   <AlertSummaryCard
@@ -1780,12 +1812,110 @@ export function DashboardView() {
                         className="w-full h-6 text-[10px] gap-1"
                         onClick={(e) => { e.stopPropagation(); navigateTo('risk-alerts') }}
                       >
-                        Open in Risk & Alerts <ArrowRight className="h-2.5 w-2.5" />
+                        Open in Risk &amp; Alerts <ArrowRight className="h-2.5 w-2.5" />
                       </Button>
                     </div>
                   )}
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Apps + Investment by sector */}
+
+      <div className="grid gap-1 lg:grid-cols-2">
+        {/* Investment by sector */}
+        <Card className="flex flex-col border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+          <CardHeader className="px-3 py-0">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xs font-bold">Investment by sector</CardTitle>
+              <span className="text-[10px] text-muted-foreground">₹ Cr</span>
+            </div>
+          </CardHeader>
+          <CardContent className="px-3 pb-0 pt-0 mt-auto">
+            <ChartContainer config={investmentConfig} className="h-[300px] w-full">
+              <BarChart data={investmentData} margin={{ top: 24, right: 4, bottom: 45, left: -14 }} barSize={12}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis
+                  type="category"
+                  dataKey="short"
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0', strokeWidth: 1 }}
+                  tick={{ fontSize: 9, fill: '#475569', fontWeight: 'bold' }}
+                  angle={-45}
+                  textAnchor="end"
+                  interval={0}
+                  height={45}
+                />
+                <YAxis
+                  type="number"
+                  domain={[0, 5200]}
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fontSize: 8, fill: '#94a3b8' }}
+                  width={28}
+                  tickFormatter={(v) => `${v / 1000}k`}
+                />
+                <ChartTooltip
+                  content={({ active, payload }) => {
+                    if (!active || !payload?.length) return null
+                    const d = payload[0].payload
+                    return (
+                      <div className="rounded-lg border bg-background px-2.5 py-1.5 shadow-md text-[11px]">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
+                          <span>{d.sector}</span>
+                        </div>
+                        <p className="text-muted-foreground mt-0.5 font-medium">
+                          Investment: <span className="text-foreground font-bold">₹{d.amount.toLocaleString('en-IN')} Cr</span>
+                        </p>
+                      </div>
+                    )
+                  }}
+                />
+                <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
+                  {investmentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Recent Applications */}
+        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+          <CardHeader className="px-3 py-0">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xs font-bold">Recent Applications</CardTitle>
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 px-1.5" onClick={() => navigateTo('applications')}>
+                View all <ArrowRight className="h-2.5 w-2.5" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="px-3 py-0">
+            <div className="space-y-1.5">
+              {recentApps.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-6">No applications yet</p>
+              ) : (
+                recentApps.map((app) => (
+                  <div key={app.id} className="flex items-center justify-between gap-2 rounded-md border p-2 hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => navigateTo('application-detail', { id: app.id })}>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-medium truncate">{app.projectName || app.applicationNumber}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">
+                        {app.applicant?.organizationName}{app.landParcel ? ` · ${app.landParcel.plotId}` : ''}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-0.5 shrink-0">
+                      <StatusBadge status={app.status} />
+                      <span className="text-[9px] text-muted-foreground">{formatDate(app.createdAt)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
