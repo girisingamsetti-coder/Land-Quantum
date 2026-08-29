@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
 
 // ---- Types ----
 
@@ -339,9 +340,14 @@ export function ApplicationDetail() {
   const [noteLoading, setNoteLoading] = useState(false)
 
   const handleAddNote = async (note: string) => {
+    if (!note.trim()) {
+      toast.error('Note cannot be empty')
+      return
+    }
     setNoteLoading(true)
     // Simulate API call to save note
     await new Promise(r => setTimeout(r, 600))
+    toast.success('Note added successfully')
     setNoteLoading(false)
     setNoteDialogOpen(false)
   }
@@ -392,12 +398,17 @@ export function ApplicationDetail() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
       })
-      if (res.ok) {
+      const json = await res.json()
+      if (res.ok && json.success) {
         setEditingCard(null)
+        toast.success('Application details updated successfully')
         fetchApplication() // Refresh data
+      } else {
+        toast.error(json.message || 'Failed to update application')
       }
     } catch (error) {
       console.error('Failed to save:', error)
+      toast.error('Failed to save changes. Please try again.')
     } finally {
       setEditLoading(false)
     }
@@ -440,10 +451,13 @@ export function ApplicationDetail() {
       const json = await res.json()
       if (json.success) {
         setDialogOpen(false)
+        toast.success(`${dialogDecision} recorded for ${app.currentStage} stage`)
         fetchApplication() // refresh
+      } else {
+        toast.error(json.message || 'Failed to update workflow stage')
       }
-    } catch {
-      // silent
+    } catch (err) {
+      toast.error('Network error updating stage')
     } finally {
       setDialogLoading(false)
     }

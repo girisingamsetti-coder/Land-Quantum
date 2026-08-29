@@ -21,9 +21,16 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const session = await requireAuth()
-    const { ids } = await request.json()
-    await db.notification.updateMany({ where: { id: { in: ids }, userId: session.id }, data: { isRead: true } })
-    return apiSuccess({ updated: ids.length })
+    const body = await request.json()
+    const ids = Array.isArray(body?.ids) ? body.ids.filter((id: unknown): id is string => typeof id === 'string') : []
+    if (ids.length === 0) {
+      return apiSuccess({ updated: 0 })
+    }
+    const result = await db.notification.updateMany({
+      where: { id: { in: ids }, userId: session.id },
+      data: { isRead: true }
+    })
+    return apiSuccess({ updated: result.count })
   } catch (error) {
     if (error && typeof error === 'object' && 'response' in error) return (error as any).response
     return apiError('Failed to update notifications')

@@ -21,6 +21,7 @@ import {
   IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer, Plus
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAppLayout } from '@/components/layout/app-layout'
 import { RecordsTable } from '@/components/dashboard/dashboard-view'
 
 function formatINR(amount: number) { return `\u20B9${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` }
@@ -151,6 +152,7 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
 
 // REPORTS
 export function ReportsView() {
+  const { navigateTo } = useAppLayout();
   const [reportId, setReportId] = useState('summary');
   const [filters, setFilters] = useState({ from: '', to: '', phase: 'ALL', status: 'ALL' });
   const [exporting, setExporting] = useState<string | null>(null);
@@ -302,7 +304,7 @@ export function ReportsView() {
         </div>
       </Card>
       {reportId === 'summary' ? (
-        <RecordsTable onNavigateToApp={() => { }} />
+        <RecordsTable onNavigateToApp={(id) => navigateTo('application-detail', { id })} />
       ) : (
         <Card className="shadow-md overflow-hidden">
 
@@ -610,7 +612,7 @@ export function SettingsView() {
   const [editingTemplate, setEditingTemplate] = useState<any>(null)
 
   const handleSaveTemplate = () => {
-    if (!editingTemplate.name.trim()) {
+    if (!editingTemplate?.name?.trim()) {
       toast.error('Template name is required')
       return
     }

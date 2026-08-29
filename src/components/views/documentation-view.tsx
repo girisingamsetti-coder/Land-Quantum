@@ -281,7 +281,15 @@ function categoryBadge(category: string) {
   }
 }
 
-const WIZARD_DOCS = [
+interface WizardDocItem {
+  title: string
+  desc: string
+  icon: React.ComponentType<{ className?: string }>
+  ready: boolean
+  missingMsg?: string
+}
+
+const WIZARD_DOCS: WizardDocItem[] = [
   {
     title: 'LOI Letter',
     desc: 'Allotment terms, financial details, and acceptance annexure.',

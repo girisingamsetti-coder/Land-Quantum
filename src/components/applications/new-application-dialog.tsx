@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import {
   Building2, Briefcase, ChevronRight, ChevronLeft,
-  Check, Loader2, Plus, Globe, MapPin, Users, Landmark, Wand2, FileText, FileUp, Library, Banknote, TrendingUp, LineChart, Upload, Clock
+  Check, Loader2, Plus, Globe, MapPin, Users, Landmark, Wand2, FileText, FileUp, Library, Banknote, TrendingUp, LineChart, Upload, Clock, X
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -903,8 +903,8 @@ export function NewApplicationDialog({ open, onOpenChange, onCreated }: NewAppli
                         <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-md">
                           <FileText className="h-4 w-4" />
                           <span className="text-sm font-medium">{form.dprDocumentName}</span>
-                          <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-primary/20" onClick={() => set('dprDocumentName', '')}>
-                            <Check className="h-3.5 w-3.5" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 hover:bg-primary/20" onClick={() => set('dprDocumentName', '')} title="Remove file">
+                            <X className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       )}

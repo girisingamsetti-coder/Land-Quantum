@@ -19,11 +19,27 @@ export async function PUT(request: Request) {
     await requirePermission('settings:manage')
     const body = await request.json()
     if (body.type === 'sla') {
-      await db.workflowConfig.update({ where: { stageName: body.stageName }, data: { slaDays: body.slaDays } })
+      const slaDays = parseInt(body.slaDays, 10)
+      if (isNaN(slaDays) || slaDays < 1 || !body.stageName || typeof body.stageName !== 'string') {
+        return apiError('Valid stageName and positive slaDays are required', 400)
+      }
+      await db.workflowConfig.update({ where: { stageName: body.stageName.trim() }, data: { slaDays } })
       return apiSuccess({ updated: true })
     }
     if (body.type === 'setting') {
-      await db.systemSetting.upsert({ where: { key: body.key }, update: { value: body.value }, create: { key: body.key, value: body.value, label: body.label, category: body.category } })
+      if (!body.key || typeof body.key !== 'string' || body.value === undefined) {
+        return apiError('Setting key and value are required', 400)
+      }
+      await db.systemSetting.upsert({
+        where: { key: body.key.trim() },
+        update: { value: String(body.value) },
+        create: {
+          key: body.key.trim(),
+          value: String(body.value),
+          label: typeof body.label === 'string' ? body.label.trim() : body.key.trim(),
+          category: typeof body.category === 'string' ? body.category.trim() : 'General',
+        },
+      })
       return apiSuccess({ updated: true })
     }
     return apiError('Invalid update type')

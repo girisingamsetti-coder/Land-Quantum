@@ -190,12 +190,13 @@ export async function POST(request: Request) {
     const now = new Date()
     const slaDueDate = new Date(now.getTime() + (STAGE_SLA['Application'] ?? 3) * 86400000)
 
-    // Calculate total employment
-    const employmentCommitment = (parseInt(permanentEmployees || '0') +
-      parseInt(temporaryEmployees || '0') +
-      parseInt(partTimeEmployees || '0') +
-      parseInt(interns || '0') +
-      parseInt(contractualStaff || '0'))
+    // Calculate total employment safely
+    const permEmp = Math.max(0, parseInt(String(permanentEmployees || '0'), 10) || 0)
+    const tempEmp = Math.max(0, parseInt(String(temporaryEmployees || '0'), 10) || 0)
+    const partEmp = Math.max(0, parseInt(String(partTimeEmployees || '0'), 10) || 0)
+    const internEmp = Math.max(0, parseInt(String(interns || '0'), 10) || 0)
+    const contractEmp = Math.max(0, parseInt(String(contractualStaff || '0'), 10) || 0)
+    const employmentCommitment = permEmp + tempEmp + partEmp + internEmp + contractEmp
 
     // Create applicant + application in one transaction
     const application = await db.$transaction(async (tx) => {

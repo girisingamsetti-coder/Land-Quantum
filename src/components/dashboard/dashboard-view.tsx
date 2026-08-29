@@ -1507,17 +1507,17 @@ export function DashboardView() {
   if (view !== 'dashboard') return null
 
 
-  const barData = stats ? [
-    { name: 'Approved', value: stats.applications.approved, fill: 'oklch(0.62 0.17 160)' },
-    { name: 'Pending', value: stats.applications.pending, fill: 'oklch(0.72 0.16 75)' },
-    { name: 'Rejected', value: stats.applications.rejected, fill: 'oklch(0.60 0.20 25)' },
-    { name: 'Others', value: Math.max(0, stats.applications.total - stats.applications.approved - stats.applications.pending - stats.applications.rejected), fill: 'oklch(0.85 0.03 260)' },
+  const barData = stats?.applications ? [
+    { name: 'Approved', value: stats.applications.approved || 0, fill: 'oklch(0.62 0.17 160)' },
+    { name: 'Pending', value: stats.applications.pending || 0, fill: 'oklch(0.72 0.16 75)' },
+    { name: 'Rejected', value: stats.applications.rejected || 0, fill: 'oklch(0.60 0.20 25)' },
+    { name: 'Others', value: Math.max(0, (stats.applications.total || 0) - (stats.applications.approved || 0) - (stats.applications.pending || 0) - (stats.applications.rejected || 0)), fill: 'oklch(0.85 0.03 260)' },
   ] : []
 
-  const pieData = stats ? [
-    { name: 'Available', value: stats.landParcels.available, fill: 'oklch(0.62 0.17 160)' },
-    { name: 'Allotted', value: Math.floor((stats.landParcels.total - stats.landParcels.available) * 0.7), fill: 'oklch(0.45 0.12 180)' },
-    { name: 'In Allocation', value: Math.ceil((stats.landParcels.total - stats.landParcels.available) * 0.3), fill: 'oklch(0.72 0.16 75)' },
+  const pieData = stats?.landParcels ? [
+    { name: 'Available', value: stats.landParcels.available || 0, fill: 'oklch(0.62 0.17 160)' },
+    { name: 'Allotted', value: Math.max(0, Math.floor(((stats.landParcels.total || 0) - (stats.landParcels.available || 0)) * 0.7)), fill: 'oklch(0.45 0.12 180)' },
+    { name: 'In Allocation', value: Math.max(0, Math.ceil(((stats.landParcels.total || 0) - (stats.landParcels.available || 0)) * 0.3)), fill: 'oklch(0.72 0.16 75)' },
   ] : []
 
   if (loading) {

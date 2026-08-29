@@ -601,7 +601,7 @@ export function DealsView() {
         filterStage={filterStage}
         filterDealStatus={filterDealStatus}
         filterPriority={filterPriority}
-        onNavigate={(id: string) => navigateTo(id as any)} 
+        onNavigate={(id: string) => navigateTo('application-detail', { id })} 
       />
 
       <NewDealDialog open={newDealOpen} onClose={() => setNewDealOpen(false)} />

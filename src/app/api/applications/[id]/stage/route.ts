@@ -27,12 +27,15 @@ export async function POST(
       data?: unknown
     }
 
-    if (!stageName || !decision) {
-      return apiError('stageName and decision are required')
+    if (!stageName || !decision || typeof stageName !== 'string' || typeof decision !== 'string') {
+      return apiError('stageName and decision strings are required', 400)
     }
 
-    if (!VALID_DECISIONS.includes(decision)) {
-      return apiError(`Invalid decision. Must be one of: ${VALID_DECISIONS.join(', ')}`)
+    const cleanStageName = stageName.trim()
+    const cleanDecision = decision.trim()
+
+    if (!VALID_DECISIONS.includes(cleanDecision)) {
+      return apiError(`Invalid decision. Must be one of: ${VALID_DECISIONS.join(', ')}`, 400)
     }
 
     // Fetch the application with stages
@@ -46,13 +49,13 @@ export async function POST(
     }
 
     // Find the current stage record
-    const stageRecord = application.stages.find((s) => s.stageName === stageName)
+    const stageRecord = application.stages.find((s) => s.stageName === cleanStageName)
     if (!stageRecord) {
-      return apiError(`Stage "${stageName}" not found for this application`)
+      return apiError(`Stage "${cleanStageName}" not found for this application`)
     }
 
     if (stageRecord.status === 'Completed') {
-      return apiError(`Stage "${stageName}" is already completed`)
+      return apiError(`Stage "${cleanStageName}" is already completed`)
     }
 
     // Role & permission check: User must have super admin access, or stage-specific permission, or be the assigned officer
@@ -64,10 +67,10 @@ export async function POST(
       return apiForbidden('You do not have permission to take decisions on this workflow stage')
     }
 
-    const currentStageIdx = WORKFLOW_STAGES.indexOf(stageName)
+    const currentStageIdx = WORKFLOW_STAGES.indexOf(cleanStageName)
     const now = new Date()
 
-    if (decision === 'Approved') {
+    if (cleanDecision === 'Approved') {
       // Complete current stage
       await db.applicationStage.update({
         where: { id: stageRecord.id },
@@ -120,7 +123,7 @@ export async function POST(
           data: { status: 'Completed' },
         })
       }
-    } else if (decision === 'Returned') {
+    } else if (cleanDecision === 'Returned') {
       // Mark current stage as returned
       await db.applicationStage.update({
         where: { id: stageRecord.id },
@@ -147,7 +150,7 @@ export async function POST(
           data: { currentStage: prevStageName, status: 'Under Review' },
         })
       }
-    } else if (decision === 'Rejected') {
+    } else if (cleanDecision === 'Rejected') {
       await db.applicationStage.update({
         where: { id: stageRecord.id },
         data: {
@@ -163,10 +166,10 @@ export async function POST(
         where: { id },
         data: {
           status: 'Rejected',
-          rejectionReason: remarks ?? 'Application rejected at ' + stageName + ' stage',
+          rejectionReason: remarks ?? 'Application rejected at ' + cleanStageName + ' stage',
         },
       })
-    } else if (decision === 'Deferred') {
+    } else if (cleanDecision === 'Deferred') {
       await db.applicationStage.update({
         where: { id: stageRecord.id },
         data: {
@@ -189,10 +192,10 @@ export async function POST(
         userId: user.id,
         userName: user.name,
         role: user.roleName,
-        action: decision === 'Approved' ? 'APPROVE' : (decision === 'Rejected' ? 'REJECT' : 'UPDATE'),
-        module: stageName,
+        action: cleanDecision === 'Approved' ? 'APPROVE' : (cleanDecision === 'Rejected' ? 'REJECT' : 'UPDATE'),
+        module: cleanStageName,
         recordId: id,
-        remarks: `${decision} at ${stageName} stage: ${remarks ?? ''}`.trim(),
+        remarks: `${cleanDecision} at ${cleanStageName} stage: ${remarks ?? ''}`.trim(),
       },
     })
 
