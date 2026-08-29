@@ -11,11 +11,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   ScrollText, Users, Building2, Settings, Map, ClipboardList,
   AlertTriangle, AlertCircle, CheckCircle2, XCircle, Shield, BarChart3,
   Search, Filter, X, ChevronDown, ChevronUp, Clock, ArrowRight, FileWarning,
-  IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer,
+  IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer, Plus
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RecordsTable } from '@/components/dashboard/dashboard-view'
@@ -596,6 +599,30 @@ export function SettingsView() {
   const [slaSearch, setSlaSearch] = useState('')
   const [systemSearch, setSystemSearch] = useState('')
   const [systemCategory, setSystemCategory] = useState('All')
+  
+  const [templates, setTemplates] = useState([
+    { id: '1', name: 'LOI Letter', description: 'Allotment terms, financial details, and acceptance annexure.' },
+    { id: '2', name: 'Payment Due Notice', description: 'Outstanding payment reminder with bank details.' },
+    { id: '3', name: 'Agreement Cover Letter', description: 'Draft agreement with payment and land details.' },
+    { id: '4', name: 'Approval Guidelines', description: 'Required clearances and application procedures.' },
+    { id: '5', name: 'Construction Start Notice', description: 'Construction timeline and commencement requirements.' },
+  ])
+  const [editingTemplate, setEditingTemplate] = useState<any>(null)
+
+  const handleSaveTemplate = () => {
+    if (!editingTemplate.name.trim()) {
+      toast.error('Template name is required')
+      return
+    }
+    if (editingTemplate.id) {
+      setTemplates(templates.map(t => t.id === editingTemplate.id ? editingTemplate : t))
+      toast.success('Template updated successfully.')
+    } else {
+      setTemplates([...templates, { ...editingTemplate, id: Date.now().toString() }])
+      toast.success('Template created successfully.')
+    }
+    setEditingTemplate(null)
+  }
 
   useEffect(() => { fetch('/api/workflow-config').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
@@ -651,6 +678,7 @@ export function SettingsView() {
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="departments">Departments & Roles</TabsTrigger>
           <TabsTrigger value="audit">Audit Trail</TabsTrigger>
+          <TabsTrigger value="templates">Document Templates</TabsTrigger>
         </TabsList>
 
         {/* TAB 1: WORKFLOW */}
@@ -818,6 +846,83 @@ export function SettingsView() {
         <TabsContent value="users"><UsersView hideHeader /></TabsContent>
         <TabsContent value="departments"><DepartmentsView hideHeader /></TabsContent>
         <TabsContent value="audit"><AuditLogView hideHeader /></TabsContent>
+        <TabsContent value="templates" className="space-y-4">
+          <Card className="p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold">Document Templates</h3>
+                <p className="text-xs text-muted-foreground mt-1">Configure and manage standard templates used for auto-generated documents.</p>
+              </div>
+              <Button size="sm" onClick={() => setEditingTemplate({ name: '', description: '' })}><Plus className="h-4 w-4 mr-1"/> New Template</Button>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Template Name</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {templates.map((t, idx) => (
+                  <TableRow key={t.id}>
+                    <TableCell className="font-medium text-xs">{t.name}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{t.description}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" onClick={() => setEditingTemplate({ ...t })}>Edit</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+          
+          <Dialog open={!!editingTemplate} onOpenChange={(open) => !open && setEditingTemplate(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{editingTemplate?.id ? 'Edit Template' : 'New Template'}</DialogTitle>
+              </DialogHeader>
+              {editingTemplate && (
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label>Template Name</Label>
+                    <Input 
+                      value={editingTemplate.name} 
+                      onChange={(e) => setEditingTemplate({ ...editingTemplate, name: e.target.value })} 
+                      placeholder="e.g. Demand Notice"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea 
+                      value={editingTemplate.description} 
+                      onChange={(e) => setEditingTemplate({ ...editingTemplate, description: e.target.value })} 
+                      placeholder="Brief description of the template's purpose"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Template File</Label>
+                    <Input 
+                      type="file"
+                      accept=".pdf,.docx,.doc"
+                      className="cursor-pointer text-xs"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          toast.success(`File "${e.target.files[0].name}" attached successfully.`);
+                        }
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground">Upload the standard template file (PDF or Word document).</p>
+                  </div>
+                </div>
+              )}
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setEditingTemplate(null)}>Cancel</Button>
+                <Button onClick={handleSaveTemplate}>Save Changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
       </Tabs>
     </div>
   )

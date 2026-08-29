@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -283,32 +283,32 @@ function categoryBadge(category: string) {
 
 const WIZARD_DOCS = [
   {
-    title: 'Letter of Intent (LOI)',
-    desc: 'Formal LOI with land allotment terms, financial schedules, and acceptance annexure',
+    title: 'LOI Letter',
+    desc: 'Allotment terms, financial details, and acceptance annexure.',
     icon: FileText,
     ready: true,
   },
   {
-    title: 'Payment Reminder',
-    desc: 'Reminder letter for outstanding payment with bank account details',
+    title: 'Payment Due Notice',
+    desc: 'Outstanding payment reminder with bank details.',
     icon: Mail,
     ready: true,
   },
   {
-    title: 'Draft Agreement Covering Letter',
-    desc: 'Covering letter for the draft agreement, referencing payment confirmation and land details',
+    title: 'Agreement Cover Letter',
+    desc: 'Draft agreement with payment and land details.',
     icon: FileText,
     ready: true,
   },
   {
-    title: 'Intimation & SOP for Approvals',
-    desc: 'List of required clearances with application procedures after agreement execution',
+    title: 'Approval Guidelines',
+    desc: 'Required clearances and application procedures.',
     icon: CheckCircle2,
     ready: true,
   },
   {
-    title: 'Construction Commencement Reminder',
-    desc: 'Reminder about implementation period, agreement date, and timeline expectations',
+    title: 'Construction Start Notice',
+    desc: 'Construction timeline and commencement requirements.',
     icon: AlertCircle,
     ready: true,
   },
@@ -322,6 +322,26 @@ export function DocumentationView() {
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null)
   const [previewDocTitle, setPreviewDocTitle] = useState<string | null>(null)
   const [isWizardOpen, setIsWizardOpen] = useState(false)
+  const [selectedWizardApp, setSelectedWizardApp] = useState('')
+  const [applications, setApplications] = useState<any[]>([])
+  const [isLoadingApps, setIsLoadingApps] = useState(false)
+
+  useEffect(() => {
+    async function fetchApps() {
+      if (!isWizardOpen) return;
+      setIsLoadingApps(true)
+      try {
+        const res = await fetch('/api/applications?page=1&pageSize=50')
+        const json = await res.json()
+        setApplications(json.data?.applications || [])
+      } catch (e) {
+        console.error("Failed to load applications", e)
+      } finally {
+        setIsLoadingApps(false)
+      }
+    }
+    fetchApps()
+  }, [isWizardOpen])
 
   const filtered = useMemo(() => {
     return docs.filter(d => {
@@ -363,6 +383,18 @@ export function DocumentationView() {
 
   const handleConfirmAndIssue = () => {
     if (!previewDocTitle) return;
+    
+    let applicantName = 'Auto-Generated Entity'
+    let projectNum = 'APCRDA-GEN-001'
+
+    if (selectedWizardApp) {
+      const app = applications.find((a: any) => a.id === selectedWizardApp)
+      if (app) {
+        applicantName = app.applicant?.organizationName || 'Unknown Applicant'
+        projectNum = app.applicationNumber
+      }
+    }
+
     const newDoc: DocumentItem = {
       id: `DOC-2024-0${docs.length + 1}`,
       name: previewDocTitle,
@@ -371,8 +403,8 @@ export function DocumentationView() {
       fileSize: '1.2 MB',
       status: 'Verified',
       uploadedBy: 'System Auto-Generation',
-      applicant: 'Auto-Generated Entity',
-      projectNumber: 'APCRDA-GEN-001',
+      applicant: applicantName,
+      projectNumber: projectNum,
       date: new Date().toISOString().split('T')[0],
       version: 'v1.0'
     }
@@ -400,13 +432,34 @@ export function DocumentationView() {
                 <Sparkles className="h-4 w-4 mr-2" /> Generate
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[95vw] sm:w-[60.5vw] max-w-[95vw] sm:max-w-[60.5vw] h-[86.9vh] max-h-[86.9vh] overflow-y-auto rounded-xl">
+            <DialogContent className="w-[95vw] sm:w-[60.5vw] max-w-[95vw] sm:max-w-[60.5vw] h-[86.9vh] max-h-[86.9vh] overflow-y-auto rounded-xl gap-2">
               <DialogHeader>
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3">
                   <DialogTitle className="text-xl">Available Documents</DialogTitle>
                 </div>
               </DialogHeader>
               
+              <div className="flex flex-col gap-1.5 pb-2">
+                <Select value={selectedWizardApp} onValueChange={setSelectedWizardApp}>
+                  <SelectTrigger className="w-full bg-white shadow-sm">
+                    <SelectValue placeholder="Select Applicant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isLoadingApps ? (
+                      <SelectItem value="loading" disabled>Loading applications...</SelectItem>
+                    ) : applications.length > 0 ? (
+                      applications.map(app => (
+                        <SelectItem key={app.id} value={app.id}>
+                          {app.applicationNumber} - {app.applicant?.organizationName || 'Unknown'}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>No applications found</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {WIZARD_DOCS.map((doc, idx) => (
                   <Card key={idx} className={cn("overflow-hidden border shadow-sm", doc.ready ? "border-slate-200" : "border-slate-200 bg-slate-50/50")}>
@@ -440,7 +493,7 @@ export function DocumentationView() {
                             setPreviewDocTitle(doc.title)
                           }}
                         >
-                          <Eye className="h-4 w-4" /> Generate & Preview
+                          <Eye className="h-4 w-4" /> Create & View
                         </Button>
                       </div>
                     </CardContent>
