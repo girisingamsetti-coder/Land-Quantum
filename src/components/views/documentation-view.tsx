@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { toast } from "sonner"
 import {
   FileText,
   CheckCircle2,
@@ -23,7 +25,10 @@ import {
   User,
   HardDrive,
   ShieldCheck,
-  FolderOpen
+  FolderOpen,
+  Plus,
+  Sparkles,
+  Mail
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -276,14 +281,50 @@ function categoryBadge(category: string) {
   }
 }
 
+const WIZARD_DOCS = [
+  {
+    title: 'Letter of Intent (LOI)',
+    desc: 'Formal LOI with land allotment terms, financial schedules, and acceptance annexure',
+    icon: FileText,
+    ready: true,
+  },
+  {
+    title: 'Payment Reminder',
+    desc: 'Reminder letter for outstanding payment with bank account details',
+    icon: Mail,
+    ready: true,
+  },
+  {
+    title: 'Draft Agreement Covering Letter',
+    desc: 'Covering letter for the draft agreement, referencing payment confirmation and land details',
+    icon: FileText,
+    ready: true,
+  },
+  {
+    title: 'Intimation & SOP for Approvals',
+    desc: 'List of required clearances with application procedures after agreement execution',
+    icon: CheckCircle2,
+    ready: true,
+  },
+  {
+    title: 'Construction Commencement Reminder',
+    desc: 'Reminder about implementation period, agreement date, and timeline expectations',
+    icon: AlertCircle,
+    ready: true,
+  },
+]
+
 export function DocumentationView() {
+  const [docs, setDocs] = useState<DocumentItem[]>(MOCK_DOCS)
   const [statusFilter, setStatusFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null)
+  const [previewDocTitle, setPreviewDocTitle] = useState<string | null>(null)
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   const filtered = useMemo(() => {
-    return MOCK_DOCS.filter(d => {
+    return docs.filter(d => {
       const matchesStatus = statusFilter && statusFilter !== 'All' ? d.status === statusFilter : true
       const matchesCategory = categoryFilter && categoryFilter !== 'All' ? d.category === categoryFilter : true
       const matchesSearch = searchQuery
@@ -302,14 +343,48 @@ export function DocumentationView() {
     (searchQuery ? 1 : 0)
 
   const summary = useMemo(() => ({
-    total: MOCK_DOCS.length,
-    verified: MOCK_DOCS.filter(d => d.status === 'Verified').length,
-    pending: MOCK_DOCS.filter(d => d.status === 'Pending Review' || d.status === 'Under Inspection').length,
-    rejected: MOCK_DOCS.filter(d => d.status === 'Rejected').length,
-  }), [])
+    total: docs.length,
+    verified: docs.filter(d => d.status === 'Verified').length,
+    pending: docs.filter(d => d.status === 'Pending Review' || d.status === 'Under Inspection').length,
+    rejected: docs.filter(d => d.status === 'Rejected').length,
+  }), [docs])
+
+  const handleDownload = () => {
+    const element = document.createElement("a");
+    const file = new Blob(["Mock Document Content"], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = `${previewDocTitle || 'Document'}.pdf`;
+    document.body.appendChild(element); 
+    element.click();
+    toast.info("Download Started", {
+      description: "The document is being downloaded.",
+    })
+  }
+
+  const handleConfirmAndIssue = () => {
+    if (!previewDocTitle) return;
+    const newDoc: DocumentItem = {
+      id: `DOC-2024-0${docs.length + 1}`,
+      name: previewDocTitle,
+      category: 'Legal',
+      type: 'PDF',
+      fileSize: '1.2 MB',
+      status: 'Verified',
+      uploadedBy: 'System Auto-Generation',
+      applicant: 'Auto-Generated Entity',
+      projectNumber: 'APCRDA-GEN-001',
+      date: new Date().toISOString().split('T')[0],
+      version: 'v1.0'
+    }
+    setDocs([newDoc, ...docs])
+    setPreviewDocTitle(null)
+    toast.success("Document Issued Successfully", {
+      description: `${previewDocTitle} has been added to the repository against the application.`,
+    })
+  }
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-2 pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
@@ -319,9 +394,64 @@ export function DocumentationView() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs px-3 py-1 font-medium bg-background">
-            <FolderOpen className="h-3.5 w-3.5 mr-1.5 text-primary" /> {MOCK_DOCS.length} Total Records
-          </Badge>
+          <Dialog open={isWizardOpen} onOpenChange={setIsWizardOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-primary/5">
+                <Sparkles className="h-4 w-4 mr-2" /> Generate
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="w-[95vw] sm:w-[60.5vw] max-w-[95vw] sm:max-w-[60.5vw] h-[86.9vh] max-h-[86.9vh] overflow-y-auto rounded-xl">
+              <DialogHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <DialogTitle className="text-xl">Available Documents</DialogTitle>
+                </div>
+              </DialogHeader>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {WIZARD_DOCS.map((doc, idx) => (
+                  <Card key={idx} className={cn("overflow-hidden border shadow-sm", doc.ready ? "border-slate-200" : "border-slate-200 bg-slate-50/50")}>
+                    <CardContent className="p-4 flex flex-col h-full justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-muted-foreground shrink-0">
+                              <doc.icon className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <h4 className={cn("font-medium text-sm", !doc.ready && "text-muted-foreground")}>{doc.title}</h4>
+                              <p className="text-xs text-muted-foreground mt-1 leading-snug">{doc.desc}</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {!doc.ready && doc.missingMsg && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Missing: {doc.missingMsg}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="mt-4">
+                        <Button 
+                          className={cn("w-full gap-2 h-9 text-xs transition-colors", doc.ready ? "bg-[#1a9b55] hover:bg-[#1a9b55]/90 text-white" : "bg-slate-300 text-white hover:bg-slate-300 cursor-not-allowed")} 
+                          disabled={!doc.ready}
+                          onClick={() => {
+                            setIsWizardOpen(false)
+                            setPreviewDocTitle(doc.title)
+                          }}
+                        >
+                          <Eye className="h-4 w-4" /> Generate & Preview
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Button size="sm">
+            <Plus className="h-4 w-4 mr-2" /> Add New
+          </Button>
         </div>
       </div>
 
@@ -467,7 +597,7 @@ export function DocumentationView() {
             <div>
               <CardTitle className="text-base font-semibold">Document Repository</CardTitle>
               <CardDescription className="text-xs mt-0.5">
-                Showing {filtered.length} of {MOCK_DOCS.length} verified statutory filings
+                Showing {filtered.length} of {docs.length} verified statutory filings
               </CardDescription>
             </div>
             <div className="text-xs text-muted-foreground font-medium">
@@ -680,6 +810,59 @@ export function DocumentationView() {
           </SheetContent>
         </Sheet>
       )}
+
+
+      {/* Document Generation Preview Dialog */}
+      <Dialog open={!!previewDocTitle} onOpenChange={(open) => !open && setPreviewDocTitle(null)}>
+        <DialogContent className="w-[95vw] sm:w-[60.5vw] max-w-[95vw] sm:max-w-[60.5vw] h-[86.9vh] max-h-[86.9vh] flex flex-col p-0 overflow-hidden rounded-xl">
+          <DialogHeader className="p-4 border-b shrink-0 bg-muted/20">
+            <DialogTitle className="text-lg">Generated Document Preview</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden bg-slate-100 flex flex-col items-center justify-center relative p-8">
+            {/* Mock A4 Paper container */}
+            <div className="w-full max-w-2xl bg-white h-full shadow-md border rounded p-12 overflow-y-auto flex flex-col space-y-6">
+              {/* Fake skeleton lines for text */}
+              <div className="flex justify-between items-start border-b pb-4">
+                <div className="w-16 h-16 bg-slate-200 rounded-full" />
+                <div className="w-32 h-4 bg-slate-200 rounded" />
+              </div>
+              <div className="text-center pb-4">
+                <h3 className="font-bold text-xl uppercase tracking-wider">{previewDocTitle}</h3>
+              </div>
+              <div className="space-y-3 pt-4">
+                <div className="h-3 w-full bg-slate-100 rounded" />
+                <div className="h-3 w-[90%] bg-slate-100 rounded" />
+                <div className="h-3 w-[95%] bg-slate-100 rounded" />
+                <div className="h-3 w-[80%] bg-slate-100 rounded" />
+              </div>
+              <div className="space-y-3 pt-6">
+                <div className="h-3 w-full bg-slate-100 rounded" />
+                <div className="h-3 w-[85%] bg-slate-100 rounded" />
+                <div className="h-3 w-[95%] bg-slate-100 rounded" />
+                <div className="h-3 w-[90%] bg-slate-100 rounded" />
+              </div>
+              <div className="mt-auto pt-12 flex justify-end">
+                <div className="text-center space-y-2">
+                  <div className="h-12 w-32 bg-slate-100/50 rounded border-b-2 border-slate-300" />
+                  <div className="h-3 w-32 bg-slate-200 rounded" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="absolute bottom-4 right-4 flex items-center gap-2">
+              <Button variant="outline" className="bg-white shadow-sm" onClick={() => setPreviewDocTitle(null)}>
+                Cancel
+              </Button>
+              <Button variant="secondary" className="shadow-sm border" onClick={handleDownload}>
+                <Download className="h-4 w-4 mr-2" /> Download
+              </Button>
+              <Button className="shadow-sm" onClick={handleConfirmAndIssue}>
+                <FileCheck className="h-4 w-4 mr-2" /> Confirm & Issue
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

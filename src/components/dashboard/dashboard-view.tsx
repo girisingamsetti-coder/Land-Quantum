@@ -618,7 +618,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
   const [sortKey, setSortKey] = useState<SortKey>('ageDays')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 21
+  const PAGE_SIZE = 10
 
   const handleSearch = () => {
     setSearch(searchInput)
@@ -677,6 +677,9 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
     const dedupedMock = ALL_CASES.filter(c => !ids.has(c.id))
     return [...realCases, ...dedupedMock]
   }, [realCases])
+
+  const dynamicStatusOptions = useMemo(() => ['All', ...Array.from(new Set(combinedCases.map(r => r.status))).filter(Boolean).sort()], [combinedCases])
+  const dynamicStageOptions = useMemo(() => ['All', ...Array.from(new Set(combinedCases.map(r => r.step))).filter(Boolean).sort()], [combinedCases])
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -809,7 +812,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Status' : s}</SelectItem>)}
+                    {dynamicStatusOptions.map((s) => <SelectItem key={s as string} value={s as string} className="text-xs">{s === 'All' ? 'Status' : (s as string)}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={stage} onValueChange={setStage}>
@@ -817,7 +820,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                     <SelectValue placeholder="Stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    {STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Stage' : s}</SelectItem>)}
+                    {dynamicStageOptions.map((s) => <SelectItem key={s as string} value={s as string} className="text-xs">{s === 'All' ? 'Stage' : (s as string)}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={sector} onValueChange={setSector}>
@@ -1236,6 +1239,7 @@ export const DASH_SECTOR_OPTIONS = ['All Sectors', 'Commercial', 'Education', 'F
 export const DASH_STAGE_OPTIONS = ['All Stages', 'Application', 'Eligibility', 'DPR Review', 'Economic Review', 'LASC Scrutiny', 'Govt. Approval', 'Order & Offer']
 export const DASH_STATUS_OPTIONS = ['All Statuses', 'Submitted', 'Under Review', 'Approved', 'Rejected']
 export const DASH_PRIORITY_OPTIONS = ['All Priorities', 'Normal', 'High', 'Critical']
+export const DASH_LEAD_OPTIONS = ['All Managers', 'K. Padmavathi', 'R. Venkatesh', 'S. Rao']
 
 export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: string) => void }) {
   const [rows, setRows] = useState(MOCK_APP_ROWS)
@@ -1244,10 +1248,16 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
   const [filterStage, setFilterStage] = useState('All Stages')
   const [filterStatus, setFilterStatus] = useState('All Statuses')
   const [filterPriority, setFilterPriority] = useState('All Priorities')
+  const [filterLead, setFilterLead] = useState('All Managers')
   const [sortCol, setSortCol] = useState<string | null>(null)
+
+  const dynamicStatusOptions = useMemo(() => ['All Statuses', ...Array.from(new Set(rows.map(r => r.status))).sort()], [rows])
+  const dynamicStageOptions = useMemo(() => ['All Stages', ...Array.from(new Set(rows.map(r => r.stage))).sort()], [rows])
+  const dynamicPriorityOptions = useMemo(() => ['All Priorities', ...Array.from(new Set(rows.map(r => r.priority))).sort()], [rows])
+  const dynamicLeadOptions = useMemo(() => ['All Managers', ...Array.from(new Set(rows.map(r => r.lead))).sort()], [rows])
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 21
+  const PAGE_SIZE = 10
 
   // Fetch real applications and prepend
   useEffect(() => {
@@ -1295,10 +1305,11 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
       const matchStage = filterStage === 'All Stages' || r.stage === filterStage
       const matchStatus = filterStatus === 'All Statuses' || r.status === filterStatus
       const matchPriority = filterPriority === 'All Priorities' || r.priority === filterPriority
+      const matchLead = filterLead === 'All Managers' || r.lead === filterLead
 
-      return matchQ && matchSector && matchStage && matchStatus && matchPriority
+      return matchQ && matchSector && matchStage && matchStatus && matchPriority && matchLead
     })
-  }, [rows, search, filterSector, filterStage, filterStatus, filterPriority])
+  }, [rows, search, filterSector, filterStage, filterStatus, filterPriority, filterLead])
 
   const sorted = useMemo(() => {
     if (!sortCol) return filtered
@@ -1333,10 +1344,11 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
     setFilterStage('All Stages')
     setFilterStatus('All Statuses')
     setFilterPriority('All Priorities')
+    setFilterLead('All Managers')
     setPage(1)
   }
 
-  const hasFilters = search !== '' || filterStatus !== 'All Statuses' || filterStage !== 'All Stages' || filterSector !== 'All Sectors'
+  const hasFilters = search !== '' || filterStatus !== 'All Statuses' || filterStage !== 'All Stages' || filterSector !== 'All Sectors' || filterPriority !== 'All Priorities' || filterLead !== 'All Managers'
 
   return (
     <div className="space-y-2 w-full">
@@ -1358,7 +1370,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                {DASH_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Statuses' ? 'Status' : s}</SelectItem>)}
+                {dynamicStatusOptions.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Statuses' ? 'Status' : s}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}>
@@ -1366,7 +1378,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
                 <SelectValue placeholder="Stage" />
               </SelectTrigger>
               <SelectContent>
-                {DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Stages' ? 'Stage' : s}</SelectItem>)}
+                {dynamicStageOptions.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Stages' ? 'Stage' : s}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}>
@@ -1375,6 +1387,22 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
               </SelectTrigger>
               <SelectContent>
                 {DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Sectors' ? 'All Sectors' : s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}>
+              <SelectTrigger className="w-[110px] h-8 text-xs bg-white border-slate-200" data-active={filterPriority !== 'All Priorities'}>
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                {dynamicPriorityOptions.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Priorities' ? 'Priority' : s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filterLead} onValueChange={(v) => { setFilterLead(v); setPage(1) }}>
+              <SelectTrigger className="w-[130px] h-8 text-xs bg-white border-slate-200" data-active={filterLead !== 'All Managers'}>
+                <SelectValue placeholder="Lead Manager" />
+              </SelectTrigger>
+              <SelectContent>
+                {dynamicLeadOptions.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All Managers' ? 'Lead Manager' : s}</SelectItem>)}
               </SelectContent>
             </Select>
             
