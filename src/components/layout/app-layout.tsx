@@ -208,25 +208,19 @@ function SidebarRailWithTrigger() {
   return (
     <>
       <SidebarRail />
-      {/* Floating collapse button centered on the rail separator */}
-      <div
-        className={cn(
-          'absolute top-1/2 -translate-y-1/2 z-20 transition-all duration-200',
-          // When expanded sidebar is ~16rem wide; when collapsed ~3rem wide (icon mode)
-          state === 'expanded' ? '-right-3.5' : '-right-3.5',
-        )}
-        style={{ right: '-14px' }}
-      >
+      {/* Collapse button positioned directly ON the separating line */}
+      <div className="absolute top-1/2 -translate-y-1/2 -right-3 z-30 hidden md:flex items-center justify-center">
         <button
           onClick={toggleSidebar}
+          title={state === 'expanded' ? 'Collapse menu' : 'Expand menu'}
           className={cn(
-            'h-7 w-7 rounded-full border bg-background shadow-md',
-            'hover:bg-accent hover:text-accent-foreground',
+            'h-6 w-6 rounded-full border border-border bg-background shadow-xs',
+            'hover:bg-accent hover:text-accent-foreground text-muted-foreground',
             'flex items-center justify-center',
-            'transition-all duration-200',
+            'transition-all duration-200 cursor-pointer focus-visible:ring-1 focus-visible:ring-ring',
           )}
         >
-          {state === 'expanded' ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          {state === 'expanded' ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           <span className="sr-only">Toggle Sidebar</span>
         </button>
       </div>
@@ -300,7 +294,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications, globalFilters, setGlobalFilters }}>
       <SidebarProvider>
-        <Sidebar collapsible="icon" variant="floating">
+        <Sidebar collapsible="icon" className="border-r border-border bg-sidebar">
           {/* Logo Header */}
           <SidebarHeader className="px-3 pt-4 pb-2">
             <SidebarMenu>
@@ -469,7 +463,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         <SidebarInset className="min-w-0 w-full">
           {/* Main Content */}
-          <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pt-0 px-0 bg-muted/30 flex flex-col">
+          <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto p-3 pl-3.5 bg-muted/30 flex flex-col">
             {children}
           </div>
         </SidebarInset>

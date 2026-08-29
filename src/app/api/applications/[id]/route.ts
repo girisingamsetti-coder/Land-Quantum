@@ -1,4 +1,4 @@
-import { apiSuccess, apiUnauthorized, apiNotFound, apiError } from '@/lib/api-response'
+import { apiSuccess, apiUnauthorized, apiNotFound, apiForbidden, apiError } from '@/lib/api-response'
 import { requireAuth } from '@/lib/session'
 import { db } from '@/lib/db'
 
@@ -116,18 +116,27 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAuth()
+    const user = await requireAuth()
     const { id } = await params
     const body = await request.json()
 
     // Validate if the application exists
     const existing = await db.application.findUnique({
       where: { id },
-      select: { applicantId: true }
+      select: { applicantId: true, assignedOfficerId: true, applicant: { select: { userId: true } } }
     })
 
     if (!existing) {
       return apiNotFound('Application not found')
+    }
+
+    const isSuperAdmin = user.rolePermissions.includes('*') || user.isSystemRole
+    const isOfficer = existing.assignedOfficerId === user.id
+    const isOwner = existing.applicant?.userId === user.id
+    const hasEditPerm = user.rolePermissions.some(p => p.includes('application:edit') || p.includes('application:review') || p.includes('application:approve'))
+
+    if (!isSuperAdmin && !isOfficer && !isOwner && !hasEditPerm) {
+      return apiForbidden('You do not have permission to edit this application')
     }
 
     const {

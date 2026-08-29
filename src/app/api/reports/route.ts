@@ -4,7 +4,12 @@ import { db } from '@/lib/db'
 
 export async function GET(request: Request) {
   try {
-    await requireAuth()
+    const session = await requireAuth()
+    const canViewReports = session.isSystemRole || session.rolePermissions.includes('*') || session.rolePermissions.some(p => p.includes('report') || p.includes('audit'))
+    if (!canViewReports) {
+      const { apiForbidden } = await import('@/lib/api-response')
+      return apiForbidden('You do not have permission to view aggregated reports')
+    }
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') ?? 'overview'
 

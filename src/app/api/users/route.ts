@@ -4,7 +4,11 @@ import { db } from '@/lib/db'
 
 export async function GET() {
   try {
-    await requireAuth()
+    const session = await requireAuth()
+    if (!session.isSystemRole && !session.rolePermissions.includes('*') && !session.rolePermissions.includes('user:manage')) {
+      const { apiForbidden } = await import('@/lib/api-response')
+      return apiForbidden('You do not have permission to view the users directory')
+    }
     const users = await db.user.findMany({
       select: {
         id: true, email: true, name: true, designation: true, phone: true,

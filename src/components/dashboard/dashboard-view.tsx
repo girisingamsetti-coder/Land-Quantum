@@ -84,7 +84,7 @@ function StatCard({ title, value, subtitle, icon: Icon, color, trend, trendValue
               : 'bg-gradient-to-r from-slate-50 to-white/50'
 
   return (
-    <Card className={cn("py-2.5 overflow-hidden border border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] shadow-sm hover:shadow-md transition-all cursor-pointer", bgClass)}>
+    <Card className={cn("py-2.5 overflow-hidden border border-slate-200/90 shadow-xs ring-1 ring-slate-900/5 hover:border-slate-300 hover:shadow-sm hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer", bgClass)}>
       <CardContent className="px-3 py-0">
         <div className="flex justify-start items-center gap-3">
           <div className={cn('rounded-lg p-2 shrink-0', color)}>
@@ -198,12 +198,12 @@ const PIPELINE_STAGES: PipelineStage[] = [
 function PipelineCard({ stage }: { stage: PipelineStage }) {
   const Icon = stage.icon
   return (
-    <Card className="py-2.5 bg-gradient-to-r from-emerald-50/50 to-white/50 border border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
+    <Card className="py-2.5 bg-gradient-to-r from-emerald-50/50 to-white/50 border border-slate-200/90 shadow-xs ring-1 ring-slate-900/5 hover:border-slate-300 hover:shadow-sm hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
       <CardContent className="px-2 pt-2 pb-2">
         {/* Top Section */}
         <div className="flex items-center justify-between mb-4 mt-1">
           <div className="flex items-center gap-2.5">
-            <div className="rounded-lg bg-emerald-50 p-2 shrink-0">
+            <div className="rounded-lg bg-emerald-50 p-2 shrink-0 border border-emerald-100/80 shadow-xs">
               <Icon className="h-3.5 w-3.5 text-emerald-600" />
             </div>
             <div>
@@ -211,7 +211,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
               <p className="text-xs text-muted-foreground mt-0.5 m-0 leading-none">{stage.total}</p>
             </div>
           </div>
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-100">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-200/60 shadow-xs">
             <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
           </div>
         </div>
@@ -227,7 +227,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
         {/* 2x2 Grid */}
         <div className="grid grid-cols-2 gap-3">
           {/* Top Left - In Progress */}
-          <div className="rounded-lg bg-slate-50 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-white border border-transparent hover:border-slate-200 transition-all cursor-pointer">
+          <div className="rounded-lg bg-slate-50/80 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-white border border-slate-200/70 hover:border-slate-300 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">In Progress</span>
               <span className="text-[10px] font-bold text-slate-500">{stage.inProgress.pct}%</span>
@@ -236,7 +236,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
           </div>
 
           {/* Top Right - Revision */}
-          <div className="rounded-lg bg-slate-50 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-white border border-transparent hover:border-slate-200 transition-all cursor-pointer">
+          <div className="rounded-lg bg-slate-50/80 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-white border border-slate-200/70 hover:border-slate-300 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Revision</span>
               <span className="text-[10px] font-bold text-slate-500">{stage.revision.pct}%</span>
@@ -245,7 +245,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
           </div>
 
           {/* Bottom Left - Approved */}
-          <div className="rounded-lg bg-emerald-50/50 border border-emerald-100 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-emerald-50 hover:border-emerald-200 transition-all cursor-pointer">
+          <div className="rounded-lg bg-emerald-50/50 border border-emerald-200/70 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-emerald-50 hover:border-emerald-300 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Approved</span>
               <span className="text-[10px] font-bold text-emerald-600">{stage.approved.pct}%</span>
@@ -254,7 +254,7 @@ function PipelineCard({ stage }: { stage: PipelineStage }) {
           </div>
 
           {/* Bottom Right - Rejected */}
-          <div className="rounded-lg bg-orange-50/50 border border-orange-100 px-2 py-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:bg-orange-50 hover:border-orange-200 transition-all cursor-pointer">
+          <div className="rounded-lg bg-orange-50/50 border border-orange-200/70 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-orange-50 hover:border-orange-300 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
               <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">Rejected</span>
               <span className="text-[10px] font-bold text-orange-600">{stage.rejected.pct}%</span>
@@ -1331,7 +1331,7 @@ export function DashboardView() {
   const alertCounts = { critical: 1, high: 2, medium: 2, low: 1 }
 
   return (
-    <div className="flex flex-col gap-2 pt-1.5">
+    <div className="flex flex-col gap-2.5">
       {/* Header */}
       <div className="flex items-center justify-between shrink-0 px-5 py-1 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
         <div>
@@ -1441,7 +1441,7 @@ export function DashboardView() {
       </div>
 
       {/* Stat Cards Row */}
-      <div className="grid gap-1 grid-cols-2 lg:grid-cols-6 shrink-0">
+      <div className="grid gap-2 grid-cols-2 lg:grid-cols-6 shrink-0">
         <StatCard
           title="Total Applications"
           value={stats?.applications.total ?? 0}
@@ -1523,12 +1523,12 @@ export function DashboardView() {
       {/* Pipeline Stage Cards */}
       <div>
 
-        <div className="grid gap-1 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
           {PIPELINE_STAGES.map((stage) => <PipelineCard key={stage.id} stage={stage} />)}
         </div>
       </div>
       {/* Analytics Charts */}
-      <div className="grid gap-1 lg:grid-cols-4">
+      <div className="grid gap-2 lg:grid-cols-4">
         {/* Revenue Trend */}
         <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">

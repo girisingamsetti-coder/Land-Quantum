@@ -16,9 +16,10 @@ const WORKFLOW_STAGES = [
 ]
 
 const SECTORS = [
-  'IT & ITES', 'Real Estate', 'Healthcare', 'Education',
-  'Hospitality & Tourism', 'Manufacturing', 'Financial Services', 'Retail',
-  'Logistics', 'Energy', 'Agriculture', 'Media & Entertainment',
+  'All Sectors', 'Commercial', 'Education', 'Financial Institutions',
+  'Food Processing', 'Government Organisations', 'Healthcare', 'Hospitality',
+  'IT/ITES', 'Industrial', 'Logistics', 'NGOs', 'Others',
+  'Pharmaceutical', 'Political Parties', 'Sports', 'Textiles',
 ]
 
 const ALLOTMENT_MODES = [
@@ -87,7 +88,7 @@ export async function GET(request: Request) {
     if (stage && WORKFLOW_STAGES.includes(stage)) {
       where.currentStage = stage
     }
-    if (sector && SECTORS.includes(sector)) {
+    if (sector && sector !== 'All' && sector !== 'All Sectors' && SECTORS.includes(sector)) {
       where.sector = sector
     }
     if (mode && ALLOTMENT_MODES.includes(mode)) {

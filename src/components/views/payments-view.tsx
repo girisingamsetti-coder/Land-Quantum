@@ -51,21 +51,52 @@ export function PaymentsView() {
 
       {/* Colored Summary Tiles */}
       {data && <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="py-2.5 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-violet-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Due</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{formatINR(data.summary.totalDue)}</p></div><div className="rounded-lg bg-violet-100 p-2 shrink-0"><IndianRupee className="h-3.5 w-3.5 text-violet-600"/></div></div></CardContent></Card>
-        <Card className="py-2.5 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-emerald-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Collected</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">{formatINR(data.summary.totalPaid)}</p></div><div className="rounded-lg bg-emerald-100 p-2 shrink-0"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-600"/></div></div></CardContent></Card>
-        <Card className="py-2.5 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Outstanding</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">{formatINR(data.summary.outstanding)}</p></div><div className="rounded-lg bg-amber-100 p-2 shrink-0"><Clock className="h-3.5 w-3.5 text-amber-600"/></div></div></CardContent></Card>
-        <Card className="py-2.5 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-red-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Overdue</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-red-700 truncate">{formatINR(data.summary.overdue)}</p></div><div className="rounded-lg bg-red-100 p-2 shrink-0"><TrendingDown className="h-3.5 w-3.5 text-red-600"/></div></div></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-violet-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Due</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{formatINR(data.summary.totalDue)}</p></div><div className="rounded-lg bg-violet-100 p-2 shrink-0"><IndianRupee className="h-3.5 w-3.5 text-violet-600"/></div></div></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-emerald-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Collected</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">{formatINR(data.summary.totalPaid)}</p></div><div className="rounded-lg bg-emerald-100 p-2 shrink-0"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-600"/></div></div></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Outstanding</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">{formatINR(data.summary.outstanding)}</p></div><div className="rounded-lg bg-amber-100 p-2 shrink-0"><Clock className="h-3.5 w-3.5 text-amber-600"/></div></div></CardContent></Card>
+        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-red-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Overdue</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-red-700 truncate">{formatINR(data.summary.overdue)}</p></div><div className="rounded-lg bg-red-100 p-2 shrink-0"><TrendingDown className="h-3.5 w-3.5 text-red-600"/></div></div></CardContent></Card>
       </div>}
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search app #..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
-          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All','Paid','Pending','Partially Paid','Overdue','Forfeited','Refunded'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={type || 'All'} onValueChange={v => setType(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!type && type !== 'All'}><SelectValue placeholder="Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{paymentTypes.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setStatus(''); setType(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search application number, applicant organization..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={!!status && status !== 'All'}>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {['All','Paid','Pending','Partially Paid','Overdue','Forfeited','Refunded'].map(s => (
+                  <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Status' : s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={type || 'All'} onValueChange={v => setType(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!type && type !== 'All'}>
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All" className="text-xs">All Types</SelectItem>
+                {paymentTypes.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {activeFilters > 0 && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => { setStatus(''); setType(''); setSearch('') }}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
       <Card>
         <CardContent className="px-3 py-0">
         {loading ? <div className="p-4 space-y-2">{Array.from({length:4}).map((_,i)=><Skeleton key={i} className="h-12 w-full"/>)}</div> :

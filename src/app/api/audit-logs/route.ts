@@ -1,10 +1,10 @@
 import { apiSuccess, apiError } from '@/lib/api-response'
-import { requireAuth } from '@/lib/session'
+import { requirePermission } from '@/lib/session'
 import { db } from '@/lib/db'
 
 export async function GET(request: Request) {
   try {
-    await requireAuth()
+    await requirePermission('audit:view')
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
     const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get('pageSize') ?? '50')))

@@ -174,40 +174,56 @@ export function BuildingPermitsView() {
         <p className="text-sm text-muted-foreground">Manage and track building permits for Amaravati City, Andhra Pradesh.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="py-2.5 bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg shrink-0"><FileText className="h-3.5 w-3.5" /></div>
-            <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Total Permits</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">1,248</h3>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Card className="bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Permits</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">1,248</p>
+              </div>
+              <div className="rounded-lg p-2 bg-blue-100/50 text-blue-600 shrink-0">
+                <FileText className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="py-2.5 bg-gradient-to-r from-emerald-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-emerald-100/50 text-emerald-600 rounded-lg shrink-0"><CheckCircle2 className="h-3.5 w-3.5" /></div>
-            <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Approved</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">842</h3>
+        <Card className="bg-gradient-to-r from-emerald-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Approved</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">842</p>
+              </div>
+              <div className="rounded-lg p-2 bg-emerald-100/50 text-emerald-600 shrink-0">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="py-2.5 bg-gradient-to-r from-amber-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-amber-100/50 text-amber-600 rounded-lg shrink-0"><Clock className="h-3.5 w-3.5" /></div>
-            <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Under Review</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">315</h3>
+        <Card className="bg-gradient-to-r from-amber-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Under Review</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">315</p>
+              </div>
+              <div className="rounded-lg p-2 bg-amber-100/50 text-amber-600 shrink-0">
+                <Clock className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="py-2.5 bg-gradient-to-r from-red-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-red-100/50 text-red-600 rounded-lg shrink-0"><XCircle className="h-3.5 w-3.5" /></div>
-            <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">Rejected</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">91</h3>
+        <Card className="bg-gradient-to-r from-red-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Rejected</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-red-700 truncate">91</p>
+              </div>
+              <div className="rounded-lg p-2 bg-red-100/50 text-red-600 shrink-0">
+                <XCircle className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -116,6 +116,15 @@ export function hasPermission(user: SessionUser, permission: string): boolean {
   return user.rolePermissions.includes(permission) || user.rolePermissions.includes(prefix)
 }
 
+export async function requirePermission(permission: string): Promise<SessionUser> {
+  const session = await requireAuth()
+  if (!hasPermission(session, permission)) {
+    const { apiForbidden } = await import('./api-response')
+    throw new AuthError(apiForbidden(`Permission denied: requires '${permission}'`))
+  }
+  return session
+}
+
 export class AuthError extends Error {
   response: ReturnType<typeof import('next/server').NextResponse.json>
   constructor(response: ReturnType<typeof import('next/server').NextResponse.json>) {

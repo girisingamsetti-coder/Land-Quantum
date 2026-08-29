@@ -1,4 +1,4 @@
-import { apiSuccess, apiUnauthorized, apiNotFound, apiError } from '@/lib/api-response'
+import { apiSuccess, apiUnauthorized, apiNotFound, apiForbidden, apiError } from '@/lib/api-response'
 import { requireAuth } from '@/lib/session'
 import { db } from '@/lib/db'
 
@@ -53,6 +53,15 @@ export async function POST(
 
     if (stageRecord.status === 'Completed') {
       return apiError(`Stage "${stageName}" is already completed`)
+    }
+
+    // Role & permission check: User must have super admin access, or stage-specific permission, or be the assigned officer
+    const isSuperAdmin = user.rolePermissions.includes('*') || user.isSystemRole
+    const isAssigned = stageRecord.assignedToId === user.id || application.assignedOfficerId === user.id
+    const hasStagePerm = user.rolePermissions.some(p => p.includes('approve') || p.includes('review') || p.includes('manage'))
+
+    if (!isSuperAdmin && !isAssigned && !hasStagePerm) {
+      return apiForbidden('You do not have permission to take decisions on this workflow stage')
     }
 
     const currentStageIdx = WORKFLOW_STAGES.indexOf(stageName)

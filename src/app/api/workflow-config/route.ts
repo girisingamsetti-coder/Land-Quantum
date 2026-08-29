@@ -1,5 +1,5 @@
 import { apiSuccess, apiError } from '@/lib/api-response'
-import { requireAuth } from '@/lib/session'
+import { requireAuth, requirePermission } from '@/lib/session'
 import { db } from '@/lib/db'
 
 export async function GET() {
@@ -16,7 +16,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    await requireAuth()
+    await requirePermission('settings:manage')
     const body = await request.json()
     if (body.type === 'sla') {
       await db.workflowConfig.update({ where: { stageName: body.stageName }, data: { slaDays: body.slaDays } })

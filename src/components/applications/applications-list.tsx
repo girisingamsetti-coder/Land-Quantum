@@ -187,7 +187,7 @@ export function ApplicationsList({
       if (search) params.set('search', search)
       if (status !== 'All') params.set('status', status)
       if (stage !== 'All') params.set('stage', stage)
-      if (sector !== 'All') params.set('sector', sector)
+      if (sector !== 'All' && sector !== 'All Sectors') params.set('sector', sector)
       if (mode !== 'All') params.set('mode', mode)
       if (viewType) params.set('viewType', viewType)
 
@@ -237,74 +237,84 @@ export function ApplicationsList({
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-1 shrink-0 mb-1">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 shrink-0 mb-2">
         <Card
-          className={cn("py-2.5 bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'total' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'total' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'total' ? null : 'total')}
         >
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-              <FileText className="h-3.5 w-3.5 text-primary" />
-            </div>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Applications</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">1,248</h3>
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Applications</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">1,248</p>
+              </div>
+              <div className="rounded-lg p-2 bg-primary/10 text-primary shrink-0">
+                <FileText className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={cn("py-2.5 bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'sectors' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'sectors' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'sectors' ? null : 'sectors')}
         >
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg shrink-0">
-              <PieChart className="h-3.5 w-3.5 text-blue-500" />
-            </div>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Active Sectors</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">14</h3>
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Active Sectors</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">14</p>
+              </div>
+              <div className="rounded-lg p-2 bg-blue-500/10 text-blue-500 shrink-0">
+                <PieChart className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={cn("py-2.5 bg-gradient-to-r from-emerald-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'approved' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-emerald-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'approved' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'approved' ? null : 'approved')}
         >
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/10 rounded-lg shrink-0">
-              <Activity className="h-3.5 w-3.5 text-emerald-500" />
-            </div>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Approved Status</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">892</h3>
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Approved Status</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">892</p>
+              </div>
+              <div className="rounded-lg p-2 bg-emerald-500/10 text-emerald-500 shrink-0">
+                <Activity className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={cn("py-2.5 bg-gradient-to-r from-amber-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'pending' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-amber-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'pending' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'pending' ? null : 'pending')}
         >
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-amber-500/10 rounded-lg shrink-0">
-              <Clock className="h-3.5 w-3.5 text-amber-500" />
-            </div>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Pending Review</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">124</h3>
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Pending Review</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">124</p>
+              </div>
+              <div className="rounded-lg p-2 bg-amber-500/10 text-amber-500 shrink-0">
+                <Clock className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>
         <Card
-          className={cn("py-2.5 bg-gradient-to-r from-purple-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'investment' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-purple-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'investment' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'investment' ? null : 'investment')}
         >
-          <CardContent className="px-3 py-0 flex items-center gap-3">
-            <div className="p-2 bg-purple-500/10 rounded-lg shrink-0">
-              <IndianRupee className="h-3.5 w-3.5 text-purple-500" />
-            </div>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Est. Investment</p>
-              <h3 className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">12.5k Cr</h3>
+          <CardContent className="px-3 py-0">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Est. Investment</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-purple-700 truncate">12.5k Cr</p>
+              </div>
+              <div className="rounded-lg p-2 bg-purple-500/10 text-purple-500 shrink-0">
+                <IndianRupee className="h-3.5 w-3.5" />
+              </div>
             </div>
           </CardContent>
         </Card>

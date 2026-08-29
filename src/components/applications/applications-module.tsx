@@ -20,9 +20,10 @@ const STAGE_OPTIONS = [
   'Possession', 'Building Permission', 'Construction', 'Compliance',
 ]
 const SECTOR_OPTIONS = [
-  'All', 'IT & ITES', 'Real Estate', 'Healthcare', 'Education',
-  'Hospitality & Tourism', 'Manufacturing', 'Financial Services', 'Retail',
-  'Logistics', 'Energy', 'Agriculture', 'Media & Entertainment',
+  'All Sectors', 'Commercial', 'Education', 'Financial Institutions',
+  'Food Processing', 'Government Organisations', 'Healthcare', 'Hospitality',
+  'IT/ITES', 'Industrial', 'Logistics', 'NGOs', 'Others',
+  'Pharmaceutical', 'Political Parties', 'Sports', 'Textiles',
 ]
 
 export function ApplicationsModule() {
@@ -34,7 +35,7 @@ export function ApplicationsModule() {
   const [searchInput, setSearchInput] = useState('')
   const [status, setStatus] = useState('All')
   const [stage, setStage] = useState('All')
-  const [sector, setSector] = useState('All')
+  const [sector, setSector] = useState('All Sectors')
 
   const handleSearch = () => {
     setSearch(searchInput)
@@ -45,10 +46,10 @@ export function ApplicationsModule() {
     setSearch('')
     setStatus('All')
     setStage('All')
-    setSector('All')
+    setSector('All Sectors')
   }
 
-  const hasFilters = searchInput.trim() !== '' || search.trim() !== '' || status !== 'All' || stage !== 'All' || sector !== 'All'
+  const hasFilters = searchInput.trim() !== '' || search.trim() !== '' || status !== 'All' || stage !== 'All' || (sector !== 'All' && sector !== 'All Sectors')
 
   const handleCreated = () => {
     // Refresh the applications list
@@ -80,11 +81,11 @@ export function ApplicationsModule() {
             </SelectContent>
           </Select>
           <Select value={sector} onValueChange={setSector}>
-            <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={sector !== 'All'}>
+            <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={sector !== 'All' && sector !== 'All Sectors'}>
               <SelectValue placeholder="Sector" />
             </SelectTrigger>
             <SelectContent>
-              {SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Sector' : s}</SelectItem>)}
+              {SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
             </SelectContent>
           </Select>
 
@@ -99,7 +100,7 @@ export function ApplicationsModule() {
   )
 
   return (
-    <div className="flex-1 w-full flex flex-col space-y-1 px-2 py-4 md:px-2 pb-0 md:pb-0 bg-muted/30 pt-4">
+    <div className="flex-1 w-full flex flex-col space-y-1">
       <div className="flex flex-col gap-0 shrink-0">
         <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -120,7 +121,7 @@ export function ApplicationsModule() {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
-        <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1 mb-0 rounded-none h-auto">
+        <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1.5 mb-2.5 rounded-none h-auto">
           <TabsTrigger value="all" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
             <LayoutGrid className="w-4 h-4 mr-2 text-blue-500" /> <b>All Applications</b>
           </TabsTrigger>

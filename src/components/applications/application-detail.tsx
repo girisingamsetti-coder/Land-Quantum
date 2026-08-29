@@ -799,7 +799,7 @@ export function ApplicationDetail() {
               <InfoRow label="Total Payments" value={app.payments.length.toString()} />
               <InfoRow label="Total Amount Paid" value={formatINR(app.payments.reduce((acc, p) => acc + (p.amountPaid || 0), 0))} />
               <InfoRow label="Outstanding Dues" value={formatINR(app.payments.reduce((acc, p) => acc + ((p.amountDue || 0) - (p.amountPaid || 0)), 0))} />
-              <InfoRow label="Next Payment Due" value={app.payments.find(p => p.status === 'Pending' || p.status === 'Overdue')?.dueDate ? formatDate(app.payments.find(p => p.status === 'Pending' || p.status === 'Overdue')?.dueDate!) : '—'} />
+              <InfoRow label="Next Payment Due" value={(() => { const nextPayment = app.payments.find(p => p.status === 'Pending' || p.status === 'Overdue'); return nextPayment?.dueDate ? formatDate(nextPayment.dueDate) : '—' })()} />
             </DetailCard>
 
             <DetailCard title="Approval & Post-Approval" icon={Shield}>

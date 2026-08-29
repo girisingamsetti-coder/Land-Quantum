@@ -380,7 +380,7 @@ export function DocumentationView() {
           <Card
             key={s.label}
             className={cn(
-              'py-2.5 border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
+              'border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
               s.bg,
               statusFilter === s.filterVal && 'outline outline-1 outline-primary outline-offset-[-1px]'
             )}
@@ -402,63 +402,63 @@ export function DocumentationView() {
         ))}
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card p-3 rounded-lg border">
-        <div className="flex items-center gap-2 flex-1">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search document title, applicant, ID..."
-              className="pl-8 h-9 text-xs"
+              className="pl-8 h-8 text-xs bg-white w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={categoryFilter || 'All'} onValueChange={(v) => setCategoryFilter(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!categoryFilter && categoryFilter !== 'All'}>
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {['All', 'Allotment', 'Technical', 'Clearance', 'Financial', 'Legal', 'Compliance'].map((cat) => (
+                  <SelectItem key={cat} value={cat} className="text-xs">
+                    {cat === 'All' ? 'Category' : cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={statusFilter || 'All'} onValueChange={(v) => setStatusFilter(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!statusFilter && statusFilter !== 'All'}>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {['All', 'Verified', 'Pending Review', 'Under Inspection', 'Rejected'].map((s) => (
+                  <SelectItem key={s} value={s} className="text-xs">
+                    {s === 'All' ? 'Status' : s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {activeFilters > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-xs gap-1 text-muted-foreground px-2"
+                onClick={() => {
+                  setStatusFilter('')
+                  setCategoryFilter('')
+                  setSearchQuery('')
+                }}
+              >
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Select value={categoryFilter || 'All'} onValueChange={(v) => setCategoryFilter(v === 'All' ? '' : v)}>
-            <SelectTrigger className="w-[140px] h-9 text-xs" data-active={!!categoryFilter && categoryFilter !== 'All'}>
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              {['All', 'Allotment', 'Technical', 'Clearance', 'Financial', 'Legal', 'Compliance'].map((cat) => (
-                <SelectItem key={cat} value={cat} className="text-xs">
-                  {cat === 'All' ? 'All Categories' : cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={statusFilter || 'All'} onValueChange={(v) => setStatusFilter(v === 'All' ? '' : v)}>
-            <SelectTrigger className="w-[140px] h-9 text-xs" data-active={!!statusFilter && statusFilter !== 'All'}>
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {['All', 'Verified', 'Pending Review', 'Under Inspection', 'Rejected'].map((s) => (
-                <SelectItem key={s} value={s} className="text-xs">
-                  {s === 'All' ? 'All Statuses' : s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {activeFilters > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 text-xs gap-1 text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                setStatusFilter('')
-                setCategoryFilter('')
-                setSearchQuery('')
-              }}
-            >
-              <X className="h-3.5 w-3.5" /> Clear Filters ({activeFilters})
-            </Button>
-          )}
-        </div>
-      </div>
+      </Card>
 
       {/* Main Table */}
       <Card className="shadow-xs border overflow-hidden">

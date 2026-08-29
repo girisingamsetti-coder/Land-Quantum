@@ -105,13 +105,29 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
   return (
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Cancellation & Resumption</h1><p className="text-sm text-muted-foreground">Track cancellation cases, notices, and resumption proceedings</p></div>}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div>{tabsControl}</div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search cases..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+      
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="flex items-center gap-2">
+            {tabsControl}
+          </div>
+          <div className="relative w-full sm:flex-1 max-w-md ml-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search cases, applications, reasons..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          {activeFilters > 0 && (
+            <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => setSearch('')}>
+              <X className="h-3.5 w-3.5" /> Clear
+            </Button>
+          )}
         </div>
-      </div>
+      </Card>
       <Card>
         <CardContent className="px-3 py-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}</div> :
           <Table><TableHeader><TableRow><TableHead>Case #</TableHead><TableHead>Application</TableHead><TableHead>Project</TableHead><TableHead>Initiated By</TableHead><TableHead>Reason</TableHead><TableHead>Decision</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
@@ -210,9 +226,10 @@ export function ReportsView() {
 
   const active = catalogue.find((r: any) => r.id === reportId);
   const meta = { phases: [{ value: 'P1', label: 'Phase 1' }], caseStatuses: ['UNDER_REVIEW', 'APPROVED'] };
+  const hasFilters = Boolean(filters.from || filters.to || filters.phase !== 'ALL' || filters.status !== 'ALL');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
@@ -249,30 +266,38 @@ export function ReportsView() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <Input type="date" className="h-8 text-xs w-32" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
-          <Input type="date" className="h-8 text-xs w-32" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
-          <Select value={filters.phase} onValueChange={(v) => setFilters({ ...filters, phase: v })}>
-            <SelectTrigger className="h-8 text-xs w-[130px]" data-active={filters.phase !== 'ALL'}><SelectValue placeholder="Phase" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All phases</SelectItem>
-              {meta?.phases?.map((p: any) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
-            <SelectTrigger className="h-8 text-xs w-[130px]" data-active={filters.status !== 'ALL'}><SelectValue placeholder="Status" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Any status</SelectItem>
-              {meta?.caseStatuses?.map((s: any) => <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => setFilters({ from: '', to: '', phase: 'ALL', status: 'ALL' })}>
-            <X className="h-3.5 w-3.5" /> Clear
-          </Button>
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="flex items-center gap-2 flex-1 mr-auto flex-wrap">
+            <span className="text-xs font-medium text-muted-foreground shrink-0">Dates:</span>
+            <Input type="date" className="h-8 text-xs w-36 bg-white" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
+            <span className="text-xs text-muted-foreground">to</span>
+            <Input type="date" className="h-8 text-xs w-36 bg-white" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={filters.phase} onValueChange={(v) => setFilters({ ...filters, phase: v })}>
+              <SelectTrigger className="h-8 text-xs w-[130px] bg-white" data-active={filters.phase !== 'ALL'}><SelectValue placeholder="Phase" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All phases</SelectItem>
+                {meta?.phases?.map((p: any) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
+              <SelectTrigger className="h-8 text-xs w-[130px] bg-white" data-active={filters.status !== 'ALL'}><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Any status</SelectItem>
+                {meta?.caseStatuses?.map((s: any) => <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => setFilters({ from: '', to: '', phase: 'ALL', status: 'ALL' })}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
       {reportId === 'summary' ? (
         <RecordsTable onNavigateToApp={() => { }} />
       ) : (
@@ -340,6 +365,7 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [loading, setLoading] = useState(true)
   const [action, setAction] = useState('')
   const [module, setModule] = useState('')
+  const [search, setSearch] = useState('')
 
   useEffect(() => { fetch('/api/audit-logs?pageSize=50').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
 
@@ -351,23 +377,68 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
     return data.logs.filter((l: any) => {
       if (action && l.action !== action) return false
       if (module && l.module !== module) return false
+      if (search) {
+        const s = search.toLowerCase()
+        const matchUser = l.userName?.toLowerCase().includes(s)
+        const matchRole = l.role?.toLowerCase().includes(s)
+        const matchAction = l.action?.toLowerCase().includes(s)
+        const matchModule = l.module?.toLowerCase().includes(s)
+        return matchUser || matchRole || matchAction || matchModule
+      }
       return true
     })
-  }, [data, action, module])
+  }, [data, action, module, search])
 
-  const activeFilters = [action, module].filter(Boolean).length
+  const hasFilters = Boolean(action || module || search)
+  const resetFilters = () => {
+    setAction('')
+    setModule('')
+    setSearch('')
+  }
 
   return (
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Audit Trail</h1><p className="text-sm text-muted-foreground">Immutable record of all system actions and changes</p></div>}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!action && action !== 'All'}><SelectValue placeholder="Action" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Actions</SelectItem>{actions.map(a => <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>)}</SelectContent></Select>
-          <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!module && module !== 'All'}><SelectValue placeholder="Module" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Modules</SelectItem>{modules.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}</SelectContent></Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setAction(''); setModule('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+      
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search user, role, action, module..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={!!action && action !== 'All'}>
+                <SelectValue placeholder="Action" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All" className="text-xs">All Actions</SelectItem>
+                {actions.map(a => <SelectItem key={a} value={a} className="text-xs">{a}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={!!module && module !== 'All'}>
+                <SelectValue placeholder="Module" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All" className="text-xs">All Modules</SelectItem>
+                {modules.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
       <Card>
         <CardContent className="px-3 py-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div> :
           <Table><TableHeader><TableRow><TableHead>Timestamp</TableHead><TableHead>User</TableHead><TableHead>Role</TableHead><TableHead>Action</TableHead><TableHead>Module</TableHead></TableRow></TableHeader><TableBody>
@@ -406,19 +477,46 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
     })
   }, [data, role, search])
 
-  const activeFilters = [role, search].filter(Boolean).length
+  const hasFilters = Boolean(role || search)
+  const resetFilters = () => {
+    setRole('')
+    setSearch('')
+  }
 
   return (
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">User Management</h1><p className="text-sm text-muted-foreground">Manage system users, roles, and department assignments</p></div>}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <div className="relative max-w-xs w-full sm:w-auto"><Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" /><Input placeholder="Search users..." className="pl-8 h-8 text-xs" value={search} onChange={e => setSearch(e.target.value)} /></div>
-          <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!role && role !== 'All'}><SelectValue placeholder="Role" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Roles</SelectItem>{roles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}</SelectContent></Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setRole(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+      
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search user name, email, department..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!role && role !== 'All'}>
+                <SelectValue placeholder="Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All" className="text-xs">All Roles</SelectItem>
+                {roles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
       <Card>
         <CardContent className="px-3 py-0">{loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div> :
           <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Designation</TableHead><TableHead>Role</TableHead><TableHead>Department</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody>
@@ -439,13 +537,51 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
 export function DepartmentsView({ hideHeader }: { hideHeader?: boolean } = {}) {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+
   useEffect(() => { fetch('/api/users').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
+
+  const filteredDepts = useMemo(() => {
+    if (!data?.departments) return []
+    if (!search) return data.departments
+    const s = search.toLowerCase()
+    return data.departments.filter((d: any) => d.name?.toLowerCase().includes(s) || d.code?.toLowerCase().includes(s))
+  }, [data, search])
+
+  const filteredRoles = useMemo(() => {
+    if (!data?.roles) return []
+    if (!search) return data.roles
+    const s = search.toLowerCase()
+    return data.roles.filter((r: any) => r.name?.toLowerCase().includes(s) || r.description?.toLowerCase().includes(s))
+  }, [data, search])
+
   return (
     <div className="space-y-4">
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Departments & Roles</h1><p className="text-sm text-muted-foreground">Manage organizational structure and role-based access</p></div>}
+      
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search departments and roles..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          {search && (
+            <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => setSearch('')}>
+              <X className="h-3.5 w-3.5" /> Clear
+            </Button>
+          )}
+        </div>
+      </Card>
+
       <div className="grid md:grid-cols-2 gap-4">
-        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="px-3 py-0"><Table><TableBody>{data?.departments?.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className=" text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
-        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="px-3 py-0"><Table><TableBody>{data?.roles?.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Departments</CardTitle></CardHeader><CardContent className="px-3 py-0"><Table><TableBody>{filteredDepts.map((d: any) => (<TableRow key={d.id}><TableCell className="text-sm font-medium">{d.name}</TableCell><TableCell className=" text-xs text-muted-foreground">{d.code}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
+        <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Roles</CardTitle></CardHeader><CardContent className="px-3 py-0"><Table><TableBody>{filteredRoles.map((r: any) => (<TableRow key={r.id}><TableCell className="text-sm font-medium">{r.name}</TableCell><TableCell className="text-xs text-muted-foreground">{r.description}</TableCell></TableRow>))}</TableBody></Table></CardContent></Card>
       </div>
     </div>
   )
@@ -455,27 +591,230 @@ export function DepartmentsView({ hideHeader }: { hideHeader?: boolean } = {}) {
 export function SettingsView() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [workflowSearch, setWorkflowSearch] = useState('')
+  const [workflowRole, setWorkflowRole] = useState('All')
+  const [slaSearch, setSlaSearch] = useState('')
+  const [systemSearch, setSystemSearch] = useState('')
+  const [systemCategory, setSystemCategory] = useState('All')
+
   useEffect(() => { fetch('/api/workflow-config').then(r => r.json()).then(j => j.success && setData(j.data)).finally(() => setLoading(false)) }, [])
+
+  const workflowRoles = useMemo(() => {
+    if (!data?.stages) return []
+    return [...new Set(data.stages.map((s: any) => s.ownerRole).filter(Boolean))] as string[]
+  }, [data])
+
+  const systemCategories = useMemo(() => {
+    if (!data?.settings) return []
+    return [...new Set(data.settings.map((s: any) => s.category).filter(Boolean))] as string[]
+  }, [data])
+
+  const filteredStages = useMemo(() => {
+    if (!data?.stages) return []
+    return data.stages.filter((s: any) => {
+      if (workflowRole !== 'All' && s.ownerRole !== workflowRole) return false
+      if (workflowSearch) {
+        const q = workflowSearch.toLowerCase()
+        return s.stageName?.toLowerCase().includes(q) || s.ownerRole?.toLowerCase().includes(q)
+      }
+      return true
+    })
+  }, [data, workflowSearch, workflowRole])
+
+  const filteredSla = useMemo(() => {
+    if (!data?.stages) return []
+    if (!slaSearch) return data.stages
+    const q = slaSearch.toLowerCase()
+    return data.stages.filter((s: any) => s.stageName?.toLowerCase().includes(q) || s.ownerRole?.toLowerCase().includes(q))
+  }, [data, slaSearch])
+
+  const filteredSettings = useMemo(() => {
+    if (!data?.settings) return []
+    return data.settings.filter((s: any) => {
+      if (systemCategory !== 'All' && s.category !== systemCategory) return false
+      if (systemSearch) {
+        const q = systemSearch.toLowerCase()
+        return s.key?.toLowerCase().includes(q) || s.label?.toLowerCase().includes(q) || String(s.value)?.toLowerCase().includes(q)
+      }
+      return true
+    })
+  }, [data, systemSearch, systemCategory])
+
   return (
     <div className="space-y-4">
       <div><h1 className="text-2xl font-bold tracking-tight">Admin Settings</h1><p className="text-sm text-muted-foreground">Configure workflow stages, SLA targets, and system settings</p></div>
-      <Tabs defaultValue="workflow" className="flex flex-col h-full"><TabsList className="flex-wrap h-auto"><TabsTrigger value="workflow">Workflow Stages</TabsTrigger><TabsTrigger value="sla">SLA Configuration</TabsTrigger><TabsTrigger value="system">System Settings</TabsTrigger><TabsTrigger value="users">Users</TabsTrigger><TabsTrigger value="departments">Departments & Roles</TabsTrigger><TabsTrigger value="audit">Audit Trail</TabsTrigger></TabsList>
-        <TabsContent value="workflow"><Card><CardContent className="px-3 py-0"><Table><TableHeader><TableRow><TableHead>#</TableHead><TableHead>Stage</TableHead><TableHead>Owner Role</TableHead><TableHead>SLA (days)</TableHead><TableHead>Optional</TableHead><TableHead>Active</TableHead></TableRow></TableHeader><TableBody>
-          {data?.stages?.map((s: any) => (<TableRow key={s.id}>
-            <TableCell className="text-xs tabular-nums">{s.stageOrder}</TableCell>
-            <TableCell className="text-sm font-medium">{s.stageName}</TableCell>
-            <TableCell className="text-xs">{s.ownerRole}</TableCell>
-            <TableCell className="text-xs tabular-nums">{s.slaDays}</TableCell>
-            <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
-            <TableCell>{s.isActive ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <XCircle className="h-3.5 w-3.5 text-red-500" />}</TableCell>
-          </TableRow>))}
-        </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="sla"><Card><CardContent className="px-3 py-0"><Table><TableHeader><TableRow><TableHead>Stage</TableHead><TableHead>SLA (days)</TableHead></TableRow></TableHeader><TableBody>
-          {data?.stages?.map((s: any) => (<TableRow key={s.id}><TableCell className="text-sm">{s.stageName}</TableCell><TableCell className="text-sm font-bold tabular-nums">{s.slaDays} days</TableCell></TableRow>))}
-        </TableBody></Table></CardContent></Card></TabsContent>
-        <TabsContent value="system"><Card><CardContent className="px-3 py-0"><Table><TableHeader><TableRow><TableHead>Key</TableHead><TableHead>Value</TableHead><TableHead>Category</TableHead><TableHead>Label</TableHead></TableRow></TableHeader><TableBody>
-          {data?.settings?.map((s: any) => (<TableRow key={s.id}><TableCell className=" text-xs">{s.key}</TableCell><TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell><TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell><TableCell className="text-xs">{s.label}</TableCell></TableRow>))}
-        </TableBody></Table></CardContent></Card></TabsContent>
+      <Tabs defaultValue="workflow" className="flex flex-col h-full">
+        <TabsList className="flex-wrap h-auto mb-3">
+          <TabsTrigger value="workflow">Workflow Stages</TabsTrigger>
+          <TabsTrigger value="sla">SLA Configuration</TabsTrigger>
+          <TabsTrigger value="system">System Settings</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="departments">Departments & Roles</TabsTrigger>
+          <TabsTrigger value="audit">Audit Trail</TabsTrigger>
+        </TabsList>
+
+        {/* TAB 1: WORKFLOW */}
+        <TabsContent value="workflow" className="space-y-3">
+          <Card className="p-1.5 border shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+              <div className="relative w-full sm:flex-1 mr-auto">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search workflow stages, owner role..."
+                  className="pl-8 h-8 text-xs bg-white w-full"
+                  value={workflowSearch}
+                  onChange={e => setWorkflowSearch(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+                <Select value={workflowRole} onValueChange={setWorkflowRole}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={workflowRole !== 'All'}>
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All" className="text-xs">All Roles</SelectItem>
+                    {workflowRoles.map(r => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                {(workflowSearch || workflowRole !== 'All') && (
+                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => { setWorkflowSearch(''); setWorkflowRole('All') }}>
+                    <X className="h-3.5 w-3.5" /> Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+          </Card>
+          <Card>
+            <CardContent className="px-3 py-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>#</TableHead>
+                    <TableHead>Stage</TableHead>
+                    <TableHead>Owner Role</TableHead>
+                    <TableHead>SLA (days)</TableHead>
+                    <TableHead>Optional</TableHead>
+                    <TableHead>Active</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStages.map((s: any) => (
+                    <TableRow key={s.id}>
+                      <TableCell className="text-xs tabular-nums">{s.stageOrder}</TableCell>
+                      <TableCell className="text-sm font-medium">{s.stageName}</TableCell>
+                      <TableCell className="text-xs">{s.ownerRole}</TableCell>
+                      <TableCell className="text-xs tabular-nums">{s.slaDays}</TableCell>
+                      <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
+                      <TableCell>{s.isActive ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <XCircle className="h-3.5 w-3.5 text-red-500" />}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* TAB 2: SLA */}
+        <TabsContent value="sla" className="space-y-3">
+          <Card className="p-1.5 border shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+              <div className="relative w-full sm:flex-1 mr-auto">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search SLA configuration by stage name..."
+                  className="pl-8 h-8 text-xs bg-white w-full"
+                  value={slaSearch}
+                  onChange={e => setSlaSearch(e.target.value)}
+                />
+              </div>
+              {slaSearch && (
+                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => setSlaSearch('')}>
+                  <X className="h-3.5 w-3.5" /> Clear
+                </Button>
+              )}
+            </div>
+          </Card>
+          <Card>
+            <CardContent className="px-3 py-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Stage</TableHead>
+                    <TableHead>Owner Role</TableHead>
+                    <TableHead className="text-right">SLA Target</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredSla.map((s: any) => (
+                    <TableRow key={s.id}>
+                      <TableCell className="text-sm font-medium">{s.stageName}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{s.ownerRole}</TableCell>
+                      <TableCell className="text-sm font-bold tabular-nums text-right">{s.slaDays} days</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* TAB 3: SYSTEM SETTINGS */}
+        <TabsContent value="system" className="space-y-3">
+          <Card className="p-1.5 border shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+              <div className="relative w-full sm:flex-1 mr-auto">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search settings key, label, value..."
+                  className="pl-8 h-8 text-xs bg-white w-full"
+                  value={systemSearch}
+                  onChange={e => setSystemSearch(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+                <Select value={systemCategory} onValueChange={setSystemCategory}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={systemCategory !== 'All'}>
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All" className="text-xs">All Categories</SelectItem>
+                    {systemCategories.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                {(systemSearch || systemCategory !== 'All') && (
+                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => { setSystemSearch(''); setSystemCategory('All') }}>
+                    <X className="h-3.5 w-3.5" /> Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+          </Card>
+          <Card>
+            <CardContent className="px-3 py-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Key</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Label</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredSettings.map((s: any) => (
+                    <TableRow key={s.id}>
+                      <TableCell className="text-xs font-medium">{s.key}</TableCell>
+                      <TableCell className="text-xs max-w-[200px] truncate">{typeof s.value === 'string' && s.value.startsWith('{') ? 'JSON Config' : s.value}</TableCell>
+                      <TableCell><Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border-slate-200">{s.category}</Badge></TableCell>
+                      <TableCell className="text-xs">{s.label}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="users"><UsersView hideHeader /></TabsContent>
         <TabsContent value="departments"><DepartmentsView hideHeader /></TabsContent>
         <TabsContent value="audit"><AuditLogView hideHeader /></TabsContent>
@@ -610,6 +949,7 @@ export function RiskAlertsView() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [severityFilter, setSeverityFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
+  const [search, setSearch] = useState('')
 
   const types = useMemo(() => [...new Set(RISK_ALERTS.map(a => a.type))], [])
 
@@ -617,11 +957,23 @@ export function RiskAlertsView() {
     return RISK_ALERTS.filter(a => {
       if (severityFilter && a.severity !== severityFilter) return false
       if (typeFilter && a.type !== typeFilter) return false
+      if (search) {
+        const s = search.toLowerCase()
+        const matchDesc = a.description.toLowerCase().includes(s)
+        const matchApp = a.application.toLowerCase().includes(s)
+        const matchType = a.type.toLowerCase().includes(s)
+        return matchDesc || matchApp || matchType
+      }
       return true
     })
-  }, [severityFilter, typeFilter])
+  }, [severityFilter, typeFilter, search])
 
-  const activeFilters = [severityFilter, typeFilter].filter(Boolean).length
+  const hasFilters = Boolean(severityFilter || typeFilter || search)
+  const resetFilters = () => {
+    setSeverityFilter('')
+    setTypeFilter('')
+    setSearch('')
+  }
 
   return (
     <div className="space-y-4">
@@ -633,7 +985,7 @@ export function RiskAlertsView() {
           const tc = severityTileColor(sev)
           const count = RISK_ALERTS.filter(a => a.severity === sev).length
           return (
-            <Card key={sev} className={cn('py-2.5 border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
+            <Card key={sev} className={cn('border', tc.border, tc.bg, 'cursor-pointer transition-all hover:shadow-md', severityFilter === sev && 'outline outline-1 outline-primary outline-offset-[-1px]')} onClick={() => setSeverityFilter(severityFilter === sev ? '' : sev)}>
               <CardContent className="px-3 py-0">
                 <div className="flex items-start justify-between">
                   <div>
@@ -650,14 +1002,46 @@ export function RiskAlertsView() {
         })}
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!severityFilter && severityFilter !== 'All'}><SelectValue placeholder="Severity" /></SelectTrigger><SelectContent>{['All', 'Critical', 'High', 'Medium', 'Low'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!typeFilter && typeFilter !== 'All'}><SelectValue placeholder="Alert Type" /></SelectTrigger><SelectContent><SelectItem value="All" className="text-xs">All Types</SelectItem>{types.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}</SelectContent></Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => { setSeverityFilter(''); setTypeFilter('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+      {/* Filter Toolbar Card */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search alerts, description, application..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={!!severityFilter && severityFilter !== 'All'}>
+                <SelectValue placeholder="Severity" />
+              </SelectTrigger>
+              <SelectContent>
+                {['All', 'Critical', 'High', 'Medium', 'Low'].map(s => (
+                  <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Severity' : s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!typeFilter && typeFilter !== 'All'}>
+                <SelectValue placeholder="Alert Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All" className="text-xs">All Types</SelectItem>
+                {types.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
 
       <div className="space-y-2">
         {filtered.map((alert) => {

@@ -7,7 +7,8 @@ import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { HardHat, AlertCircle, CheckCircle2, Clock, Building, Filter, X, CalendarDays, CheckSquare, Target } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { HardHat, AlertCircle, CheckCircle2, Clock, Building, Filter, X, CalendarDays, CheckSquare, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 function statusColor(s: string) {
@@ -33,20 +34,35 @@ export function ConstructionView() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [status, setStatus] = useState('')
+  const [search, setSearch] = useState('')
 
   useEffect(() => { fetch('/api/constructions').then(r=>r.json()).then(j=>j.success&&setData(j.data)).finally(()=>setLoading(false)) }, [])
 
   const filtered = useMemo(() => {
     if (!data?.constructions) return []
-    if (!status) return data.constructions
-    return data.constructions.filter((c: any) => c.status === status)
-  }, [data, status])
+    return data.constructions.filter((c: any) => {
+      if (status && c.status !== status) return false
+      if (search) {
+        const s = search.toLowerCase()
+        const matchProject = c.application?.projectName?.toLowerCase().includes(s)
+        const matchApplicant = c.application?.applicant?.organizationName?.toLowerCase().includes(s)
+        const matchAppNo = c.application?.applicationNumber?.toLowerCase().includes(s)
+        return matchProject || matchApplicant || matchAppNo
+      }
+      return true
+    })
+  }, [data, status, search])
 
   const milestones = useMemo(() => generateMockMilestones(filtered), [filtered])
-  const activeFilters = status ? 1 : 0
+  const hasFilters = Boolean(status || search)
+
+  const resetFilters = () => {
+    setStatus('')
+    setSearch('')
+  }
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-4 pb-10">
       <div><h1 className="text-2xl font-bold tracking-tight">Construction Monitoring</h1><p className="text-sm text-muted-foreground">Track construction progress and milestones for allotted projects</p></div>
       {data && <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
@@ -67,14 +83,7 @@ export function ConstructionView() {
         ))}
       </div>}
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="h-3.5 w-3.5" /><span className="text-xs font-semibold">Filters</span></div>
-        <div className="flex flex-wrap items-center gap-2 flex-1 justify-end">
-          <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}><SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger><SelectContent>{['All', 'In Progress', 'Delayed', 'Not Started', 'Completed'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-          {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={() => setStatus('')}><X className="h-3.5 w-3.5" /> Clear</Button>}
-        </div>
-      </div>
-
+      {/* Project Cards Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((c: any) => (
           <Card key={c.id} className="hover:shadow-md transition-shadow border-t-4" style={{ borderTopColor: c.status === 'Delayed' ? '#ef4444' : c.status === 'Completed' ? '#10b981' : '#f59e0b' }}>
@@ -101,14 +110,40 @@ export function ConstructionView() {
         ))}
       </div>
 
+      {/* Filter Toolbar Card directly above the Table */}
+      <Card className="p-1.5 border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+          <div className="relative w-full sm:flex-1 mr-auto">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search projects, applicants, application numbers..."
+              className="pl-8 h-8 text-xs bg-white w-full"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
+            <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!status && status !== 'All'}>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {['All', 'In Progress', 'Delayed', 'Not Started', 'Completed'].map(s => (
+                  <SelectItem key={s} value={s} className="text-xs">{s === 'All' ? 'Status' : s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
+          </div>
+        </div>
+      </Card>
+
       {filtered.length > 0 && (
-        <Card className="mt-8">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Target className="h-3.5 w-3.5 text-primary" />
-              <CardTitle>Project Milestones Tracking</CardTitle>
-            </div>
-          </CardHeader>
+        <Card>
           <CardContent className="px-3 py-0">
             <div className="overflow-x-auto">
               <Table>
