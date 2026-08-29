@@ -183,36 +183,63 @@ interface PipelineStage {
 }
 
 const PIPELINE_STAGES: PipelineStage[] = [
-  { id: 'app', title: 'Applications & eligibility', description: 'Application intake and qualification', icon: ClipboardCheck, total: 45, inProgress: { count: 3, pct: 6.7, steps: 2 }, approved: { count: 42, pct: 93.3 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
-  { id: 'dpr', title: 'DPR review', description: 'Technical project scrutiny', icon: LayoutList, total: 35, inProgress: { count: 4, pct: 11.4 }, approved: { count: 29, pct: 82.9 }, revision: { count: 2, pct: 5.7 }, rejected: { count: 0, pct: 0 } },
+  { id: 'app', title: 'Applications', description: 'Application intake and qualification', icon: ClipboardCheck, total: 45, inProgress: { count: 3, pct: 6.7, steps: 2 }, approved: { count: 42, pct: 93.3 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
+  { id: 'dpr', title: 'DPR', description: 'Technical project scrutiny', icon: LayoutList, total: 35, inProgress: { count: 4, pct: 11.4 }, approved: { count: 29, pct: 82.9 }, revision: { count: 2, pct: 5.7 }, rejected: { count: 0, pct: 0 } },
   { id: 'eco', title: 'Economic review', description: 'Investment, jobs, and sector fit', icon: TrendingUp, total: 25, inProgress: { count: 2, pct: 8.0 }, approved: { count: 23, pct: 92.0 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
   { id: 'lasc', title: 'LASC scrutiny', description: 'Site, title, and committee recommendation', icon: ShieldCheck, total: 25, inProgress: { count: 2, pct: 8.0 }, approved: { count: 19, pct: 76.0 }, revision: { count: 3, pct: 12.0 }, rejected: { count: 1, pct: 4.0 } },
-  { id: 'govt', title: 'Government approvals', description: 'GoM, Authority, and Cabinet gates', icon: BadgeCheck, total: 40, inProgress: { count: 5, pct: 12.5, steps: 5 }, approved: { count: 35, pct: 87.5 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 }, extra: { label: 'Deferred', count: 1 } },
-  { id: 'ord', title: 'Order & offer', description: 'Government Order and Letter of intent', icon: Award, total: 20, inProgress: { count: 2, pct: 10.0, steps: 2 }, approved: { count: 18, pct: 90.0 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 }, extra: { label: 'Expired', count: 1 } },
-  { id: 'pay', title: 'Payment & agreement', description: 'Financial close and registered agreement', icon: Handshake, total: 15, inProgress: { count: 2, pct: 13.3, steps: 3 }, approved: { count: 13, pct: 86.7 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
-  { id: 'hand', title: 'Handover & compliance', description: 'Possession, construction, and closure', icon: PackageCheck, total: 10, inProgress: { count: 2, pct: 20.0, steps: 4 }, approved: { count: 8, pct: 80.0 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
+  { id: 'govt', title: 'GoM approvals', description: 'GoM, Authority, and Cabinet gates', icon: BadgeCheck, total: 40, inProgress: { count: 5, pct: 12.5, steps: 5 }, approved: { count: 35, pct: 87.5 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 }, extra: { label: 'Deferred', count: 1 } },
+  { id: 'ord', title: 'Deals', description: 'Government Order and Letter of intent', icon: Award, total: 20, inProgress: { count: 2, pct: 10.0, steps: 2 }, approved: { count: 18, pct: 90.0 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 }, extra: { label: 'Expired', count: 1 } },
+  { id: 'pay', title: 'Payment', description: 'Financial close and registered agreement', icon: Handshake, total: 15, inProgress: { count: 2, pct: 13.3, steps: 3 }, approved: { count: 13, pct: 86.7 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
+  { id: 'hand', title: 'Construction Monitoring', description: 'Possession, construction, and closure', icon: PackageCheck, total: 10, inProgress: { count: 2, pct: 20.0, steps: 4 }, approved: { count: 8, pct: 80.0 }, revision: { count: 0, pct: 0 }, rejected: { count: 0, pct: 0 } },
   { id: 'bpermits', title: 'Building permits', description: 'Approval of building plans', icon: HardHat, total: 32, inProgress: { count: 8, pct: 25.0 }, approved: { count: 20, pct: 62.5 }, revision: { count: 3, pct: 9.4 }, rejected: { count: 1, pct: 3.1 } },
   { id: 'grievances', title: 'Grievances', description: 'Investor complaints & resolution', icon: MessageSquare, total: 18, inProgress: { count: 5, pct: 27.8 }, approved: { count: 10, pct: 55.6 }, revision: { count: 2, pct: 11.1 }, rejected: { count: 1, pct: 5.6 } },
 ]
 
-function PipelineCard({ stage }: { stage: PipelineStage }) {
+function PipelineCard({ stage, onNavigate }: { stage: PipelineStage; onNavigate?: (view: View) => void }) {
   const Icon = stage.icon
+  const handleClick = () => {
+    if (!onNavigate) return
+    switch (stage.id) {
+      case 'app':
+      case 'dpr':
+      case 'eco':
+      case 'lasc':
+      case 'govt':
+        onNavigate('applications')
+        break
+      case 'ord':
+        onNavigate('deals')
+        break
+      case 'pay':
+        onNavigate('payments')
+        break
+      case 'hand':
+        onNavigate('constructions')
+        break
+      case 'bpermits':
+        onNavigate('building-permits')
+        break
+      case 'grievances':
+        onNavigate('grievances')
+        break
+    }
+  }
   return (
-    <Card className="py-2.5 bg-gradient-to-r from-emerald-50/50 to-white/50 border border-slate-200/90 shadow-xs ring-1 ring-slate-900/5 hover:border-slate-300 hover:shadow-sm hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
+    <Card onClick={handleClick} className="py-2.5 bg-gradient-to-r from-emerald-50/50 to-white/50 border border-slate-200/90 shadow-xs ring-1 ring-slate-900/5 hover:border-slate-300 hover:shadow-sm hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all py-2 gap-0 cursor-pointer">
       <CardContent className="px-2 pt-2 pb-2">
         {/* Top Section */}
-        <div className="flex items-center justify-between mb-4 mt-1">
-          <div className="flex items-center gap-2.5">
+        <div className="grid grid-cols-2 gap-3 items-center mb-3 mt-1">
+          <div className="flex items-center gap-2 min-w-0">
             <div className="rounded-lg bg-emerald-50 p-2 shrink-0 border border-emerald-100/80 shadow-xs">
               <Icon className="h-3.5 w-3.5 text-emerald-600" />
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 leading-tight m-0">{stage.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5 m-0 leading-none">{stage.total}</p>
-            </div>
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight m-0 truncate">{stage.title}</h3>
           </div>
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 border border-slate-200/60 shadow-xs">
-            <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+          <div className="relative flex items-center justify-center min-w-0">
+            <span className="text-lg font-bold text-slate-900 tabular-nums">{stage.total}</span>
+            <div className="absolute right-0 flex h-6 w-6 items-center justify-center rounded-full bg-slate-50 border border-slate-200/60 shadow-xs shrink-0">
+              <ChevronRight className="h-3 w-3 text-slate-400" />
+            </div>
           </div>
         </div>
 
@@ -305,13 +332,42 @@ const moneyData = [
   { month: 'May', billed: 190, collected: 170 }, { month: 'Jun', billed: 140, collected: 135 },
   { month: 'Jul', billed: 250, collected: 210 }, { month: 'Aug', billed: 180, collected: 165 },
 ]
-const INVESTMENT_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#6366f1']
-const investmentConfig = { amount: { label: 'Investment (â‚¹ Cr)', color: 'oklch(0.45 0.12 180)' } }
+const INVESTMENT_COLORS = [
+  '#ec4899', // 1. Commercial (Pink)
+  '#ef4444', // 2. Education (Coral Red)
+  '#f97316', // 3. Financial Institutions (Vivid Orange)
+  '#eab308', // 4. Food Processing (Golden Yellow)
+  '#22c55e', // 5. Government Organisations (Vibrant Green)
+  '#06b6d4', // 6. Healthcare (Teal Cyan)
+  '#3b82f6', // 7. Hospitality (Royal Blue)
+  '#a855f7', // 8. IT/ITES (Violet Purple)
+  '#14b8a6', // 9. Industrial (Mint Teal)
+  '#6366f1', // 10. Logistics (Indigo Blue)
+  '#8b5cf6', // 11. NGOs (Lavender Purple)
+  '#d946ef', // 12. Others (Fuchsia Pink)
+  '#f43f5e', // 13. Pharmaceutical (Rose Crimson)
+  '#ff7828', // 14. Political Parties (Sunset Orange)
+  '#84cc16', // 15. Sports (Lime Green)
+  '#0284c7', // 16. Textiles (Sky Blue)
+]
+const investmentConfig = { amount: { label: 'Investment (₹ Cr)', color: 'oklch(0.45 0.12 180)' } }
 const investmentData = [
-  { sector: 'IT & Electronics', amount: 4800 }, { sector: 'Manufacturing', amount: 3600 },
-  { sector: 'Pharmaceuticals', amount: 2900 }, { sector: 'Logistics', amount: 2200 },
-  { sector: 'Food Processing', amount: 1800 }, { sector: 'Textiles', amount: 1200 },
-  { sector: 'Renewable Energy', amount: 900 },
+  { sector: 'Commercial', short: 'Commercial', amount: 3200, color: '#ec4899' },
+  { sector: 'Education', short: 'Education', amount: 1500, color: '#ef4444' },
+  { sector: 'Financial Institutions', short: 'Financial', amount: 2200, color: '#f97316' },
+  { sector: 'Food Processing', short: 'Food Proc.', amount: 3400, color: '#eab308' },
+  { sector: 'Government Organisations', short: 'Govt Orgs', amount: 950, color: '#22c55e' },
+  { sector: 'Healthcare', short: 'Healthcare', amount: 3300, color: '#06b6d4' },
+  { sector: 'Hospitality', short: 'Hospitality', amount: 2800, color: '#3b82f6' },
+  { sector: 'IT/ITES', short: 'IT/ITES', amount: 4900, color: '#a855f7' },
+  { sector: 'Industrial', short: 'Industrial', amount: 4150, color: '#14b8a6' },
+  { sector: 'Logistics', short: 'Logistics', amount: 2600, color: '#6366f1' },
+  { sector: 'NGOs', short: 'NGOs', amount: 850, color: '#8b5cf6' },
+  { sector: 'Others', short: 'Others', amount: 1400, color: '#d946ef' },
+  { sector: 'Pharmaceutical', short: 'Pharma', amount: 4650, color: '#f43f5e' },
+  { sector: 'Political Parties', short: 'Political', amount: 600, color: '#ff7828' },
+  { sector: 'Sports', short: 'Sports', amount: 1850, color: '#84cc16' },
+  { sector: 'Textiles', short: 'Textiles', amount: 2750, color: '#0284c7' },
 ]
 
 function TrendWindowSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -1524,13 +1580,65 @@ export function DashboardView() {
       <div>
 
         <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-          {PIPELINE_STAGES.map((stage) => <PipelineCard key={stage.id} stage={stage} />)}
+          {PIPELINE_STAGES.map((stage) => <PipelineCard key={stage.id} stage={stage} onNavigate={navigateTo} />)}
         </div>
       </div>
-      {/* Analytics Charts */}
-      <div className="grid gap-2 lg:grid-cols-4">
-        {/* Revenue Trend */}
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+      {/* Analytics Charts - 1. Investment by sector (40%), 2. Revenue Trend (30%), 3. Land Availability (30%) */}
+      <div className="grid gap-2 grid-cols-1 lg:grid-cols-10">
+        {/* Investment by sector - 40% */}
+        <Card className="lg:col-span-4 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+          <CardHeader className="px-3 py-0">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xs font-bold">Investment by sector</CardTitle>
+              <span className="text-[10px] text-muted-foreground">₹ Cr</span>
+            </div>
+          </CardHeader>
+          <CardContent className="px-3 pb-2 pt-0">
+            {/* Tall bar chart — labels stripped, bars fill the height */}
+            <ChartContainer config={investmentConfig} className="h-[148px] w-full">
+              <BarChart data={investmentData} margin={{ top: 6, right: 4, bottom: 2, left: -14 }} barSize={10}>
+                <XAxis type="category" dataKey="short" tickLine={false} axisLine={{ stroke: '#e2e8f0', strokeWidth: 1 }} tick={false} height={4} />
+                <YAxis type="number" domain={[0, 5200]} tickLine={false} axisLine={false} tick={{ fontSize: 8, fill: '#94a3b8' }} width={28} tickFormatter={(v) => `${v / 1000}k`} />
+                <ChartTooltip
+                  content={({ active, payload }) => {
+                    if (!active || !payload?.length) return null
+                    const d = payload[0].payload
+                    return (
+                      <div className="rounded-lg border bg-background px-2.5 py-1.5 shadow-md text-[11px]">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
+                          <span>{d.sector}</span>
+                        </div>
+                        <p className="text-muted-foreground mt-0.5 font-medium">
+                          Investment: <span className="text-foreground font-bold">₹{d.amount.toLocaleString('en-IN')} Cr</span>
+                        </p>
+                      </div>
+                    )
+                  }}
+                />
+                <Bar dataKey="amount" radius={[5, 5, 0, 0]}>
+                  {investmentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+            {/* Compact 2-row legend pinned directly below chart */}
+            <div className="grid grid-cols-8 gap-x-1 gap-y-0.5 mt-1.5">
+              {investmentData.map((item) => (
+                <div key={item.sector} className="flex items-center gap-0.5 min-w-0 group" title={item.sector}>
+                  <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                  <span className="text-[7px] font-medium text-muted-foreground truncate leading-tight group-hover:text-foreground transition-colors">
+                    {item.short}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Revenue Trend - 30% */}
+        <Card className="lg:col-span-3 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Revenue Trend</CardTitle>
           </CardHeader>
@@ -1552,29 +1660,8 @@ export function DashboardView() {
           </CardContent>
         </Card>
 
-        {/* Applications by Status */}
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <CardTitle className="text-xs font-bold">Applications by Status</CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 py-0">
-            <ChartContainer config={statusChartConfig} className="h-[160px] w-full">
-              <BarChart data={barData} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
-                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="value" barSize={18} radius={[10, 10, 0, 0]}>
-                  {barData.map((entry, index) => (
-                    <Cell key={index} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Land Availability Pie */}
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
+        {/* Land Availability Pie - 30% */}
+        <Card className="lg:col-span-3 border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
           <CardHeader className="px-3 py-0">
             <CardTitle className="text-xs font-bold">Land Availability</CardTitle>
           </CardHeader>
@@ -1600,81 +1687,6 @@ export function DashboardView() {
                   ))}
                 </Pie>
               </PieChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* How far cases get */}
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <CardTitle className="text-xs font-bold">How far cases get</CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 py-0">
-            <div className="space-y-3.5 mt-3 h-[160px]">
-              {funnelData.map((item) => <FunnelBar key={item.stage} stage={item.stage} count={item.count} pct={item.pct} />)}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-
-      {/* Decisions / Money / Investment */}
-      <div className="grid gap-1 lg:grid-cols-3">
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-2 flex flex-row items-center justify-between border-b pb-2 mb-2">
-            <CardTitle className="text-xs font-bold mt-1">Decisions recorded</CardTitle>
-            <div className="flex bg-muted/50 p-0.5 rounded-md border mt-0">
-              <button onClick={() => setDecisionsView('week')} className={cn("text-[9px] px-2 py-0.5 rounded-sm transition-colors font-medium", decisionsView === 'week' ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-slate-700")}>Week</button>
-              <button onClick={() => setDecisionsView('month')} className={cn("text-[9px] px-2 py-0.5 rounded-sm transition-colors font-medium", decisionsView === 'month' ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:text-slate-700")}>Month</button>
-            </div>
-          </CardHeader>
-          <CardContent className="px-3 py-0">
-            <ChartContainer config={decisionsConfig} className="h-[145px] w-full">
-              <BarChart data={decisionsView === 'month' ? decisionsData : decisionsDataWeekly} margin={{ top: 5, right: 5, bottom: 0, left: -20 }} barSize={10}>
-                <XAxis dataKey={decisionsView === 'month' ? 'month' : 'week'} tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 9 }} allowDecimals={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="passed" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="sentBack" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="refused" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <CardTitle className="text-xs font-bold">Money in each month</CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 py-0">
-            <ChartContainer config={moneyConfig} className="h-[160px] w-full">
-              <ComposedChart data={moneyData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
-                <defs><linearGradient id="billedGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} /><stop offset="95%" stopColor="#6366f1" stopOpacity={0} /></linearGradient></defs>
-                <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 9 }} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="billed" stroke="#6366f1" fill="url(#billedGrad)" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="collected" stroke="#22c55e" strokeWidth={2} dot={false} />
-              </ComposedChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-        <Card className="border border-border shadow-sm hover:shadow-md hover:border-slate-400 hover:ring-1 hover:ring-slate-400/20 transition-all cursor-pointer">
-          <CardHeader className="px-3 py-0">
-            <CardTitle className="text-xs font-semibold">Investment by sector</CardTitle>
-            <CardDescription className="text-[10px]">Committed rupees, largest first (â‚¹ Cr)</CardDescription>
-          </CardHeader>
-          <CardContent className="px-3 py-0">
-            <ChartContainer config={investmentConfig} className="h-[160px] w-full">
-              <BarChart data={investmentData} margin={{ top: 10, right: 10, bottom: 40, left: 4 }} barSize={12}>
-                <XAxis type="category" dataKey="sector" tickLine={false} axisLine={false} tick={{ fontSize: 8 }} angle={-45} textAnchor="end" interval={0} height={40} />
-                <YAxis type="number" tickLine={false} axisLine={false} tick={{ fontSize: 9 }} width={30} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="amount" radius={[10, 10, 0, 0]}>
-                  {investmentData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={INVESTMENT_COLORS[index % INVESTMENT_COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
