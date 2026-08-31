@@ -636,9 +636,9 @@ export function DocumentationView() {
 
             {activeFilters > 0 && (
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="h-8 text-xs gap-1 text-muted-foreground px-2"
+                className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10"
                 onClick={() => {
                   setStatusFilter('')
                   setCategoryFilter('')

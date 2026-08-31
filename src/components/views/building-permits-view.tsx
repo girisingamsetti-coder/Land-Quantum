@@ -272,7 +272,7 @@ export function BuildingPermitsView() {
                 {['2024', '2023'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
               </SelectContent>
             </Select>
-            {activeFilters > 0 && <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => { setStatus(''); setType(''); setZone(''); setStage(''); setYear(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
+            {activeFilters > 0 && <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10" onClick={() => { setStatus(''); setType(''); setZone(''); setStage(''); setYear(''); setSearch('') }}><X className="h-3.5 w-3.5" /> Clear</Button>}
           </div>
         </div>
       </Card>

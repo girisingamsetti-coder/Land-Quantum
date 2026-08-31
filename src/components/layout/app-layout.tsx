@@ -166,7 +166,7 @@ function GlobalFilterBar({ view, filters, setFilters }: {
                 {filters.dateRange} <button onClick={() => setFilters(p => ({ ...p, dateRange: '' }))}><X className="h-2.5 w-2.5" /></button>
               </Badge>
             )}
-            <Button variant="ghost" size="sm" className="h-6 text-[10px] text-muted-foreground hover:text-destructive shrink-0" onClick={clearFilters}>
+            <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10 shrink-0" onClick={clearFilters}>
               Clear all
             </Button>
           </div>
@@ -194,7 +194,7 @@ function GlobalFilterBar({ view, filters, setFilters }: {
           />
 
           {activeCount > 0 && (
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10" onClick={clearFilters}>
               <X className="h-3 w-3" /> Clear filters ({activeCount})
             </Button>
           )}

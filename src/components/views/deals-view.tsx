@@ -589,7 +589,7 @@ export function DealsView() {
             <Select value={filterDealStatus} onValueChange={(v) => setFilterDealStatus(v)}><SelectTrigger className="w-[125px] h-8 text-xs" data-active={filterDealStatus !== 'All Deal Statuses'} icon={<Handshake className="size-3.5" />}><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
             <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v)}><SelectTrigger className="w-[115px] h-8 text-xs" data-active={filterPriority !== 'All Priorities'} icon={<Flag className="size-3.5" />}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
             {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterDealStatus !== 'All Deal Statuses' || filterPriority !== 'All Priorities') && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
             )}
           </div>
         </div>

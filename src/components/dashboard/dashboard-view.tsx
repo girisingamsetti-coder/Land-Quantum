@@ -1742,7 +1742,7 @@ export function DashboardView() {
             </Select>
 
             {hasFilters && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2 cursor-pointer" onClick={clearFilters}>
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10 cursor-pointer" onClick={clearFilters}>
                 <X className="h-3.5 w-3.5" /> Clear
               </Button>
             )}

@@ -132,7 +132,7 @@ export function ConstructionView() {
               </SelectContent>
             </Select>
             {hasFilters && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10" onClick={resetFilters}>
                 <X className="h-3.5 w-3.5" /> Clear
               </Button>
             )}

@@ -90,7 +90,7 @@ export function PaymentsView() {
               </SelectContent>
             </Select>
             {activeFilters > 0 && (
-              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={() => { setStatus(''); setType(''); setSearch('') }}>
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10" onClick={() => { setStatus(''); setType(''); setSearch('') }}>
                 <X className="h-3.5 w-3.5" /> Clear
               </Button>
             )}

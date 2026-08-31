@@ -60,7 +60,7 @@ function FilterBar({ children, activeCount, onClear }: { children: React.ReactNo
         </div>
         {children}
         {activeCount > 0 && (
-          <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground hover:text-foreground" onClick={onClear}>
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10" onClick={onClear}>
             <X className="h-3 w-3" /> Clear ({activeCount})
           </Button>
         )}

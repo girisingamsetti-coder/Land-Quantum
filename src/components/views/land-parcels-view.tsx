@@ -868,9 +868,9 @@ export function LandParcelsView() {
                 </Select>
                 {(status || zone || landUse || allotmentMode || fsiFar || search) && (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="h-8 text-xs gap-1 text-muted-foreground"
+                    className="h-8 text-xs gap-1 px-2 border-destructive text-destructive hover:bg-destructive/10"
                     onClick={() => {
                       setStatus('')
                       setZone('')
