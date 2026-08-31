@@ -951,7 +951,7 @@ export function GISView() {
       <div className="grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2"><Card className="overflow-hidden"><div className="py-2.5 bg-gradient-to-br from-emerald-50 via-white to-emerald-100 p-6 min-h-[400px]">
           <div className="text-center text-muted-foreground mb-4"><Map className="h-3.5 w-3.5 mx-auto mb-2" /><p className="text-sm font-medium">Land Parcel Map</p><p className="text-xs">Mock GIS Layer — Real GIS via PostGIS/MapLibre</p></div>
-          <div className="grid grid-cols-5 gap-2">{filtered.map((p) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">{filtered.map((p) => (
             <div key={p.id} className="rounded border-2 p-2 hover:shadow-md transition-shadow" style={{ borderColor: colorMap[p.status] || '#9ca3af' }} title={`${p.plotId}\n${p.zone?.name}\n${p.status}`}>
               <div className="h-10 rounded-sm mb-1" style={{ backgroundColor: colorMap[p.status] || '#9ca3af', opacity: 0.6 }} /><p className="text-[7px]  truncate font-medium">{p.plotId.replace('APCRDA-P-', '')}</p><p className="text-[6px] text-muted-foreground">{p.extentAcres}ac · {p.zone?.name}</p>
             </div>))}</div>

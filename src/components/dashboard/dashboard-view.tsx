@@ -760,18 +760,18 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
   return (
     <div>
       <Card>
-        <CardHeader className="px-4 py-2 border-b flex flex-row items-center justify-between space-y-0 overflow-x-auto hide-scrollbar">
-          <div className="flex items-center gap-6">
+        <CardHeader className="px-3 sm:px-4 py-2 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2 space-y-0">
+          <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
             <CardTitle className="text-sm font-bold tracking-tight whitespace-nowrap">Summary Table</CardTitle>
 
             {/* Tabs as Buttons */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               {RECORD_TABS.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(tab.id); resetFilters() }}
                   className={cn(
-                    'flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold whitespace-nowrap rounded-md transition-all',
+                    'flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-[11px] font-semibold whitespace-nowrap rounded-md transition-all',
                     activeTab === tab.id
                       ? 'bg-primary text-primary-foreground shadow-sm outline outline-2 outline-primary outline-offset-[-1px]'
                       : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground hover:outline hover:outline-2 hover:outline-primary/50 hover:outline-offset-[-1px]'
@@ -788,7 +788,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
             </div>
           </div>
 
-          <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 shrink-0" onClick={handleCSV}>
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 shrink-0 self-end sm:self-auto" onClick={handleCSV}>
             <Download className="h-3.5 w-3.5" /> Export CSV
           </Button>
         </CardHeader>
@@ -806,9 +806,9 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   className="pl-8 h-8 text-xs bg-white w-full"
                 />
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0 justify-start sm:justify-end">
                 <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
+                  <SelectTrigger className="w-[115px] sm:w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -816,7 +816,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   </SelectContent>
                 </Select>
                 <Select value={stage} onValueChange={setStage}>
-                  <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
+                  <SelectTrigger className="w-[120px] sm:w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
                     <SelectValue placeholder="Stage" />
                   </SelectTrigger>
                   <SelectContent>
@@ -824,7 +824,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   </SelectContent>
                 </Select>
                 <Select value={sector} onValueChange={setSector}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={sector !== 'All' && sector !== 'All Sectors'}>
+                  <SelectTrigger className="w-[130px] sm:w-[140px] h-8 text-xs bg-white" data-active={sector !== 'All' && sector !== 'All Sectors'}>
                     <SelectValue placeholder="Sector" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1538,37 +1538,45 @@ export function DashboardView() {
   return (
     <div className="flex flex-col gap-2.5">
       {/* Header */}
-      <div className="flex items-center justify-between shrink-0 px-5 py-1 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
-        <div>
-          <h1 className="text-[15px] font-bold text-slate-800 flex items-center gap-1">
-            Good Afternoon <span className="text-sm">👋</span>
-          </h1>
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1 font-medium">
-            <Calendar className="h-3 w-3 text-slate-400" />
-            <span>Saturday, 22 August 2026</span>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 shrink-0 px-3 sm:px-5 py-2.5 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
+        <div className="flex items-center justify-between sm:justify-start gap-3">
+          <div>
+            <h1 className="text-sm sm:text-[15px] font-bold text-slate-800 flex items-center gap-1">
+              Good Afternoon <span className="text-sm">👋</span>
+            </h1>
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 mt-0.5 font-medium">
+              <Calendar className="h-3 w-3 text-slate-400" />
+              <span>Saturday, 22 August 2026</span>
+            </div>
           </div>
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="lg:hidden h-7 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-2.5 font-medium rounded-full ml-auto">
+              Clear filters
+            </Button>
+          )}
         </div>
 
         {/* Modern Filters */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-3 font-medium rounded-full">
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="hidden lg:inline-flex h-8 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-3 font-medium rounded-full">
               Clear
             </Button>
           )}
 
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial min-w-[140px]">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
               placeholder="Search dashboard..."
-              className="pl-8 pr-3 h-8 w-40 xl:w-48 rounded-full border border-slate-200 bg-white text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-400 shadow-sm transition-all"
+              className="pl-8 pr-3 h-8 w-full sm:w-40 xl:w-48 rounded-full border border-slate-200 bg-white text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-400 shadow-sm transition-all"
             />
           </div>
 
-          <div className={cn("relative flex items-center gap-2 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.date ? "border-primary/30" : "border-slate-200")}>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.date ? "border-primary/30" : "border-slate-200")}>
             <Calendar className={cn("h-3.5 w-3.5", filters.date ? 'text-primary' : 'text-teal-600')} />
             <span className={cn("font-semibold", filters.date ? 'text-primary' : 'text-slate-600')}>{filters.date || 'Date'}</span>
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
             <select value={filters.date} onChange={e => setFilters(f => ({ ...f, date: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               <option value="">All Dates</option>
               <option value="Today">Today</option>
@@ -1576,20 +1584,20 @@ export function DashboardView() {
               <option value="This Month">This Month</option>
             </select>
           </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.parcel ? "border-primary/30" : "border-slate-200")}>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.parcel ? "border-primary/30" : "border-slate-200")}>
             <LandPlot className={cn("h-3.5 w-3.5", filters.parcel ? 'text-primary' : 'text-teal-600')} />
             <span className={cn("font-semibold", filters.parcel ? 'text-primary' : 'text-slate-600')}>{filters.parcel || 'All Parcels'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
             <select value={filters.parcel} onChange={e => setFilters(f => ({ ...f, parcel: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               <option value="">All Parcels</option>
               <option value="Available">Available</option>
               <option value="Allotted">Allotted</option>
             </select>
           </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.app ? "border-primary/30" : "border-slate-200")}>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.app ? "border-primary/30" : "border-slate-200")}>
             <FileText className={cn("h-3.5 w-3.5", filters.app ? 'text-primary' : 'text-teal-600')} />
             <span className={cn("font-semibold", filters.app ? 'text-primary' : 'text-slate-600')}>{filters.app || 'All Applications'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
             <select value={filters.app} onChange={e => setFilters(f => ({ ...f, app: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               <option value="">All Applications</option>
               <option value="Pending">Pending</option>
@@ -1597,10 +1605,10 @@ export function DashboardView() {
               <option value="Rejected">Rejected</option>
             </select>
           </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.stage ? "border-primary/30" : "border-slate-200")}>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.stage ? "border-primary/30" : "border-slate-200")}>
             <LayoutList className={cn("h-3.5 w-3.5", filters.stage ? 'text-primary' : 'text-teal-600')} />
             <span className={cn("font-semibold", filters.stage ? 'text-primary' : 'text-slate-600')}>{filters.stage || 'All Stages'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
             <select value={filters.stage} onChange={e => setFilters(f => ({ ...f, stage: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               <option value="">All Stages</option>
               <option value="Intake">Intake</option>
@@ -1608,20 +1616,20 @@ export function DashboardView() {
               <option value="Govt Approval">Govt Approval</option>
             </select>
           </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.project ? "border-primary/30" : "border-slate-200")}>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.project ? "border-primary/30" : "border-slate-200")}>
             <HardHat className={cn("h-3.5 w-3.5", filters.project ? 'text-primary' : 'text-teal-600')} />
             <span className={cn("font-semibold", filters.project ? 'text-primary' : 'text-slate-600')}>{filters.project || 'All Projects'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
             <select value={filters.project} onChange={e => setFilters(f => ({ ...f, project: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               <option value="">All Projects</option>
               <option value="Active">Active</option>
               <option value="Completed">Completed</option>
             </select>
           </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.sector ? "border-primary/30" : "border-slate-200")}>
+          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.sector ? "border-primary/30" : "border-slate-200")}>
             <Building2 className={cn("h-3.5 w-3.5", filters.sector ? 'text-primary' : 'text-teal-600')} />
             <span className={cn("font-semibold", filters.sector ? 'text-primary' : 'text-slate-600')}>{filters.sector || 'All Sectors'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-1" />
+            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
             <select value={filters.sector} onChange={e => setFilters(f => ({ ...f, sector: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
               <option value="">All Sectors</option>
               <option value="Commercial">Commercial</option>

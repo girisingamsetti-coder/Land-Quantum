@@ -228,22 +228,14 @@ function SidebarRailWithTrigger() {
   )
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
-
+function AppLayoutInner({ children }: AppLayoutProps) {
   const { user, logout, meta } = useAuthStore()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const [view, setView] = useState<View>('dashboard')
-  const [viewParams, setViewParams] = useState<Record<string, string>>({})
-  const [unreadNotifications, setUnreadNotifications] = useState(meta?.unreadNotifications ?? 0)
+  const { view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications, globalFilters, setGlobalFilters } = useAppLayout()
+  const { isMobile, setOpenMobile } = useSidebar()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [notifOpen, setNotifOpen] = useState(false)
-  const [globalFilters, setGlobalFilters] = useState<GlobalFilters>({ zone: '', status: '', dateRange: '' })
-
-  const navigateTo = (v: View, params?: Record<string, string>) => {
-    setView(v)
-    if (params) setViewParams(params)
-  }
 
   const initials = user?.name
     ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
@@ -291,182 +283,317 @@ export function AppLayout({ children }: AppLayoutProps) {
     return `${Math.floor(hrs / 24)}d ago`
   }
 
+  const handleSelectView = (v: View) => {
+    setView(v)
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
+  const currentViewLabel = navItems.find(i => i.view === view)?.label || (view === 'application-detail' ? 'Application Detail' : view)
+
+  return (
+    <>
+      <Sidebar collapsible="icon" className="border-r border-border bg-sidebar">
+        {/* Logo Header */}
+        <SidebarHeader className="px-3 pt-4 pb-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" className="gap-3 rounded-lg" onClick={() => handleSelectView('dashboard')}>
+                <Image
+                  src="/logo.png"
+                  alt="Land Quantum"
+                  width={32}
+                  height={32}
+                  className="rounded-md shrink-0"
+                />
+                <div className="flex flex-col gap-0.5 leading-none overflow-hidden">
+                  <span className="text-sm font-semibold tracking-tight">Land Quantum</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">Management Portal</span>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarSeparator className="mx-3" />
+
+        {/* Flat Nav List */}
+        <SidebarContent className="px-2 py-1">
+          <SidebarMenu>
+            {navItems.map((item) => {
+              const isActive = view === item.view ||
+                (view === 'application-detail' && item.view === 'applications')
+              const IconComp = item.icon
+              return (
+                <SidebarMenuItem key={item.view}>
+                  <SidebarMenuButton
+                    isActive={isActive}
+                    tooltip={item.label}
+                    onClick={() => handleSelectView(item.view)}
+                    className="rounded-md"
+                  >
+                    {IconComp && <IconComp className="size-4" />}
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+        </SidebarContent>
+
+        {/* Footer - Single Row: Notification, Dark Mode, Profile */}
+        <SidebarFooter className="p-2 pt-1 gap-1">
+          <SidebarSeparator className="mx-1 mb-1" />
+          <div className="flex items-center justify-center gap-2 w-full py-1 px-1 bg-muted/30 border border-border/50 rounded-lg group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-1.5 group-data-[collapsible=icon]:p-1">
+            {/* Notification Bell Icon */}
+            <Popover open={notifOpen} onOpenChange={setNotifOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative h-8 w-8 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer text-muted-foreground hover:text-foreground"
+                  title="Notifications"
+                >
+                  <Bell className="size-4" />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-primary-foreground">
+                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                    </span>
+                  )}
+                  <span className="sr-only">Notifications</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="right" align="end" className="w-80 p-0">
+                <div className="flex items-center justify-between px-4 py-3 border-b">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold">Notifications</h3>
+                    {unreadNotifications > 0 && (
+                      <Badge className="text-[10px] h-5 px-1.5">{unreadNotifications} new</Badge>
+                    )}
+                  </div>
+                  {unreadNotifications > 0 && (
+                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={markAllRead}>
+                      Mark all read
+                    </Button>
+                  )}
+                </div>
+                <ScrollArea className="max-h-[320px]">
+                  {notifications.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <Bell className="h-6 w-6 mx-auto text-muted-foreground/50" />
+                      <p className="text-xs text-muted-foreground mt-2">No notifications</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y">
+                      {notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer ${!n.isRead ? 'bg-primary/[0.03]' : ''}`}
+                        >
+                          <div className="mt-0.5 rounded-full bg-muted p-1.5 shrink-0">
+                            {notifIcon(n.type)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className={`text-xs leading-snug ${!n.isRead ? 'font-medium' : 'text-muted-foreground'}`}>{n.title}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
+                            <p className="text-[10px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</p>
+                          </div>
+                          {!n.isRead && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0" />}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
+
+            {/* Dark Mode Toggle Icon */}
+            {mounted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer text-muted-foreground hover:text-foreground"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {theme === 'dark' ? <Sun className="size-4 text-amber-500" /> : <Moon className="size-4" />}
+                <span className="sr-only">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+              </Button>
+            )}
+
+            {/* Profile Dropdown Icon */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer p-0"
+                  title={user?.name || 'Profile'}
+                >
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="text-[10px] font-semibold bg-primary/15 text-primary">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">Profile</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="end" className="w-52">
+                <div className="px-2.5 py-2 flex items-center gap-3">
+                  <Avatar className="h-9 w-9 shrink-0">
+                    <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                    {user?.designation && (
+                      <Badge variant="secondary" className="mt-1 text-[10px] font-medium">{user.designation}</Badge>
+                    )}
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  <UserCircle className="mr-2 h-4 w-4" /> Edit Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Calendar className="mr-2 h-4 w-4" /> Calendar
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" /> Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </SidebarFooter>
+        {/* Invisible rail — collapse button is on the separator instead */}
+        <SidebarRailWithTrigger />
+      </Sidebar>
+
+      <SidebarInset className="min-w-0 w-full flex flex-col flex-1">
+        {/* Mobile Top Header (Visible only on screens < md) */}
+        <header className="md:hidden flex items-center justify-between px-3 py-2 border-b bg-card/90 backdrop-blur-md sticky top-0 z-30 shrink-0 shadow-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <SidebarTrigger className="h-8 w-8 text-foreground" />
+            <button
+              onClick={() => handleSelectView('dashboard')}
+              className="flex items-center gap-2 text-left cursor-pointer focus:outline-none"
+            >
+              <Image
+                src="/logo.png"
+                alt="Land Quantum"
+                width={26}
+                height={26}
+                className="rounded-md shrink-0"
+              />
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold tracking-tight text-foreground truncate">Land Quantum</span>
+                <span className="text-[10px] text-primary font-medium truncate leading-tight">{currentViewLabel}</span>
+              </div>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Mobile Notification Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 relative text-foreground">
+                  <Bell className="size-4" />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute top-1 right-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-primary-foreground">
+                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="bottom" align="end" className="w-72 p-0">
+                <div className="flex items-center justify-between px-3 py-2 border-b">
+                  <h3 className="text-xs font-semibold">Notifications</h3>
+                  {unreadNotifications > 0 && (
+                    <Button variant="ghost" size="sm" className="h-6 text-[11px] px-1.5" onClick={markAllRead}>
+                      Mark read
+                    </Button>
+                  )}
+                </div>
+                <ScrollArea className="max-h-[260px]">
+                  {notifications.length === 0 ? (
+                    <div className="py-6 text-center">
+                      <p className="text-xs text-muted-foreground">No notifications</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y">
+                      {notifications.map((n) => (
+                        <div key={n.id} className="p-2.5 text-xs hover:bg-muted/50">
+                          <p className="font-medium text-[11px]">{n.title}</p>
+                          <p className="text-[10px] text-muted-foreground line-clamp-2">{n.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
+
+            {/* Mobile Dark Mode Toggle */}
+            {mounted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-foreground"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              >
+                {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+              </Button>
+            )}
+
+            {/* Mobile Profile Avatar */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full p-0">
+                  <Avatar className="h-7 w-7">
+                    <AvatarFallback className="text-[10px] font-semibold bg-primary/15 text-primary">{initials}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <div className="px-2.5 py-1.5 border-b">
+                  <p className="text-xs font-semibold truncate">{user?.name}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+                </div>
+                <DropdownMenuItem onClick={logout} className="text-destructive text-xs cursor-pointer">
+                  <LogOut className="mr-2 h-3.5 w-3.5" /> Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto p-2.5 sm:p-3 sm:pl-3.5 bg-muted/30 flex flex-col">
+          {children}
+        </div>
+      </SidebarInset>
+    </>
+  )
+}
+
+export function AppLayout({ children }: AppLayoutProps) {
+  const { meta } = useAuthStore()
+  const [view, setView] = useState<View>('dashboard')
+  const [viewParams, setViewParams] = useState<Record<string, string>>({})
+  const [unreadNotifications, setUnreadNotifications] = useState(meta?.unreadNotifications ?? 0)
+  const [globalFilters, setGlobalFilters] = useState<GlobalFilters>({ zone: '', status: '', dateRange: '' })
+
+  const navigateTo = (v: View, params?: Record<string, string>) => {
+    setView(v)
+    if (params) setViewParams(params)
+  }
+
   return (
     <LayoutContext.Provider value={{ view, setView, viewParams, setViewParams, navigateTo, unreadNotifications, setUnreadNotifications, globalFilters, setGlobalFilters }}>
       <SidebarProvider>
-        <Sidebar collapsible="icon" className="border-r border-border bg-sidebar">
-          {/* Logo Header */}
-          <SidebarHeader className="px-3 pt-4 pb-2">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="gap-3 rounded-lg">
-                  <Image
-                    src="/logo.png"
-                    alt="Land Quantum"
-                    width={32}
-                    height={32}
-                    className="rounded-md shrink-0"
-                  />
-                  <div className="flex flex-col gap-0.5 leading-none overflow-hidden">
-                    <span className="text-sm font-semibold tracking-tight">Land Quantum</span>
-                    <span className="text-[11px] text-muted-foreground font-normal">Management Portal</span>
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-          <SidebarSeparator className="mx-3" />
-
-          {/* Flat Nav List */}
-          <SidebarContent className="px-2 py-1">
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const isActive = view === item.view ||
-                  (view === 'application-detail' && item.view === 'applications')
-                const IconComp = item.icon
-                return (
-                  <SidebarMenuItem key={item.view}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      tooltip={item.label}
-                      onClick={() => setView(item.view)}
-                      className="rounded-md"
-                    >
-                      {IconComp && <IconComp className="size-4" />}
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarContent>
-
-          {/* Footer - Notification, Dark Mode, Profile */}
-          <SidebarFooter className="gap-0.5">
-            <SidebarSeparator />
-            <SidebarMenu>
-              {/* Notification Bell */}
-              <SidebarMenuItem>
-                <Popover open={notifOpen} onOpenChange={setNotifOpen}>
-                  <PopoverTrigger asChild>
-                    <SidebarMenuButton tooltip="Notifications">
-                      <div className="relative">
-                        <Bell className="size-4" />
-                        {unreadNotifications > 0 && (
-                          <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-primary-foreground">
-                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                          </span>
-                        )}
-                      </div>
-                      <span>Notifications</span>
-                    </SidebarMenuButton>
-                  </PopoverTrigger>
-                  <PopoverContent side="right" align="start" className="w-80 p-0">
-                    <div className="flex items-center justify-between px-4 py-3 border-b">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold">Notifications</h3>
-                        {unreadNotifications > 0 && (
-                          <Badge className="text-[10px] h-5 px-1.5">{unreadNotifications} new</Badge>
-                        )}
-                      </div>
-                      {unreadNotifications > 0 && (
-                        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={markAllRead}>
-                          Mark all read
-                        </Button>
-                      )}
-                    </div>
-                    <ScrollArea className="max-h-[320px]">
-                      {notifications.length === 0 ? (
-                        <div className="py-8 text-center">
-                          <Bell className="h-6 w-6 mx-auto text-muted-foreground/50" />
-                          <p className="text-xs text-muted-foreground mt-2">No notifications</p>
-                        </div>
-                      ) : (
-                        <div className="divide-y">
-                          {notifications.map((n) => (
-                            <div
-                              key={n.id}
-                              className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer ${!n.isRead ? 'bg-primary/[0.03]' : ''}`}
-                            >
-                              <div className="mt-0.5 rounded-full bg-muted p-1.5 shrink-0">
-                                {notifIcon(n.type)}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className={`text-xs leading-snug ${!n.isRead ? 'font-medium' : 'text-muted-foreground'}`}>{n.title}</p>
-                                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{n.message}</p>
-                                <p className="text-[10px] text-muted-foreground/70 mt-1">{timeAgo(n.createdAt)}</p>
-                              </div>
-                              {!n.isRead && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary shrink-0" />}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </ScrollArea>
-                  </PopoverContent>
-                </Popover>
-              </SidebarMenuItem>
-
-              {/* Dark Mode Toggle */}
-              {mounted && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    tooltip={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  >
-                    {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
-                    <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
-
-              {/* Profile Dropdown */}
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton tooltip="Profile">
-                      <UserCircle className="size-4" />
-                      <span>{user?.name}</span>
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start" className="w-52">
-                    <div className="px-2.5 py-2 flex items-center gap-3">
-                      <Avatar className="h-9 w-9 shrink-0">
-                        <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">{initials}</AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium">{user?.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                        {user?.designation && (
-                          <Badge variant="secondary" className="mt-1 text-[10px] font-medium">{user.designation}</Badge>
-                        )}
-                      </div>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer">
-                      <UserCircle className="mr-2 h-4 w-4" /> Edit Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Calendar className="mr-2 h-4 w-4" /> Calendar
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
-                      <LogOut className="mr-2 h-4 w-4" /> Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-          {/* Invisible rail — collapse button is on the separator instead */}
-          <SidebarRailWithTrigger />
-        </Sidebar>
-
-        <SidebarInset className="min-w-0 w-full">
-          {/* Main Content */}
-          <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto p-3 pl-3.5 bg-muted/30 flex flex-col">
-            {children}
-          </div>
-        </SidebarInset>
+        <AppLayoutInner>{children}</AppLayoutInner>
       </SidebarProvider>
     </LayoutContext.Provider>
   )

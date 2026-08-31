@@ -556,86 +556,88 @@ export function ApplicationDetail() {
         <Card>
           <CardHeader className="py-1.5 px-3 pb-0 border-none"><CardTitle className="text-base font-semibold leading-none">Workflow Progress</CardTitle></CardHeader>
           <CardContent className="pt-0 pb-1.5 px-3">
-            <div className="flex items-end w-full">
-              {app.stages
-                .slice()
-                .sort((a, b) => a.stageOrder - b.stageOrder)
-                .map((stage, idx, arr) => {
-                  const isCompleted = stage.status === 'Completed'
-                  const isCurrent = stage.stageName === app.currentStage
-                  const isRejected = stage.status === 'Rejected'
-                  const isReturned = stage.status === 'Returned'
-                  const isLast = idx === arr.length - 1
+            <div className="overflow-x-auto w-full pb-1 scrollbar-none">
+              <div className="flex items-end min-w-[760px] w-full">
+                {app.stages
+                  .slice()
+                  .sort((a, b) => a.stageOrder - b.stageOrder)
+                  .map((stage, idx, arr) => {
+                    const isCompleted = stage.status === 'Completed'
+                    const isCurrent = stage.stageName === app.currentStage
+                    const isRejected = stage.status === 'Rejected'
+                    const isReturned = stage.status === 'Returned'
+                    const isLast = idx === arr.length - 1
 
-                  const completedDate = stage.completedAt
-                    ? new Date(stage.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
-                    : null
+                    const completedDate = stage.completedAt
+                      ? new Date(stage.completedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                      : null
 
-                  return (
-                    <div key={stage.id} className="flex items-end" style={{ flex: isLast ? '0 0 auto' : '1 1 0', minWidth: 0 }}>
-                      {/* Stage node */}
-                      <div className="flex flex-col items-center justify-end shrink-0" style={{ width: 44 }}>
-                        {/* Stage label */}
-                        <span className={[
-                          'mb-1 leading-tight block text-center w-full',
-                          'text-[8.5px]',
-                          isCompleted
-                            ? 'text-emerald-700 font-medium'
-                            : isCurrent
-                              ? 'text-[#7c1d2e] font-bold'
-                              : isRejected
-                                ? 'text-red-500'
-                                : 'text-gray-400',
-                        ].join(' ')}>
-                          {stage.stageName}
-                        </span>
+                    return (
+                      <div key={stage.id} className="flex items-end" style={{ flex: isLast ? '0 0 auto' : '1 1 0', minWidth: 0 }}>
+                        {/* Stage node */}
+                        <div className="flex flex-col items-center justify-end shrink-0" style={{ width: 44 }}>
+                          {/* Stage label */}
+                          <span className={[
+                            'mb-1 leading-tight block text-center w-full',
+                            'text-[8.5px]',
+                            isCompleted
+                              ? 'text-emerald-700 font-medium'
+                              : isCurrent
+                                ? 'text-[#7c1d2e] font-bold'
+                                : isRejected
+                                  ? 'text-red-500'
+                                  : 'text-gray-400',
+                          ].join(' ')}>
+                            {stage.stageName}
+                          </span>
 
-                        {/* Date / status sub-label */}
-                        {completedDate && (
-                          <span className="mb-1 text-[7.5px] text-muted-foreground text-center block w-full">{completedDate}</span>
-                        )}
-                        {isCurrent && (
-                          <span className="mb-1 text-[7.5px] text-[#7c1d2e]/70 font-semibold text-center block w-full">Active</span>
-                        )}
-
-                        {/* Circle */}
-                        <div className={[
-                          'w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all',
-                          isCompleted
-                            ? 'bg-emerald-500 border-emerald-500 text-white'
-                            : isRejected
-                              ? 'bg-red-100 border-red-400 text-red-600'
-                              : isReturned
-                                ? 'bg-orange-100 border-orange-400 text-orange-600'
-                                : isCurrent
-                                  ? 'bg-[#7c1d2e] border-[#7c1d2e] text-white shadow-md'
-                                  : 'bg-background border-dashed border-gray-300 text-gray-300',
-                        ].join(' ')}>
-                          {isCompleted ? (
-                            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          ) : isRejected ? (
-                            <XCircle className="h-3 w-3" />
-                          ) : isReturned ? (
-                            <RotateCcw className="h-3 w-3" />
-                          ) : isCurrent ? (
-                            <MapPin className="h-3 w-3" />
-                          ) : (
-                            <Circle className="h-3 w-3" />
+                          {/* Date / status sub-label */}
+                          {completedDate && (
+                            <span className="mb-1 text-[7.5px] text-muted-foreground text-center block w-full">{completedDate}</span>
                           )}
-                        </div>
-                      </div>
+                          {isCurrent && (
+                            <span className="mb-1 text-[7.5px] text-[#7c1d2e]/70 font-semibold text-center block w-full">Active</span>
+                          )}
 
-                      {/* Flex-growing connector line */}
-                      {!isLast && (
-                        <div
-                          className={['flex-1 mb-[13px] h-[2px] min-w-[4px]', isCompleted ? 'bg-emerald-400' : 'bg-gray-200'].join(' ')}
-                        />
-                      )}
-                    </div>
-                  )
-                })}
+                          {/* Circle */}
+                          <div className={[
+                            'w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all',
+                            isCompleted
+                              ? 'bg-emerald-500 border-emerald-500 text-white'
+                              : isRejected
+                                ? 'bg-red-100 border-red-400 text-red-600'
+                                : isReturned
+                                  ? 'bg-orange-100 border-orange-400 text-orange-600'
+                                  : isCurrent
+                                    ? 'bg-[#7c1d2e] border-[#7c1d2e] text-white shadow-md'
+                                    : 'bg-background border-dashed border-gray-300 text-gray-300',
+                          ].join(' ')}>
+                            {isCompleted ? (
+                              <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : isRejected ? (
+                              <XCircle className="h-3 w-3" />
+                            ) : isReturned ? (
+                              <RotateCcw className="h-3 w-3" />
+                            ) : isCurrent ? (
+                              <MapPin className="h-3 w-3" />
+                            ) : (
+                              <Circle className="h-3 w-3" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Flex-growing connector line */}
+                        {!isLast && (
+                          <div
+                            className={['flex-1 mb-[13px] h-[2px] min-w-[4px]', isCompleted ? 'bg-emerald-400' : 'bg-gray-200'].join(' ')}
+                          />
+                        )}
+                      </div>
+                    )
+                  })}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -645,7 +647,7 @@ export function ApplicationDetail() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         {/* Grouped Tab Navigation (Single row, centered) */}
         <div className="rounded-xl border bg-card shadow-sm overflow-hidden w-full">
-          <div className="flex items-stretch justify-center w-full overflow-x-auto scrollbar-hide">
+          <div className="flex items-stretch justify-start sm:justify-center w-full overflow-x-auto scrollbar-none">
             {([
               {
                 label: 'General',

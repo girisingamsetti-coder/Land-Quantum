@@ -121,18 +121,18 @@ export function ApplicationsModule() {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
-        <TabsList className="flex items-center gap-2 bg-transparent p-0 w-full justify-start border-b pb-1.5 mb-2.5 rounded-none h-auto">
-          <TabsTrigger value="all" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <LayoutGrid className="w-4 h-4 mr-2 text-blue-500" /> <b>All Applications</b>
+        <TabsList className="flex items-center gap-1.5 sm:gap-2 bg-transparent p-0 w-full justify-start border-b pb-1.5 mb-2.5 rounded-none h-auto overflow-x-auto scrollbar-none flex-nowrap">
+          <TabsTrigger value="all" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-blue-500 shrink-0" /> <span>All Applications</span>
           </TabsTrigger>
-          <TabsTrigger value="queue" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <Inbox className="w-4 h-4 mr-2 text-emerald-500" /> <b>Work Queue</b>
+          <TabsTrigger value="queue" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <Inbox className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-emerald-500 shrink-0" /> <span>Work Queue</span>
           </TabsTrigger>
-          <TabsTrigger value="kanban" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <Kanban className="w-4 h-4 mr-2 text-amber-500" /> <b>Stage View</b>
+          <TabsTrigger value="kanban" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <Kanban className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-amber-500 shrink-0" /> <span>Stage View</span>
           </TabsTrigger>
-          <TabsTrigger value="cancellations" className="border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-4 py-1.5 text-sm font-bold h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
-            <Ban className="w-4 h-4 mr-2 text-purple-500" /> <b>Cancellations</b>
+          <TabsTrigger value="cancellations" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+            <Ban className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-purple-500 shrink-0" /> <span>Cancellations</span>
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 flex flex-col min-h-0 mt-0">

@@ -166,3 +166,11 @@
     font-family: var(--font-sans), sans-serif !important;
   }
 }
+
+@utility scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  &::-webkit-scrollbar {
+    display: none !important;
+  }
+}

@@ -503,12 +503,12 @@ export function LandParcelsView() {
               />
 
               {/* 1. TOP-LEFT: IN-MAP QUICK JUMP PILLS & RESET BUTTON */}
-              <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-1.5 max-w-[80%] sm:max-w-none">
+              <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 max-w-[calc(100%-20px)] sm:max-w-none overflow-x-auto py-1 scrollbar-none">
                 <Button
                   size="sm"
                   variant={activeLandmark === null ? 'default' : 'outline'}
                   className={cn(
-                    'h-7 text-[11px] font-semibold backdrop-blur-md shadow-lg',
+                    'h-7 text-[10px] sm:text-[11px] font-semibold backdrop-blur-md shadow-lg shrink-0',
                     activeLandmark === null
                       ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
                       : 'bg-slate-900/90 text-slate-200 border-slate-700 hover:bg-slate-800'
@@ -526,7 +526,7 @@ export function LandParcelsView() {
                       size="sm"
                       variant={isSelected ? 'default' : 'outline'}
                       className={cn(
-                        'h-7 text-[11px] font-medium backdrop-blur-md shadow-lg transition-all',
+                        'h-7 text-[10px] sm:text-[11px] font-medium backdrop-blur-md shadow-lg transition-all shrink-0',
                         isSelected
                           ? 'bg-blue-600 hover:bg-blue-500 text-white'
                           : 'bg-slate-900/90 text-slate-200 border-slate-700 hover:bg-slate-800'
@@ -542,7 +542,7 @@ export function LandParcelsView() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-7 text-[11px] bg-slate-900/90 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white backdrop-blur-md gap-1"
+                    className="h-7 text-[10px] sm:text-[11px] bg-slate-900/90 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white backdrop-blur-md gap-1 shrink-0"
                     onClick={() => {
                       setActiveLandmark(null)
                       setMapKey(k => k + 1)

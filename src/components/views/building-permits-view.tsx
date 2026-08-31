@@ -279,19 +279,19 @@ export function BuildingPermitsView() {
 
       {/* Main Stage View Area */}
       <Card className="overflow-hidden border-2">
-        <CardContent className="h-[480px] overflow-auto p-2 bg-muted/5">
-          {/* 6 column grid to meet requirements (12 items visible = 6 cols x 2 rows) */}
-          <div className="grid grid-cols-6 gap-2 items-stretch min-w-[1000px]">
+        <CardContent className="max-h-[540px] overflow-auto p-2 bg-muted/5">
+          {/* Responsive column grid (1 col mobile, 2 cols sm, 3 cols md, 6 cols lg) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 items-stretch">
           {filtered.map((p) => (
             <Card 
               key={p.id} 
               className={cn(
-                "cursor-pointer hover:border-primary/60 transition-all flex flex-col justify-between h-full min-h-[190px] shadow-sm hover:shadow-md",
+                "cursor-pointer hover:border-primary/60 transition-all flex flex-col justify-between h-full min-h-[180px] shadow-sm hover:shadow-md",
                 selectedPermit?.id === p.id ? "border-primary ring-1 ring-primary/20 shadow-md bg-primary/[0.02]" : "border-border/60"
               )}
               onClick={() => setSelectedPermit(p)}
             >
-              <CardHeader className="p-4 pb-2">
+              <CardHeader className="p-3 sm:p-4 pb-2">
                 <div className="flex justify-between items-start mb-2">
                   <Badge variant="outline" className={cn('text-[10px] font-semibold border', 
                     p.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
@@ -305,13 +305,13 @@ export function BuildingPermitsView() {
                 <CardTitle className="text-sm font-bold line-clamp-2 leading-tight" title={p.applicant}>{p.applicant}</CardTitle>
                 <div className="text-xs  text-muted-foreground mt-1">{p.id}</div>
               </CardHeader>
-              <CardContent className="p-4 pt-0 text-xs text-muted-foreground flex-1 flex flex-col justify-end">
+              <CardContent className="p-3 sm:p-4 pt-0 text-xs text-muted-foreground flex-1 flex flex-col justify-end">
                 <div className="flex items-center gap-1.5 mt-2 text-foreground/80">
-                  <Building2 className="h-3.5 w-3.5" />
+                  <Building2 className="h-3.5 w-3.5 shrink-0" />
                   <span className="truncate">{p.type}</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-1.5 text-foreground/80">
-                  <MapPin className="h-3.5 w-3.5" />
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
                   <span className="truncate">{p.zone}</span>
                 </div>
               </CardContent>
