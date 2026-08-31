@@ -14,6 +14,7 @@ import {
   Briefcase, Handshake, CheckCircle2, Clock, Target,
   FileSignature, BadgeCheck, Ban, Building2, Users,
   X, ChevronLeft, ChevronRight,
+  LayoutGrid, Layers, Flag, Tag
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppLayout } from '@/components/layout/app-layout'
@@ -228,18 +229,18 @@ const MOCK_DEALS: Deal[] = [
 // ─── Stage Config ─────────────────────────────────────────────────────────
 
 const STAGE_CONFIG: Record<DealStage, { color: string; bg: string; border: string; icon: React.ElementType }> = {
-  'Prospect': { color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200', icon: Target },
-  'Negotiation': { color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200', icon: Briefcase },
-  'MOU Signed': { color: 'text-violet-700', bg: 'bg-violet-50', border: 'border-violet-200', icon: FileSignature },
-  'Agreement': { color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200', icon: Handshake },
-  'Closed': { color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: BadgeCheck },
-  'Lost': { color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200', icon: Ban },
+  'Prospect': { color: 'text-blue-700 dark:text-blue-300', bg: 'bg-blue-50 dark:bg-blue-950/40', border: 'border-blue-200 dark:border-blue-800/60', icon: Target },
+  'Negotiation': { color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 dark:bg-amber-950/40', border: 'border-amber-200 dark:border-amber-800/60', icon: Briefcase },
+  'MOU Signed': { color: 'text-violet-700 dark:text-violet-300', bg: 'bg-violet-50 dark:bg-violet-950/40', border: 'border-violet-200 dark:border-violet-800/60', icon: FileSignature },
+  'Agreement': { color: 'text-orange-700 dark:text-orange-300', bg: 'bg-orange-50 dark:bg-orange-950/40', border: 'border-orange-200 dark:border-orange-800/60', icon: Handshake },
+  'Closed': { color: 'text-emerald-700 dark:text-emerald-300', bg: 'bg-emerald-50 dark:bg-emerald-950/40', border: 'border-emerald-200 dark:border-emerald-800/60', icon: BadgeCheck },
+  'Lost': { color: 'text-red-700 dark:text-red-300', bg: 'bg-red-50 dark:bg-red-950/40', border: 'border-red-200 dark:border-red-800/60', icon: Ban },
 }
 
 const PRIORITY_CONFIG: Record<DealPriority, string> = {
-  High: 'bg-red-100 text-red-700 border-red-200',
-  Medium: 'bg-amber-100 text-amber-700 border-amber-200',
-  Low: 'bg-slate-100 text-slate-600 border-slate-200',
+  High: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60',
+  Medium: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60',
+  Low: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
 }
 
 const STAGES: DealStage[] = ['Prospect', 'Negotiation', 'MOU Signed', 'Agreement', 'Closed', 'Lost']
@@ -548,12 +549,12 @@ export function DealsView() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {[
-          { label: 'Total Deals', value: totalDeals, sub: `${activeCount} active`, icon: Briefcase, color: 'bg-indigo-500', bgClass: 'bg-gradient-to-r from-indigo-50 to-white/50' },
-          { label: 'Pipeline Value', value: `₹${fmt(totalPipeline)} Cr`, sub: 'Excl. closed & lost', icon: TrendingUp, color: 'bg-violet-500', bgClass: 'bg-gradient-to-r from-violet-50 to-white/50' },
-          { label: 'Weighted Forecast', value: `₹${fmt(Math.round(weightedValue))} Cr`, sub: 'Probability-adjusted', icon: Target, color: 'bg-blue-500', bgClass: 'bg-gradient-to-r from-blue-50 to-white/50' },
-          { label: 'Deals Closed', value: closedCount, sub: `₹${fmt(closedValue)} Cr won`, icon: CheckCircle2, color: 'bg-emerald-500', bgClass: 'bg-gradient-to-r from-emerald-50 to-white/50' },
+          { label: 'Total Deals', value: totalDeals, sub: `${activeCount} active`, icon: Briefcase, color: 'bg-indigo-500', bgClass: 'bg-gradient-to-r from-indigo-50 to-white/50 dark:from-indigo-950/30 dark:to-card/60' },
+          { label: 'Pipeline Value', value: `₹${fmt(totalPipeline)} Cr`, sub: 'Excl. closed & lost', icon: TrendingUp, color: 'bg-violet-500', bgClass: 'bg-gradient-to-r from-violet-50 to-white/50 dark:from-violet-950/30 dark:to-card/60' },
+          { label: 'Weighted Forecast', value: `₹${fmt(Math.round(weightedValue))} Cr`, sub: 'Probability-adjusted', icon: Target, color: 'bg-blue-500', bgClass: 'bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60' },
+          { label: 'Deals Closed', value: closedCount, sub: `₹${fmt(closedValue)} Cr won`, icon: CheckCircle2, color: 'bg-emerald-500', bgClass: 'bg-gradient-to-r from-emerald-50 to-white/50 dark:from-emerald-950/30 dark:to-card/60' },
         ].map(s => (
-          <Card key={s.label} className={cn("py-2.5 border border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer", s.bgClass)}>
+          <Card key={s.label} className={cn("py-2.5 border border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer", s.bgClass)}>
             <CardContent className="px-3 py-0">
               <div className="flex items-center gap-3">
                 <div className={cn('rounded-lg p-2 shrink-0', s.color)}>
@@ -583,10 +584,10 @@ export function DealsView() {
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
-            <Select value={filterSector} onValueChange={(v) => setFilterSector(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterSector !== 'All Sectors'}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            <Select value={filterStage} onValueChange={(v) => setFilterStage(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterStage !== 'All Stages'}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            <Select value={filterDealStatus} onValueChange={(v) => setFilterDealStatus(v)}><SelectTrigger className="w-[125px] h-8 text-xs bg-white" data-active={filterDealStatus !== 'All Deal Statuses'}><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
-            <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v)}><SelectTrigger className="w-[115px] h-8 text-xs bg-white" data-active={filterPriority !== 'All Priorities'}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterSector} onValueChange={(v) => setFilterSector(v)}><SelectTrigger className="w-[125px] h-8 text-xs" data-active={filterSector !== 'All Sectors'} icon={<LayoutGrid className="size-3.5" />}><SelectValue placeholder="Sector" /></SelectTrigger><SelectContent>{DASH_SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterStage} onValueChange={(v) => setFilterStage(v)}><SelectTrigger className="w-[115px] h-8 text-xs" data-active={filterStage !== 'All Stages'} icon={<Layers className="size-3.5" />}><SelectValue placeholder="Stage" /></SelectTrigger><SelectContent>{DASH_STAGE_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterDealStatus} onValueChange={(v) => setFilterDealStatus(v)}><SelectTrigger className="w-[125px] h-8 text-xs" data-active={filterDealStatus !== 'All Deal Statuses'} icon={<Handshake className="size-3.5" />}><SelectValue placeholder="Deal Status" /></SelectTrigger><SelectContent>{DEAL_STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
+            <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v)}><SelectTrigger className="w-[115px] h-8 text-xs" data-active={filterPriority !== 'All Priorities'} icon={<Flag className="size-3.5" />}><SelectValue placeholder="Priority" /></SelectTrigger><SelectContent>{DASH_PRIORITY_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}</SelectContent></Select>
             {(search || filterSector !== 'All Sectors' || filterStage !== 'All Stages' || filterDealStatus !== 'All Deal Statuses' || filterPriority !== 'All Priorities') && (
               <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}><X className="h-3.5 w-3.5" /> Clear</Button>
             )}

@@ -61,11 +61,11 @@ export function ApplicationsModule() {
       <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
         <div className="relative w-full sm:flex-1 mr-auto">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input placeholder="Search..." className="pl-8 h-8 text-xs bg-white w-full" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+          <Input placeholder="Search..." className="pl-8 h-8 text-xs w-full" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
         </div>
         <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
+            <SelectTrigger className="w-[120px] h-8 text-xs" data-active={status !== 'All'}>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -73,7 +73,7 @@ export function ApplicationsModule() {
             </SelectContent>
           </Select>
           <Select value={stage} onValueChange={setStage}>
-            <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
+            <SelectTrigger className="w-[130px] h-8 text-xs" data-active={stage !== 'All'}>
               <SelectValue placeholder="Stage" />
             </SelectTrigger>
             <SelectContent>
@@ -81,7 +81,7 @@ export function ApplicationsModule() {
             </SelectContent>
           </Select>
           <Select value={sector} onValueChange={setSector}>
-            <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={sector !== 'All' && sector !== 'All Sectors'}>
+            <SelectTrigger className="w-[140px] h-8 text-xs" data-active={sector !== 'All' && sector !== 'All Sectors'}>
               <SelectValue placeholder="Sector" />
             </SelectTrigger>
             <SelectContent>
@@ -100,38 +100,31 @@ export function ApplicationsModule() {
   )
 
   return (
-    <div className="flex-1 w-full flex flex-col space-y-1">
-      <div className="flex flex-col gap-0 shrink-0">
-        <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground hidden lg:block">
-            Manage all land allotment applications, view your personal work queue, and track workflow stages.
-          </p>
-          <div className="flex items-center justify-end ml-auto">
-            <Button
-              size="sm"
-              className="gap-1.5 shrink-0 h-8 text-xs"
-              onClick={() => setShowNewDialog(true)}
-            >
-              <Plus className="h-4 w-4" />
-              New Application
-            </Button>
-          </div>
+    <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex items-center justify-between gap-4 mb-2 shrink-0">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Applications Management</h1>
+          <p className="text-xs text-muted-foreground">Manage land allotment applications, review stages, and workflow status</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" className="gap-1.5 shrink-0 h-8 text-xs" onClick={() => setShowNewDialog(true)}>
+            <Plus className="h-4 w-4" /> New Application
+          </Button>
         </div>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col gap-0 overflow-hidden">
         <TabsList className="flex items-center gap-1.5 sm:gap-2 bg-transparent p-0 w-full justify-start border-b pb-1.5 mb-2.5 rounded-none h-auto overflow-x-auto scrollbar-none flex-nowrap">
-          <TabsTrigger value="all" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+          <TabsTrigger value="all" className="shrink-0 border border-slate-200/60 dark:border-border/60 bg-white/60 dark:bg-card/60 data-[state=active]:bg-white dark:data-[state=active]:bg-card data-[state=active]:border-slate-300 dark:data-[state=active]:border-border data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-foreground data-[state=active]:text-foreground">
             <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-blue-500 shrink-0" /> <span>All Applications</span>
           </TabsTrigger>
-          <TabsTrigger value="queue" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+          <TabsTrigger value="queue" className="shrink-0 border border-slate-200/60 dark:border-border/60 bg-white/60 dark:bg-card/60 data-[state=active]:bg-white dark:data-[state=active]:bg-card data-[state=active]:border-slate-300 dark:data-[state=active]:border-border data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-foreground data-[state=active]:text-foreground">
             <Inbox className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-emerald-500 shrink-0" /> <span>Work Queue</span>
           </TabsTrigger>
-          <TabsTrigger value="kanban" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+          <TabsTrigger value="kanban" className="shrink-0 border border-slate-200/60 dark:border-border/60 bg-white/60 dark:bg-card/60 data-[state=active]:bg-white dark:data-[state=active]:bg-card data-[state=active]:border-slate-300 dark:data-[state=active]:border-border data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-foreground data-[state=active]:text-foreground">
             <Kanban className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-amber-500 shrink-0" /> <span>Stage View</span>
           </TabsTrigger>
-          <TabsTrigger value="cancellations" className="shrink-0 border border-slate-200/60 bg-white/60 data-[state=active]:bg-white data-[state=active]:border-slate-300 data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 hover:text-slate-900">
+          <TabsTrigger value="cancellations" className="shrink-0 border border-slate-200/60 dark:border-border/60 bg-white/60 dark:bg-card/60 data-[state=active]:bg-white dark:data-[state=active]:bg-card data-[state=active]:border-slate-300 dark:data-[state=active]:border-border data-[state=active]:shadow-md rounded-md px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold h-[36px] sm:h-[38px] shadow-sm transition-all text-slate-500 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-foreground data-[state=active]:text-foreground">
             <Ban className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-purple-500 shrink-0" /> <span>Cancellations</span>
           </TabsTrigger>
         </TabsList>

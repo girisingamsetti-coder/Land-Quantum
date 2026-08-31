@@ -29,7 +29,8 @@ import {
   GraduationCap,
   Scale,
   Briefcase,
-  Waves
+  Waves,
+  CircleDot, LandPlot
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -39,12 +40,12 @@ function formatINR(amount: number) {
 }
 
 function statusColor(s: string) {
-  if (['Approved', 'Completed', 'Paid', 'Published', 'Available'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-  if (['Under Review', 'In Progress', 'Under Application', 'Draft'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
-  if (['Rejected', 'Withdrawn'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
-  if (['On Hold', 'Reserved'].includes(s)) return 'bg-purple-100 text-purple-700 border-purple-200'
-  if (['Allotted'].includes(s)) return 'bg-blue-100 text-blue-700 border-blue-200'
-  return 'bg-slate-100 text-slate-600 border-slate-200'
+  if (['Approved', 'Completed', 'Paid', 'Published', 'Available'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+  if (['Under Review', 'In Progress', 'Under Application', 'Draft'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+  if (['Rejected', 'Withdrawn'].includes(s)) return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+  if (['On Hold', 'Reserved'].includes(s)) return 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-800/60'
+  if (['Allotted'].includes(s)) return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800/60'
+  return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
 }
 
 interface AmaravatiLandmark {
@@ -797,7 +798,7 @@ export function LandParcelsView() {
               </div>
               <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
                 <Select value={status || 'All'} onValueChange={(v) => setStatus(v === 'All' ? '' : v)}>
-                  <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}>
+                  <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'} icon={<CircleDot className="size-3.5" />}>
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -810,7 +811,7 @@ export function LandParcelsView() {
                   </SelectContent>
                 </Select>
                 <Select value={zone || 'All'} onValueChange={(v) => setZone(v === 'All' ? '' : v)}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!zone && zone !== 'All'}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!zone && zone !== 'All'} icon={<MapPin className="size-3.5" />}>
                     <SelectValue placeholder="Zone" />
                   </SelectTrigger>
                   <SelectContent>
@@ -827,7 +828,7 @@ export function LandParcelsView() {
                   </SelectContent>
                 </Select>
                 <Select value={landUse || 'All'} onValueChange={(v) => setLandUse(v === 'All' ? '' : v)}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!landUse && landUse !== 'All'}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!landUse && landUse !== 'All'} icon={<LandPlot className="size-3.5" />}>
                     <SelectValue placeholder="Land Use" />
                   </SelectTrigger>
                   <SelectContent>
@@ -840,7 +841,7 @@ export function LandParcelsView() {
                   </SelectContent>
                 </Select>
                 <Select value={allotmentMode || 'All'} onValueChange={(v) => setAllotmentMode(v === 'All' ? '' : v)}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!allotmentMode && allotmentMode !== 'All'}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!allotmentMode && allotmentMode !== 'All'} icon={<FileText className="size-3.5" />}>
                     <SelectValue placeholder="Allotment" />
                   </SelectTrigger>
                   <SelectContent>
@@ -853,7 +854,7 @@ export function LandParcelsView() {
                   </SelectContent>
                 </Select>
                 <Select value={fsiFar || 'All'} onValueChange={(v) => setFsiFar(v === 'All' ? '' : v)}>
-                  <SelectTrigger className="w-[100px] h-8 text-xs" data-active={!!fsiFar && fsiFar !== 'All'}>
+                  <SelectTrigger className="w-[100px] h-8 text-xs" data-active={!!fsiFar && fsiFar !== 'All'} icon={<BarChart2 className="size-3.5" />}>
                     <SelectValue placeholder="FSI / FAR" />
                   </SelectTrigger>
                   <SelectContent>

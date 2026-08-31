@@ -28,7 +28,8 @@ import {
   FolderOpen,
   Plus,
   Sparkles,
-  Mail
+  Mail,
+  CircleDot, LayoutList
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -262,22 +263,22 @@ const MOCK_DOCS: DocumentItem[] = [
 ]
 
 function statusColor(s: string) {
-  if (['Verified'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-  if (['Pending Review'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
-  if (['Under Inspection'].includes(s)) return 'bg-blue-100 text-blue-700 border-blue-200'
-  if (['Rejected'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
-  return 'bg-slate-100 text-slate-600 border-slate-200'
+  if (['Verified'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+  if (['Pending Review'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+  if (['Under Inspection'].includes(s)) return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800/60'
+  if (['Rejected'].includes(s)) return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+  return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
 }
 
 function categoryBadge(category: string) {
   switch (category) {
-    case 'Allotment': return 'bg-indigo-50 text-indigo-700 border-indigo-200'
-    case 'Technical': return 'bg-sky-50 text-sky-700 border-sky-200'
-    case 'Clearance': return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-    case 'Financial': return 'bg-purple-50 text-purple-700 border-purple-200'
-    case 'Legal': return 'bg-amber-50 text-amber-700 border-amber-200'
-    case 'Compliance': return 'bg-rose-50 text-rose-700 border-rose-200'
-    default: return 'bg-slate-50 text-slate-700 border-slate-200'
+    case 'Allotment': return 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800/60'
+    case 'Technical': return 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/60'
+    case 'Clearance': return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+    case 'Financial': return 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-800/60'
+    case 'Legal': return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+    case 'Compliance': return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/60'
+    default: return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
   }
 }
 
@@ -449,7 +450,7 @@ export function DocumentationView() {
               
               <div className="flex flex-col gap-1.5 pb-2">
                 <Select value={selectedWizardApp} onValueChange={setSelectedWizardApp}>
-                  <SelectTrigger className="w-full bg-white shadow-sm">
+                  <SelectTrigger className="w-full shadow-sm">
                     <SelectValue placeholder="Select Applicant" />
                   </SelectTrigger>
                   <SelectContent>
@@ -524,11 +525,11 @@ export function DocumentationView() {
             val: summary.total,
             sub: 'Across all active allotments',
             Icon: FileText,
-            border: 'border-slate-200',
-            bg: 'bg-gradient-to-r from-slate-50 to-white/50',
-            iconBg: 'bg-slate-100',
-            iconText: 'text-slate-700',
-            valColor: 'text-slate-900',
+            border: 'border-slate-200 dark:border-border/50',
+            bg: 'bg-gradient-to-r from-slate-50 to-white/50 dark:from-slate-900/40 dark:to-card/60',
+            iconBg: 'bg-slate-100 dark:bg-slate-800',
+            iconText: 'text-slate-700 dark:text-slate-300',
+            valColor: 'text-slate-900 dark:text-foreground',
             filterVal: 'All'
           },
           {
@@ -536,11 +537,11 @@ export function DocumentationView() {
             val: summary.verified,
             sub: 'Legally cleared & validated',
             Icon: CheckCircle2,
-            border: 'border-emerald-200',
-            bg: 'bg-gradient-to-r from-emerald-50 to-white/50',
-            iconBg: 'bg-emerald-100',
-            iconText: 'text-emerald-700',
-            valColor: 'text-emerald-700',
+            border: 'border-emerald-200 dark:border-emerald-800/40',
+            bg: 'bg-gradient-to-r from-emerald-50 to-white/50 dark:from-emerald-950/30 dark:to-card/60',
+            iconBg: 'bg-emerald-100 dark:bg-emerald-950/60',
+            iconText: 'text-emerald-700 dark:text-emerald-400',
+            valColor: 'text-emerald-700 dark:text-emerald-400',
             filterVal: 'Verified'
           },
           {
@@ -548,11 +549,11 @@ export function DocumentationView() {
             val: summary.pending,
             sub: 'Pending departmental clearance',
             Icon: Clock,
-            border: 'border-amber-200',
-            bg: 'bg-gradient-to-r from-amber-50 to-white/50',
-            iconBg: 'bg-amber-100',
-            iconText: 'text-amber-700',
-            valColor: 'text-amber-700',
+            border: 'border-amber-200 dark:border-amber-800/40',
+            bg: 'bg-gradient-to-r from-amber-50 to-white/50 dark:from-amber-950/30 dark:to-card/60',
+            iconBg: 'bg-amber-100 dark:bg-amber-950/60',
+            iconText: 'text-amber-700 dark:text-amber-400',
+            valColor: 'text-amber-700 dark:text-amber-400',
             filterVal: 'Pending Review'
           },
           {
@@ -560,18 +561,18 @@ export function DocumentationView() {
             val: summary.rejected,
             sub: 'Notice issued for re-submission',
             Icon: AlertCircle,
-            border: 'border-red-200',
-            bg: 'bg-gradient-to-r from-red-50 to-white/50',
-            iconBg: 'bg-red-100',
-            iconText: 'text-red-700',
-            valColor: 'text-red-700',
+            border: 'border-red-200 dark:border-red-800/40',
+            bg: 'bg-gradient-to-r from-red-50 to-white/50 dark:from-red-950/30 dark:to-card/60',
+            iconBg: 'bg-red-100 dark:bg-red-950/60',
+            iconText: 'text-red-700 dark:text-red-400',
+            valColor: 'text-red-700 dark:text-red-400',
             filterVal: 'Rejected'
           },
         ].map((s) => (
           <Card
             key={s.label}
             className={cn(
-              'border border-transparent cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
+              'border border-transparent dark:border-border/50 cursor-pointer transition-all hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]',
               s.bg,
               statusFilter === s.filterVal && 'outline outline-1 outline-primary outline-offset-[-1px]'
             )}
@@ -600,7 +601,7 @@ export function DocumentationView() {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search document title, applicant, ID..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -608,7 +609,7 @@ export function DocumentationView() {
 
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={categoryFilter || 'All'} onValueChange={(v) => setCategoryFilter(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!categoryFilter && categoryFilter !== 'All'}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!categoryFilter && categoryFilter !== 'All'} icon={<LayoutList className="size-3.5" />}>
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -621,7 +622,7 @@ export function DocumentationView() {
             </Select>
 
             <Select value={statusFilter || 'All'} onValueChange={(v) => setStatusFilter(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!statusFilter && statusFilter !== 'All'}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!statusFilter && statusFilter !== 'All'} icon={<CircleDot className="size-3.5" />}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -879,39 +880,39 @@ export function DocumentationView() {
           <DialogHeader className="p-4 border-b shrink-0 bg-muted/20">
             <DialogTitle className="text-lg">Generated Document Preview</DialogTitle>
           </DialogHeader>
-          <div className="flex-1 overflow-hidden bg-slate-100 flex flex-col items-center justify-center relative p-8">
+          <div className="flex-1 overflow-hidden bg-slate-100 dark:bg-muted/40 flex flex-col items-center justify-center relative p-8">
             {/* Mock A4 Paper container */}
-            <div className="w-full max-w-2xl bg-white h-full shadow-md border rounded p-12 overflow-y-auto flex flex-col space-y-6">
+            <div className="w-full max-w-2xl bg-white dark:bg-card h-full shadow-md border dark:border-border rounded p-12 overflow-y-auto flex flex-col space-y-6">
               {/* Fake skeleton lines for text */}
               <div className="flex justify-between items-start border-b pb-4">
-                <div className="w-16 h-16 bg-slate-200 rounded-full" />
-                <div className="w-32 h-4 bg-slate-200 rounded" />
+                <div className="w-16 h-16 bg-slate-200 dark:bg-muted rounded-full" />
+                <div className="w-32 h-4 bg-slate-200 dark:bg-muted rounded" />
               </div>
               <div className="text-center pb-4">
                 <h3 className="font-bold text-xl uppercase tracking-wider">{previewDocTitle}</h3>
               </div>
               <div className="space-y-3 pt-4">
-                <div className="h-3 w-full bg-slate-100 rounded" />
-                <div className="h-3 w-[90%] bg-slate-100 rounded" />
-                <div className="h-3 w-[95%] bg-slate-100 rounded" />
-                <div className="h-3 w-[80%] bg-slate-100 rounded" />
+                <div className="h-3 w-full bg-slate-100 dark:bg-muted/60 rounded" />
+                <div className="h-3 w-[90%] bg-slate-100 dark:bg-muted/60 rounded" />
+                <div className="h-3 w-[95%] bg-slate-100 dark:bg-muted/60 rounded" />
+                <div className="h-3 w-[80%] bg-slate-100 dark:bg-muted/60 rounded" />
               </div>
               <div className="space-y-3 pt-6">
-                <div className="h-3 w-full bg-slate-100 rounded" />
-                <div className="h-3 w-[85%] bg-slate-100 rounded" />
-                <div className="h-3 w-[95%] bg-slate-100 rounded" />
-                <div className="h-3 w-[90%] bg-slate-100 rounded" />
+                <div className="h-3 w-full bg-slate-100 dark:bg-muted/60 rounded" />
+                <div className="h-3 w-[85%] bg-slate-100 dark:bg-muted/60 rounded" />
+                <div className="h-3 w-[95%] bg-slate-100 dark:bg-muted/60 rounded" />
+                <div className="h-3 w-[90%] bg-slate-100 dark:bg-muted/60 rounded" />
               </div>
               <div className="mt-auto pt-12 flex justify-end">
                 <div className="text-center space-y-2">
-                  <div className="h-12 w-32 bg-slate-100/50 rounded border-b-2 border-slate-300" />
-                  <div className="h-3 w-32 bg-slate-200 rounded" />
+                  <div className="h-12 w-32 bg-slate-100/50 dark:bg-muted/50 rounded border-b-2 border-slate-300 dark:border-border" />
+                  <div className="h-3 w-32 bg-slate-200 dark:bg-muted rounded" />
                 </div>
               </div>
             </div>
             
             <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <Button variant="outline" className="bg-white shadow-sm" onClick={() => setPreviewDocTitle(null)}>
+              <Button variant="outline" className="shadow-sm" onClick={() => setPreviewDocTitle(null)}>
                 Cancel
               </Button>
               <Button variant="secondary" className="shadow-sm border" onClick={handleDownload}>

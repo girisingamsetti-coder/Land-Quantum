@@ -111,40 +111,40 @@ function formatINR(amount: number) {
 
 function statusColor(status: string): string {
   switch (status) {
-    case 'Approved': case 'Completed': case 'Paid': case 'Compliant': return 'bg-emerald-100 text-emerald-800'
-    case 'Under Review': case 'In Progress': case 'Pending': return 'bg-amber-100 text-amber-800'
-    case 'Rejected': case 'Failed': case 'Non-Compliant': return 'bg-red-100 text-red-800'
-    case 'Deferred': case 'On Hold': return 'bg-orange-100 text-orange-800'
-    case 'Submitted': case 'Draft': default: return 'bg-gray-100 text-gray-800'
+    case 'Approved': case 'Completed': case 'Paid': case 'Compliant': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+    case 'Under Review': case 'In Progress': case 'Pending': return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+    case 'Rejected': case 'Failed': case 'Non-Compliant': return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+    case 'Deferred': case 'On Hold': return 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300'
+    case 'Submitted': case 'Draft': default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
   }
 }
 
 function stageColor(status: string): string {
   switch (status) {
-    case 'Completed': return 'bg-emerald-100 text-emerald-800'
-    case 'In Progress': case 'Pending Action': return 'bg-amber-100 text-amber-800'
-    case 'Returned': return 'bg-orange-100 text-orange-800'
-    case 'Rejected': return 'bg-red-100 text-red-800'
-    case 'Not Started': default: return 'bg-gray-100 text-gray-700'
+    case 'Completed': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+    case 'In Progress': case 'Pending Action': return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+    case 'Returned': return 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300'
+    case 'Rejected': return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+    case 'Not Started': default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
   }
 }
 
 function priorityColor(priority: string): string {
   switch (priority) {
-    case 'Critical': return 'bg-red-100 text-red-800'
-    case 'High': return 'bg-orange-100 text-orange-800'
-    case 'Normal': return 'bg-blue-100 text-blue-800'
-    case 'Low': return 'bg-gray-100 text-gray-700'
-    default: return 'bg-gray-100 text-gray-700'
+    case 'Critical': return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+    case 'High': return 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300'
+    case 'Normal': return 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300'
+    case 'Low': return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+    default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
   }
 }
 
 function slaBadge(slaRemaining: number | null) {
   if (slaRemaining === null) return <span className="text-xs text-muted-foreground">N/A</span>
-  if (slaRemaining < 0) return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{Math.abs(slaRemaining)}d overdue</Badge>
-  if (slaRemaining <= 3) return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{slaRemaining}d left</Badge>
-  if (slaRemaining <= 7) return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{slaRemaining}d left</Badge>
-  return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{slaRemaining}d left</Badge>
+  if (slaRemaining < 0) return <Badge className="bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-950/80">{Math.abs(slaRemaining)}d overdue</Badge>
+  if (slaRemaining <= 3) return <Badge className="bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-950/80">{slaRemaining}d left</Badge>
+  if (slaRemaining <= 7) return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-950/80">{slaRemaining}d left</Badge>
+  return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-950/80">{slaRemaining}d left</Badge>
 }
 
 // ---- Component ----
@@ -239,7 +239,7 @@ export function ApplicationsList({
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 shrink-0 mb-2">
         <Card
-          className={cn("bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'total' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'total' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'total' ? null : 'total')}
         >
           <CardContent className="px-3 py-0">
@@ -255,7 +255,7 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("bg-gradient-to-r from-blue-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'sectors' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'sectors' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'sectors' ? null : 'sectors')}
         >
           <CardContent className="px-3 py-0">
@@ -271,14 +271,14 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("bg-gradient-to-r from-emerald-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'approved' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-emerald-50 to-white/50 dark:from-emerald-950/30 dark:to-card/60 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'approved' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'approved' ? null : 'approved')}
         >
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Approved Status</p>
-                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">892</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 dark:text-emerald-400 truncate">892</p>
               </div>
               <div className="rounded-lg p-2 bg-emerald-500/10 text-emerald-500 shrink-0">
                 <Activity className="h-3.5 w-3.5" />
@@ -287,14 +287,14 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("bg-gradient-to-r from-amber-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'pending' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-amber-50 to-white/50 dark:from-amber-950/30 dark:to-card/60 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'pending' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'pending' ? null : 'pending')}
         >
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Pending Review</p>
-                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">124</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 dark:text-amber-400 truncate">124</p>
               </div>
               <div className="rounded-lg p-2 bg-amber-500/10 text-amber-500 shrink-0">
                 <Clock className="h-3.5 w-3.5" />
@@ -303,14 +303,14 @@ export function ApplicationsList({
           </CardContent>
         </Card>
         <Card
-          className={cn("bg-gradient-to-r from-purple-50 to-white/50 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'investment' && "outline outline-1 outline-primary outline-offset-[-1px]")}
+          className={cn("bg-gradient-to-r from-purple-50 to-white/50 dark:from-purple-950/30 dark:to-card/60 cursor-pointer transition-all hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]", selectedStatCard === 'investment' && "outline outline-1 outline-primary outline-offset-[-1px]")}
           onClick={() => setSelectedStatCard(selectedStatCard === 'investment' ? null : 'investment')}
         >
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Est. Investment</p>
-                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-purple-700 truncate">12.5k Cr</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-purple-700 dark:text-purple-400 truncate">12.5k Cr</p>
               </div>
               <div className="rounded-lg p-2 bg-purple-500/10 text-purple-500 shrink-0">
                 <IndianRupee className="h-3.5 w-3.5" />

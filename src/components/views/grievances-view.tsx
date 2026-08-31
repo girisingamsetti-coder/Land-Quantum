@@ -7,14 +7,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { Filter, X, Search, MessageSquareWarning, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Filter, X, Search, MessageSquareWarning, Clock, CheckCircle2, AlertCircle, CircleDot, LayoutList } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 function statusColor(s: string) {
-  if (['Resolved','Closed'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-  if (['Open','In Progress'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
-  if (['Rejected'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
-  return 'bg-slate-100 text-slate-600 border-slate-200'
+  if (['Resolved','Closed'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+  if (['Open','In Progress'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+  if (['Rejected'].includes(s)) return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+  return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
 }
 
 export function GrievancesView() {
@@ -54,10 +54,10 @@ export function GrievancesView() {
       <div><h1 className="text-2xl font-bold tracking-tight">Grievances & Appeals</h1><p className="text-sm text-muted-foreground">Manage applicant grievances, appeals, and resolutions</p></div>
 
       {summaryStats && <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-slate-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{summaryStats.total}</p></div><div className="rounded-lg bg-slate-100 p-2 shrink-0"><MessageSquareWarning className="h-3.5 w-3.5 text-slate-600"/></div></div></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Open</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">{summaryStats.open}</p></div><div className="rounded-lg bg-amber-100 p-2 shrink-0"><AlertCircle className="h-3.5 w-3.5 text-amber-600"/></div></div></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">In Progress</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-blue-700 truncate">{summaryStats.inProgress}</p></div><div className="rounded-lg bg-blue-100 p-2 shrink-0"><Clock className="h-3.5 w-3.5 text-blue-600"/></div></div></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-emerald-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Resolved</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">{summaryStats.resolved}</p></div><div className="rounded-lg bg-emerald-100 p-2 shrink-0"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-600"/></div></div></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-slate-50 to-white/50 dark:from-slate-900/40 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{summaryStats.total}</p></div><div className="rounded-lg bg-slate-100 dark:bg-slate-800 p-2 shrink-0"><MessageSquareWarning className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400"/></div></div></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50 dark:from-amber-950/30 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Open</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 dark:text-amber-400 truncate">{summaryStats.open}</p></div><div className="rounded-lg bg-amber-100 dark:bg-amber-950/60 p-2 shrink-0"><AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400"/></div></div></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">In Progress</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-blue-700 dark:text-blue-400 truncate">{summaryStats.inProgress}</p></div><div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2 shrink-0"><Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400"/></div></div></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-emerald-50 to-white/50 dark:from-emerald-950/30 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Resolved</p><p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 dark:text-emerald-400 truncate">{summaryStats.resolved}</p></div><div className="rounded-lg bg-emerald-100 dark:bg-emerald-950/60 p-2 shrink-0"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"/></div></div></CardContent></Card>
       </div>}
 
       {/* Filter Toolbar Card */}
@@ -67,14 +67,14 @@ export function GrievancesView() {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search grievance number, applicant, application..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={!!status && status !== 'All'}>
+              <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'} icon={<CircleDot className="size-3.5" />}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -84,7 +84,7 @@ export function GrievancesView() {
               </SelectContent>
             </Select>
             <Select value={category || 'All'} onValueChange={v => setCategory(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!category && category !== 'All'}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!category && category !== 'All'} icon={<LayoutList className="size-3.5" />}>
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>

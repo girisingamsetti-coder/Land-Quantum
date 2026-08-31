@@ -165,31 +165,31 @@ function formatDate(dateStr: string | null) {
 
 function statusColor(status: string): string {
   switch (status) {
-    case 'Approved': case 'Completed': case 'Paid': case 'Compliant': return 'bg-emerald-100 text-emerald-800'
-    case 'Under Review': case 'In Progress': case 'Pending': return 'bg-amber-100 text-amber-800'
-    case 'Rejected': case 'Failed': case 'Non-Compliant': return 'bg-red-100 text-red-800'
-    case 'Deferred': case 'On Hold': return 'bg-orange-100 text-orange-800'
-    case 'Submitted': case 'Draft': default: return 'bg-gray-100 text-gray-800'
+    case 'Approved': case 'Completed': case 'Paid': case 'Compliant': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+    case 'Under Review': case 'In Progress': case 'Pending': return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+    case 'Rejected': case 'Failed': case 'Non-Compliant': return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+    case 'Deferred': case 'On Hold': return 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300'
+    case 'Submitted': case 'Draft': default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
   }
 }
 
 function stageColor(status: string): string {
   switch (status) {
-    case 'Completed': return 'bg-emerald-100 text-emerald-800'
-    case 'In Progress': case 'Pending Action': return 'bg-amber-100 text-amber-800'
-    case 'Returned': return 'bg-orange-100 text-orange-800'
-    case 'Rejected': return 'bg-red-100 text-red-800'
-    case 'Not Started': default: return 'bg-gray-100 text-gray-700'
+    case 'Completed': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+    case 'In Progress': case 'Pending Action': return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+    case 'Returned': return 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300'
+    case 'Rejected': return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+    case 'Not Started': default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
   }
 }
 
 function priorityColor(priority: string): string {
   switch (priority) {
-    case 'Critical': return 'bg-red-100 text-red-800'
-    case 'High': return 'bg-orange-100 text-orange-800'
-    case 'Normal': return 'bg-blue-100 text-blue-800'
-    case 'Low': return 'bg-gray-100 text-gray-700'
-    default: return 'bg-gray-100 text-gray-700'
+    case 'Critical': return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300'
+    case 'High': return 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300'
+    case 'Normal': return 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300'
+    case 'Low': return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+    default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
   }
 }
 

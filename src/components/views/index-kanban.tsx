@@ -31,36 +31,36 @@ interface AppItem {
 }
 
 const stageColors: Record<string, string> = {
-  'Application': 'bg-blue-50 border-blue-200',
-  'Eligibility': 'bg-cyan-50 border-cyan-200',
-  'DPR Review': 'bg-violet-50 border-violet-200',
-  'Economic Review': 'bg-purple-50 border-purple-200',
-  'LASC': 'bg-amber-50 border-amber-200',
-  'GoM': 'bg-orange-50 border-orange-200',
-  'Cabinet Sub-Committee': 'bg-rose-50 border-rose-200',
-  'Authority Approval': 'bg-emerald-50 border-emerald-200',
-  'Cabinet Approval': 'bg-teal-50 border-teal-200',
-  'Government Order': 'bg-green-50 border-green-200',
-  'LOI': 'bg-lime-50 border-lime-200',
-  'Payment': 'bg-yellow-50 border-yellow-200',
-  'Agreement': 'bg-sky-50 border-sky-200',
-  'Possession': 'bg-indigo-50 border-indigo-200',
-  'Construction': 'bg-fuchsia-50 border-fuchsia-200',
-  'Compliance': 'bg-green-50 border-green-200',
+  'Application': 'bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800/50',
+  'Eligibility': 'bg-cyan-50 border-cyan-200 dark:bg-cyan-950/30 dark:border-cyan-800/50',
+  'DPR Review': 'bg-violet-50 border-violet-200 dark:bg-violet-950/30 dark:border-violet-800/50',
+  'Economic Review': 'bg-purple-50 border-purple-200 dark:bg-purple-950/30 dark:border-purple-800/50',
+  'LASC': 'bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800/50',
+  'GoM': 'bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-800/50',
+  'Cabinet Sub-Committee': 'bg-rose-50 border-rose-200 dark:bg-rose-950/30 dark:border-rose-800/50',
+  'Authority Approval': 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800/50',
+  'Cabinet Approval': 'bg-teal-50 border-teal-200 dark:bg-teal-950/30 dark:border-teal-800/50',
+  'Government Order': 'bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800/50',
+  'LOI': 'bg-lime-50 border-lime-200 dark:bg-lime-950/30 dark:border-lime-800/50',
+  'Payment': 'bg-yellow-50 border-yellow-200 dark:bg-yellow-950/30 dark:border-yellow-800/50',
+  'Agreement': 'bg-sky-50 border-sky-200 dark:bg-sky-950/30 dark:border-sky-800/50',
+  'Possession': 'bg-indigo-50 border-indigo-200 dark:bg-indigo-950/30 dark:border-indigo-800/50',
+  'Construction': 'bg-fuchsia-50 border-fuchsia-200 dark:bg-fuchsia-950/30 dark:border-fuchsia-800/50',
+  'Compliance': 'bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800/50',
 }
 
 function getStageColor(stage: string) {
-  return stageColors[stage] || 'bg-gray-50 border-gray-200'
+  return stageColors[stage] || 'bg-gray-50 border-gray-200 dark:bg-gray-900/40 dark:border-gray-800'
 }
 
 function StatusBadge({ status }: { status: string }) {
   const variants: Record<string, string> = {
-    'Draft': 'bg-gray-100 text-gray-700',
-    'Submitted': 'bg-blue-100 text-blue-700',
-    'Under Review': 'bg-amber-100 text-amber-700',
-    'Approved': 'bg-emerald-100 text-emerald-700',
-    'Rejected': 'bg-red-100 text-red-700',
-    'Completed': 'bg-green-100 text-green-700',
+    'Draft': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    'Submitted': 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
+    'Under Review': 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300',
+    'Approved': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300',
+    'Rejected': 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300',
+    'Completed': 'bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-300',
   }
   return <Badge variant="secondary" className={variants[status] || ''}>{status}</Badge>
 }
@@ -74,7 +74,7 @@ function PriorityIndicator({ priority }: { priority: string }) {
 function SLAIndicator({ remaining }: { remaining: number | null }) {
   if (remaining === null) return null
   if (remaining < 0) return <Badge variant="destructive" className="text-[10px] px-1.5">Overdue</Badge>
-  if (remaining <= 3) return <Badge variant="outline" className="text-[10px] px-1.5 border-amber-500 text-amber-700">{remaining}d left</Badge>
+  if (remaining <= 3) return <Badge variant="outline" className="text-[10px] px-1.5 border-amber-500 text-amber-700 dark:text-amber-400 dark:border-amber-500/70">{remaining}d left</Badge>
   return <span className="text-[10px] text-muted-foreground">{remaining}d left</span>
 }
 
@@ -117,7 +117,7 @@ function StageSection({ stage, items, navigateTo }: { stage: string, items: AppI
     <div className="w-full flex flex-col">
       <div className={`rounded-md border px-4 py-3 mb-4 flex items-center justify-between shadow-sm border-l-4 ${getStageColor(stage)}`}>
         <div className="flex items-center gap-3">
-          <h3 className="text-base font-bold text-slate-800">{stage}</h3>
+          <h3 className="text-base font-bold text-slate-800 dark:text-foreground">{stage}</h3>
           <Badge variant="secondary" className="text-xs">
             {items.length} {items.length === 1 ? 'Application' : 'Applications'}
           </Badge>
@@ -125,10 +125,10 @@ function StageSection({ stage, items, navigateTo }: { stage: string, items: AppI
         {items.length > 4 && (
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] text-muted-foreground mr-2">Showing {startIndex + 1}-{Math.min(startIndex + 4, items.length)} of {items.length}</span>
-            <Button variant="outline" size="icon" className="h-7 w-7 bg-white" disabled={!hasPrev} onClick={() => setStartIndex(s => s - 4)}>
+            <Button variant="outline" size="icon" className="h-7 w-7" disabled={!hasPrev} onClick={() => setStartIndex(s => s - 4)}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="h-7 w-7 bg-white" disabled={!hasNext} onClick={() => setStartIndex(s => s + 4)}>
+            <Button variant="outline" size="icon" className="h-7 w-7" disabled={!hasNext} onClick={() => setStartIndex(s => s + 4)}>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

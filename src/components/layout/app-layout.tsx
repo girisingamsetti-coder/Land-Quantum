@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DateFilterPicker, type DateFilterValue } from '@/components/ui/date-filter-picker'
 import {
   LayoutDashboard, FileText, MapPin, CreditCard, HardHat, AlertTriangle,
   Users, Building2, LogOut, Bell, BarChart3, KanbanSquare,
@@ -186,10 +187,11 @@ function GlobalFilterBar({ view, filters, setFilters }: {
             </Select>
           )}
 
-          <Select value={filters.dateRange || DATE_RANGES[0]} onValueChange={v => setFilters(p => ({ ...p, dateRange: v === DATE_RANGES[0] ? '' : v }))}>
-            <SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue placeholder="Date Range" /></SelectTrigger>
-            <SelectContent>{DATE_RANGES.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
-          </Select>
+          <DateFilterPicker
+            defaultValue={{ preset: 'overall', startDate: null, endDate: null, label: filters.dateRange || 'Date Range' }}
+            onChange={(val) => setFilters(p => ({ ...p, dateRange: val.preset === 'overall' ? '' : val.label }))}
+            onClear={() => setFilters(p => ({ ...p, dateRange: '' }))}
+          />
 
           {activeCount > 0 && (
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1 text-muted-foreground" onClick={clearFilters}>

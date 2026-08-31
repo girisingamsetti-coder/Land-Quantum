@@ -17,11 +17,13 @@ import {
   AlertTriangle, ArrowRight, ChevronRight, AlertCircle,
   ClipboardCheck, LayoutList, ShieldCheck, BadgeCheck, Award, Handshake, PackageCheck,
   Search, Download, ArrowUpDown, ArrowUp, ArrowDown, ChevronLeft, Users,
-  Calendar, ChevronDown, Filter, MessageSquare, Building2, X
+  Calendar, ChevronDown, Filter, MessageSquare, Building2, X,
+  MapPin, AppWindow, Layers, FolderKanban, LayoutGrid, CircleDot, User, Flag, Tag, ListFilter
 } from 'lucide-react'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
+import { DateFilterPicker, type DateFilterValue } from '@/components/ui/date-filter-picker'
 import { cn } from '@/lib/utils'
 
 interface DashboardStats {
@@ -253,39 +255,39 @@ function PipelineCard({ stage, onNavigate }: { stage: PipelineStage; onNavigate?
         {/* 2x2 Grid */}
         <div className="grid grid-cols-2 gap-3">
           {/* Top Left - In Progress */}
-          <div className="rounded-lg bg-slate-50/80 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-white border border-slate-200/70 hover:border-slate-300 transition-all cursor-pointer">
+          <div className="rounded-lg bg-slate-50/80 dark:bg-muted/30 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-white dark:hover:bg-muted/50 border border-slate-200/70 dark:border-border/70 hover:border-slate-300 dark:hover:border-border transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">In Progress</span>
-              <span className="text-[10px] font-bold text-slate-500">{stage.inProgress.pct}%</span>
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider">In Progress</span>
+              <span className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground">{stage.inProgress.pct}%</span>
             </div>
-            <p className="text-lg font-bold text-slate-900 leading-none">{stage.inProgress.count}</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-foreground leading-none">{stage.inProgress.count}</p>
           </div>
 
           {/* Top Right - Revision */}
-          <div className="rounded-lg bg-slate-50/80 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-white border border-slate-200/70 hover:border-slate-300 transition-all cursor-pointer">
+          <div className="rounded-lg bg-slate-50/80 dark:bg-muted/30 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-white dark:hover:bg-muted/50 border border-slate-200/70 dark:border-border/70 hover:border-slate-300 dark:hover:border-border transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Revision</span>
-              <span className="text-[10px] font-bold text-slate-500">{stage.revision.pct}%</span>
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-muted-foreground uppercase tracking-wider">Revision</span>
+              <span className="text-[10px] font-bold text-slate-500 dark:text-muted-foreground">{stage.revision.pct}%</span>
             </div>
-            <p className="text-lg font-bold text-slate-900 leading-none">{stage.revision.count}</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-foreground leading-none">{stage.revision.count}</p>
           </div>
 
           {/* Bottom Left - Approved */}
-          <div className="rounded-lg bg-emerald-50/50 border border-emerald-200/70 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-emerald-50 hover:border-emerald-300 transition-all cursor-pointer">
+          <div className="rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-800/40 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Approved</span>
-              <span className="text-[10px] font-bold text-emerald-600">{stage.approved.pct}%</span>
+              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Approved</span>
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{stage.approved.pct}%</span>
             </div>
-            <p className="text-lg font-bold text-emerald-950 leading-none">{stage.approved.count}</p>
+            <p className="text-lg font-bold text-emerald-950 dark:text-emerald-300 leading-none">{stage.approved.count}</p>
           </div>
 
           {/* Bottom Right - Rejected */}
-          <div className="rounded-lg bg-orange-50/50 border border-orange-200/70 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-orange-50 hover:border-orange-300 transition-all cursor-pointer">
+          <div className="rounded-lg bg-orange-50/50 dark:bg-orange-950/20 border border-orange-200/70 dark:border-orange-800/40 px-2 py-4 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-sm hover:bg-orange-50 dark:hover:bg-orange-950/40 hover:border-orange-300 dark:hover:border-orange-700 transition-all cursor-pointer">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">Rejected</span>
-              <span className="text-[10px] font-bold text-orange-600">{stage.rejected.pct}%</span>
+              <span className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Rejected</span>
+              <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400">{stage.rejected.pct}%</span>
             </div>
-            <p className="text-lg font-bold text-orange-950 leading-none">{stage.rejected.count}</p>
+            <p className="text-lg font-bold text-orange-950 dark:text-orange-300 leading-none">{stage.rejected.count}</p>
           </div>
         </div>
       </CardContent>
@@ -615,6 +617,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
   const [status, setStatus] = useState('All')
   const [stage, setStage] = useState('All')
   const [sector, setSector] = useState('All Sectors')
+  const [dateFilter, setDateFilter] = useState<DateFilterValue>({ preset: 'overall', startDate: null, endDate: null, label: 'Date' })
   const [sortKey, setSortKey] = useState<SortKey>('ageDays')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [page, setPage] = useState(1)
@@ -631,10 +634,11 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
     setStatus('All')
     setStage('All')
     setSector('All Sectors')
+    setDateFilter({ preset: 'overall', startDate: null, endDate: null, label: 'Date' })
     setPage(1)
   }
 
-  const hasFilters = searchInput.trim() !== '' || search.trim() !== '' || status !== 'All' || stage !== 'All' || (sector !== 'All Sectors')
+  const hasFilters = searchInput.trim() !== '' || search.trim() !== '' || status !== 'All' || stage !== 'All' || (sector !== 'All Sectors') || dateFilter.preset !== 'overall'
 
 
   const [realCases, setRealCases] = useState<CaseRecord[]>([])
@@ -690,6 +694,18 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     return combinedCases.filter(r => {
+      if (dateFilter.preset !== 'overall' && dateFilter.startDate) {
+        const rowDate = new Date(r.applied)
+        if (!isNaN(rowDate.getTime())) {
+          const start = new Date(dateFilter.startDate.getFullYear(), dateFilter.startDate.getMonth(), dateFilter.startDate.getDate()).getTime()
+          const end = dateFilter.endDate
+            ? new Date(dateFilter.endDate.getFullYear(), dateFilter.endDate.getMonth(), dateFilter.endDate.getDate(), 23, 59, 59, 999).getTime()
+            : new Date(dateFilter.startDate.getFullYear(), dateFilter.startDate.getMonth(), dateFilter.startDate.getDate(), 23, 59, 59, 999).getTime()
+          const t = rowDate.getTime()
+          if (t < start || t > end) return false
+        }
+      }
+
       const matchesSearch = !q ||
         r.id.toLowerCase().includes(q) ||
         r.applicant.toLowerCase().includes(q) ||
@@ -703,7 +719,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
       
       return matchesSearch && matchesStatus && matchesStage && matchesSector
     })
-  }, [search, status, stage, sector, combinedCases])
+  }, [search, status, stage, sector, dateFilter, combinedCases])
 
   const sorted = useMemo(() => {
     if (!sortKey) return filtered
@@ -803,12 +819,12 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   onChange={e => setSearchInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSearch()}
                   placeholder="Search..."
-                  className="pl-8 h-8 text-xs bg-white w-full"
+                  className="pl-8 h-8 text-xs w-full"
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0 justify-start sm:justify-end">
                 <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger className="w-[115px] sm:w-[120px] h-8 text-xs bg-white" data-active={status !== 'All'}>
+                  <SelectTrigger className="w-[115px] sm:w-[120px] h-8 text-xs" data-active={status !== 'All'} icon={<CircleDot className="size-3.5" />}>
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -816,7 +832,7 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   </SelectContent>
                 </Select>
                 <Select value={stage} onValueChange={setStage}>
-                  <SelectTrigger className="w-[120px] sm:w-[130px] h-8 text-xs bg-white" data-active={stage !== 'All'}>
+                  <SelectTrigger className="w-[120px] sm:w-[130px] h-8 text-xs" data-active={stage !== 'All'} icon={<Layers className="size-3.5" />}>
                     <SelectValue placeholder="Stage" />
                   </SelectTrigger>
                   <SelectContent>
@@ -824,13 +840,19 @@ export function RecordsTable({ onNavigateToApp }: { onNavigateToApp: (id: string
                   </SelectContent>
                 </Select>
                 <Select value={sector} onValueChange={setSector}>
-                  <SelectTrigger className="w-[130px] sm:w-[140px] h-8 text-xs bg-white" data-active={sector !== 'All' && sector !== 'All Sectors'}>
+                  <SelectTrigger className="w-[130px] sm:w-[140px] h-8 text-xs" data-active={sector !== 'All' && sector !== 'All Sectors'} icon={<LayoutGrid className="size-3.5" />}>
                     <SelectValue placeholder="Sector" />
                   </SelectTrigger>
                   <SelectContent>
                     {SECTOR_OPTIONS.map((s) => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
                   </SelectContent>
                 </Select>
+
+                <DateFilterPicker
+                  value={dateFilter}
+                  onChange={setDateFilter}
+                  onClear={() => setDateFilter({ preset: 'overall', startDate: null, endDate: null, label: 'Date' })}
+                />
 
                 {hasFilters && (
                   <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2" onClick={resetFilters}>
@@ -1216,21 +1238,21 @@ export const MOCK_APP_ROWS = [
 export function DashBadge({ value, variant }: { value: string; variant: 'status' | 'priority' | 'sla' }) {
   const cls = (() => {
     if (variant === 'status') {
-      if (value === 'Approved') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-      if (value === 'Rejected') return 'bg-red-50 text-red-700 border-red-200'
-      if (value === 'Active') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-      if (value === 'Cancelled') return 'bg-red-50 text-red-700 border-red-200'
-      if (value === 'Pending') return 'bg-amber-50 text-amber-700 border-amber-200'
-      return 'bg-amber-50 text-amber-700 border-amber-200'
+      if (value === 'Approved') return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+      if (value === 'Rejected') return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+      if (value === 'Active') return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+      if (value === 'Cancelled') return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+      if (value === 'Pending') return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+      return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
     }
     if (variant === 'priority') {
-      if (value === 'High' || value === 'Critical') return 'bg-red-50 text-red-700 border-red-200'
-      return 'bg-slate-100 text-slate-600 border-slate-200'
+      if (value === 'High' || value === 'Critical') return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+      return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
     }
     // sla
-    if (value === 'Overdue') return 'bg-red-50 text-red-700 border-red-200 font-semibold'
-    if (value.includes('2 days') || value.includes('1 day')) return 'bg-orange-50 text-orange-700 border-orange-200'
-    return 'bg-slate-50 text-slate-600 border-slate-200'
+    if (value === 'Overdue') return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60 font-semibold'
+    if (value.includes('2 days') || value.includes('1 day')) return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800/60'
+    return 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700'
   })()
   return <Badge variant="outline" className={cn('text-[9px] py-0 font-medium', cls)}>{value}</Badge>
 }
@@ -1241,7 +1263,7 @@ export const DASH_STATUS_OPTIONS = ['All Statuses', 'Submitted', 'Under Review',
 export const DASH_PRIORITY_OPTIONS = ['All Priorities', 'Normal', 'High', 'Critical']
 export const DASH_LEAD_OPTIONS = ['All Managers', 'K. Padmavathi', 'R. Venkatesh', 'S. Rao']
 
-export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: string) => void }) {
+export function DashboardApplicationsTable({ onNavigate, dateFilter }: { onNavigate: (id: string) => void; dateFilter?: DateFilterValue }) {
   const [rows, setRows] = useState(MOCK_APP_ROWS)
   const [search, setSearch] = useState('')
   const [filterSector, setFilterSector] = useState('All Sectors')
@@ -1297,6 +1319,18 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     return rows.filter(r => {
+      if (dateFilter && dateFilter.preset !== 'overall' && dateFilter.startDate) {
+        const rowDate = new Date(r.appliedOn)
+        if (!isNaN(rowDate.getTime())) {
+          const start = new Date(dateFilter.startDate.getFullYear(), dateFilter.startDate.getMonth(), dateFilter.startDate.getDate()).getTime()
+          const end = dateFilter.endDate
+            ? new Date(dateFilter.endDate.getFullYear(), dateFilter.endDate.getMonth(), dateFilter.endDate.getDate(), 23, 59, 59, 999).getTime()
+            : new Date(dateFilter.startDate.getFullYear(), dateFilter.startDate.getMonth(), dateFilter.startDate.getDate(), 23, 59, 59, 999).getTime()
+          const t = rowDate.getTime()
+          if (t < start || t > end) return false
+        }
+      }
+
       const matchQ = !q || r.id.toLowerCase().includes(q) || r.applicant.toLowerCase().includes(q) ||
         r.sector.toLowerCase().includes(q) || r.stage.toLowerCase().includes(q) || r.lead.toLowerCase().includes(q) ||
         r.status.toLowerCase().includes(q) || r.priority.toLowerCase().includes(q)
@@ -1309,7 +1343,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
 
       return matchQ && matchSector && matchStage && matchStatus && matchPriority && matchLead
     })
-  }, [rows, search, filterSector, filterStage, filterStatus, filterPriority, filterLead])
+  }, [rows, search, filterSector, filterStage, filterStatus, filterPriority, filterLead, dateFilter])
 
   const sorted = useMemo(() => {
     if (!sortCol) return filtered
@@ -1359,14 +1393,14 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
             <input
               type="text"
               placeholder="Search..."
-              className="pl-8 h-8 text-xs bg-white w-full border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1) }}>
-              <SelectTrigger className="w-[120px] h-8 text-xs bg-white border-slate-200" data-active={filterStatus !== 'All Statuses'}>
+              <SelectTrigger className="w-[120px] h-8 text-xs" data-active={filterStatus !== 'All Statuses'} icon={<CircleDot className="size-3.5" />}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -1374,7 +1408,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
               </SelectContent>
             </Select>
             <Select value={filterStage} onValueChange={(v) => { setFilterStage(v); setPage(1) }}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-white border-slate-200" data-active={filterStage !== 'All Stages'}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={filterStage !== 'All Stages'} icon={<Layers className="size-3.5" />}>
                 <SelectValue placeholder="Stage" />
               </SelectTrigger>
               <SelectContent>
@@ -1382,7 +1416,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
               </SelectContent>
             </Select>
             <Select value={filterSector} onValueChange={(v) => { setFilterSector(v); setPage(1) }}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white border-slate-200" data-active={filterSector !== 'All Sectors'}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={filterSector !== 'All Sectors'} icon={<LayoutGrid className="size-3.5" />}>
                 <SelectValue placeholder="All Sectors" />
               </SelectTrigger>
               <SelectContent>
@@ -1390,7 +1424,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
               </SelectContent>
             </Select>
             <Select value={filterPriority} onValueChange={(v) => { setFilterPriority(v); setPage(1) }}>
-              <SelectTrigger className="w-[110px] h-8 text-xs bg-white border-slate-200" data-active={filterPriority !== 'All Priorities'}>
+              <SelectTrigger className="w-[110px] h-8 text-xs" data-active={filterPriority !== 'All Priorities'} icon={<Flag className="size-3.5" />}>
                 <SelectValue placeholder="Priority" />
               </SelectTrigger>
               <SelectContent>
@@ -1398,7 +1432,7 @@ export function DashboardApplicationsTable({ onNavigate }: { onNavigate: (id: st
               </SelectContent>
             </Select>
             <Select value={filterLead} onValueChange={(v) => { setFilterLead(v); setPage(1) }}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-white border-slate-200" data-active={filterLead !== 'All Managers'}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={filterLead !== 'All Managers'} icon={<User className="size-3.5" />}>
                 <SelectValue placeholder="Lead Manager" />
               </SelectTrigger>
               <SelectContent>
@@ -1484,10 +1518,14 @@ export function DashboardView() {
   const [expandedAlert, setExpandedAlert] = useState<string | null>(null)
   const [trendWindow, setTrendWindow] = useState('12M')
   const [decisionsView, setDecisionsView] = useState<'month' | 'week'>('month')
-  const [filters, setFilters] = useState({ date: '', parcel: '', app: '', stage: '', project: '', sector: '' })
+  const [dateFilter, setDateFilter] = useState<DateFilterValue>({ preset: 'overall', startDate: null, endDate: null, label: 'Date' })
+  const [filters, setFilters] = useState({ parcel: '', app: '', stage: '', project: '', sector: '' })
 
-  const hasFilters = Object.values(filters).some(Boolean)
-  const clearFilters = () => setFilters({ date: '', parcel: '', app: '', stage: '', project: '', sector: '' })
+  const hasFilters = dateFilter.preset !== 'overall' || Object.values(filters).some(Boolean)
+  const clearFilters = () => {
+    setDateFilter({ preset: 'overall', startDate: null, endDate: null, label: 'Date' })
+    setFilters({ parcel: '', app: '', stage: '', project: '', sector: '' })
+  }
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -1507,17 +1545,96 @@ export function DashboardView() {
   if (view !== 'dashboard') return null
 
 
-  const barData = stats?.applications ? [
-    { name: 'Approved', value: stats.applications.approved || 0, fill: 'oklch(0.62 0.17 160)' },
-    { name: 'Pending', value: stats.applications.pending || 0, fill: 'oklch(0.72 0.16 75)' },
-    { name: 'Rejected', value: stats.applications.rejected || 0, fill: 'oklch(0.60 0.20 25)' },
-    { name: 'Others', value: Math.max(0, (stats.applications.total || 0) - (stats.applications.approved || 0) - (stats.applications.pending || 0) - (stats.applications.rejected || 0)), fill: 'oklch(0.85 0.03 260)' },
+  const displayStats = useMemo(() => {
+    if (!stats) return null
+    let appTotal = stats.applications.total
+    let appApproved = stats.applications.approved
+    let appPending = stats.applications.pending
+    let appRejected = stats.applications.rejected
+    let dealsTotal = stats.deals?.total ?? 142
+    let constructionsActive = stats.constructions?.active ?? 8
+    let revenue = stats.payments?.totalRevenue ?? 763000000
+    let jobsTotal = stats.jobs?.generated ?? 24500
+    let landParcelsTotal = stats.landParcels.total
+
+    // Apply Date Filter scaling if active
+    if (dateFilter.preset !== 'overall') {
+      if (dateFilter.preset === 'today') {
+        appTotal = 6; appApproved = 3; appPending = 2; appRejected = 1; dealsTotal = 3; constructionsActive = 1; revenue = 18000000; jobsTotal = 420
+      } else if (dateFilter.preset === 'yesterday') {
+        appTotal = 8; appApproved = 4; appPending = 3; appRejected = 1; dealsTotal = 4; constructionsActive = 2; revenue = 24000000; jobsTotal = 560
+      } else if (dateFilter.preset === 'last7') {
+        appTotal = 32; appApproved = 18; appPending = 11; appRejected = 3; dealsTotal = 19; constructionsActive = 4; revenue = 145000000; jobsTotal = 3400
+      } else if (dateFilter.preset === 'last30') {
+        appTotal = 95; appApproved = 54; appPending = 31; appRejected = 10; dealsTotal = 58; constructionsActive = 6; revenue = 480000000; jobsTotal = 11200
+      } else if (dateFilter.preset === 'custom' && dateFilter.startDate) {
+        const days = Math.max(1, Math.round(((dateFilter.endDate || dateFilter.startDate).getTime() - dateFilter.startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1)
+        const ratio = Math.min(1, Math.max(0.05, days / 90))
+        appTotal = Math.max(1, Math.round(stats.applications.total * ratio))
+        appApproved = Math.round(appTotal * 0.55)
+        appPending = Math.round(appTotal * 0.35)
+        appRejected = Math.max(0, appTotal - appApproved - appPending)
+        dealsTotal = Math.max(1, Math.round(142 * ratio))
+        constructionsActive = Math.max(1, Math.round(8 * ratio))
+        revenue = Math.round(763000000 * ratio)
+        jobsTotal = Math.round(24500 * ratio)
+      }
+    }
+
+    // Apply Sector Filter scaling if active
+    if (filters.sector && filters.sector !== 'All Sectors') {
+      const sectorWeights: Record<string, number> = {
+        'IT/ITES': 0.28, 'Industrial': 0.22, 'Healthcare': 0.14, 'Education': 0.12,
+        'Hospitality': 0.08, 'Logistics': 0.07, 'Commercial': 0.05, 'Food Processing': 0.04
+      }
+      const weight = sectorWeights[filters.sector] || 0.06
+      appTotal = Math.max(1, Math.round(appTotal * weight))
+      appApproved = Math.max(1, Math.round(appTotal * 0.6))
+      appPending = Math.max(0, Math.round(appTotal * 0.3))
+      appRejected = Math.max(0, appTotal - appApproved - appPending)
+      dealsTotal = Math.max(1, Math.round(dealsTotal * weight))
+      revenue = Math.round(revenue * weight)
+      jobsTotal = Math.round(jobsTotal * weight)
+    }
+
+    // Apply Parcel Filter
+    if (filters.parcel && filters.parcel !== 'All Parcels') {
+      if (filters.parcel === 'Available') {
+        landParcelsTotal = stats.landParcels.available
+      } else if (filters.parcel === 'Allotted') {
+        landParcelsTotal = stats.landParcels.total - stats.landParcels.available
+      }
+    }
+
+    // Apply App Status Filter
+    if (filters.app && filters.app !== 'All Applications') {
+      if (filters.app === 'Approved') appTotal = appApproved
+      else if (filters.app === 'Pending') appTotal = appPending
+      else if (filters.app === 'Rejected') appTotal = appRejected
+    }
+
+    return {
+      applications: { total: appTotal, pending: appPending, approved: appApproved, rejected: appRejected },
+      landParcels: { total: landParcelsTotal, available: stats.landParcels.available },
+      payments: { totalRevenue: revenue, overdueCount: stats.payments.overdueCount },
+      constructions: { active: constructionsActive, inProcess: Math.round(constructionsActive * 1.5), total: constructionsActive + Math.round(constructionsActive * 1.5) },
+      grievances: stats.grievances,
+      jobs: { generated: jobsTotal },
+      deals: { total: dealsTotal }
+    }
+  }, [stats, dateFilter, filters])
+
+  const barData = displayStats?.applications ? [
+    { name: 'Approved', value: displayStats.applications.approved || 0, fill: 'oklch(0.62 0.17 160)' },
+    { name: 'Pending', value: displayStats.applications.pending || 0, fill: 'oklch(0.72 0.16 75)' },
+    { name: 'Rejected', value: displayStats.applications.rejected || 0, fill: 'oklch(0.60 0.20 25)' },
+    { name: 'Others', value: Math.max(0, (displayStats.applications.total || 0) - (displayStats.applications.approved || 0) - (displayStats.applications.pending || 0) - (displayStats.applications.rejected || 0)), fill: 'oklch(0.85 0.03 260)' },
   ] : []
 
-  const pieData = stats?.landParcels ? [
-    { name: 'Available', value: stats.landParcels.available || 0, fill: 'oklch(0.62 0.17 160)' },
-    { name: 'Allotted', value: Math.max(0, Math.floor(((stats.landParcels.total || 0) - (stats.landParcels.available || 0)) * 0.7)), fill: 'oklch(0.45 0.12 180)' },
-    { name: 'In Allocation', value: Math.max(0, Math.ceil(((stats.landParcels.total || 0) - (stats.landParcels.available || 0)) * 0.3)), fill: 'oklch(0.72 0.16 75)' },
+  const pieData = displayStats?.landParcels ? [
+    { name: 'Available', value: displayStats.landParcels.available || 0, fill: 'oklch(0.62 0.17 160)' },
+    { name: 'Allotted', value: Math.max(0, Math.floor(((displayStats.landParcels.total || 0) - (displayStats.landParcels.available || 0)) * 0.7)), fill: 'oklch(0.45 0.12 180)' },
+    { name: 'In Allocation', value: Math.max(0, Math.ceil(((displayStats.landParcels.total || 0) - (displayStats.landParcels.available || 0)) * 0.3)), fill: 'oklch(0.72 0.16 75)' },
   ] : []
 
   if (loading) {
@@ -1537,132 +1654,112 @@ export function DashboardView() {
 
   return (
     <div className="flex flex-col gap-2.5">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 shrink-0 px-3 sm:px-5 py-2.5 bg-gradient-to-r from-[#eefaf9] to-[#f4fcfc] rounded-2xl border border-teal-100/60 shadow-sm">
-        <div className="flex items-center justify-between sm:justify-start gap-3">
+      {/* Header & Filter Toolbar */}
+      <Card className="p-2 border shadow-sm shrink-0">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 w-full">
           <div>
-            <h1 className="text-sm sm:text-[15px] font-bold text-slate-800 flex items-center gap-1">
+            <h1 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1">
               Good Afternoon <span className="text-sm">👋</span>
             </h1>
-            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 mt-0.5 font-medium">
-              <Calendar className="h-3 w-3 text-slate-400" />
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 font-medium">
+              <Calendar className="h-3 w-3 text-muted-foreground" />
               <span>Saturday, 22 August 2026</span>
             </div>
           </div>
-          {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="lg:hidden h-7 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-2.5 font-medium rounded-full ml-auto">
-              Clear filters
-            </Button>
-          )}
-        </div>
 
-        {/* Modern Filters */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-          {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="hidden lg:inline-flex h-8 text-[11px] text-red-500 hover:text-red-600 hover:bg-red-50 px-3 font-medium rounded-full">
-              Clear
-            </Button>
-          )}
+          {/* Filters Matching Dashboard Table Style */}
+          <div className="flex flex-wrap items-center gap-2 justify-start lg:justify-end">
+            <div className="relative w-full sm:w-44 xl:w-52">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search dashboard..."
+                className="pl-8 h-8 text-xs w-full rounded-md border border-input bg-transparent px-3 py-1 text-foreground shadow-xs outline-none focus-visible:ring-[1px] focus-visible:ring-ring"
+              />
+            </div>
 
-          <div className="relative flex-1 sm:flex-initial min-w-[140px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search dashboard..."
-              className="pl-8 pr-3 h-8 w-full sm:w-40 xl:w-48 rounded-full border border-slate-200 bg-white text-[11px] outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-400 shadow-sm transition-all"
+            <DateFilterPicker
+              value={dateFilter}
+              onChange={setDateFilter}
+              onClear={() => setDateFilter({ preset: 'overall', startDate: null, endDate: null, label: 'Date' })}
             />
-          </div>
 
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.date ? "border-primary/30" : "border-slate-200")}>
-            <Calendar className={cn("h-3.5 w-3.5", filters.date ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.date ? 'text-primary' : 'text-slate-600')}>{filters.date || 'Date'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
-            <select value={filters.date} onChange={e => setFilters(f => ({ ...f, date: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Dates</option>
-              <option value="Today">Today</option>
-              <option value="This Week">This Week</option>
-              <option value="This Month">This Month</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.parcel ? "border-primary/30" : "border-slate-200")}>
-            <LandPlot className={cn("h-3.5 w-3.5", filters.parcel ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.parcel ? 'text-primary' : 'text-slate-600')}>{filters.parcel || 'All Parcels'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
-            <select value={filters.parcel} onChange={e => setFilters(f => ({ ...f, parcel: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Parcels</option>
-              <option value="Available">Available</option>
-              <option value="Allotted">Allotted</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.app ? "border-primary/30" : "border-slate-200")}>
-            <FileText className={cn("h-3.5 w-3.5", filters.app ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.app ? 'text-primary' : 'text-slate-600')}>{filters.app || 'All Applications'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
-            <select value={filters.app} onChange={e => setFilters(f => ({ ...f, app: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Applications</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.stage ? "border-primary/30" : "border-slate-200")}>
-            <LayoutList className={cn("h-3.5 w-3.5", filters.stage ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.stage ? 'text-primary' : 'text-slate-600')}>{filters.stage || 'All Stages'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
-            <select value={filters.stage} onChange={e => setFilters(f => ({ ...f, stage: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Stages</option>
-              <option value="Intake">Intake</option>
-              <option value="DPR Review">DPR Review</option>
-              <option value="Govt Approval">Govt Approval</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.project ? "border-primary/30" : "border-slate-200")}>
-            <HardHat className={cn("h-3.5 w-3.5", filters.project ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.project ? 'text-primary' : 'text-slate-600')}>{filters.project || 'All Projects'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
-            <select value={filters.project} onChange={e => setFilters(f => ({ ...f, project: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Projects</option>
-              <option value="Active">Active</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
-          <div className={cn("relative flex items-center gap-1.5 bg-white border shadow-sm rounded-full px-2.5 sm:px-3.5 py-1.5 text-[11px] hover:bg-slate-50 transition-colors cursor-pointer", filters.sector ? "border-primary/30" : "border-slate-200")}>
-            <Building2 className={cn("h-3.5 w-3.5", filters.sector ? 'text-primary' : 'text-teal-600')} />
-            <span className={cn("font-semibold", filters.sector ? 'text-primary' : 'text-slate-600')}>{filters.sector || 'All Sectors'}</span>
-            <ChevronDown className="h-3 w-3 text-slate-400 ml-0.5" />
-            <select value={filters.sector} onChange={e => setFilters(f => ({ ...f, sector: e.target.value }))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-              <option value="">All Sectors</option>
-              <option value="Commercial">Commercial</option>
-              <option value="Education">Education</option>
-              <option value="Financial Institutions">Financial Institutions</option>
-              <option value="Food Processing">Food Processing</option>
-              <option value="Government Organisations">Government Organisations</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Hospitality">Hospitality</option>
-              <option value="IT/ITES">IT/ITES</option>
-              <option value="Industrial">Industrial</option>
-              <option value="Logistics">Logistics</option>
-              <option value="NGOs">NGOs</option>
-              <option value="Others">Others</option>
-              <option value="Pharmaceutical">Pharmaceutical</option>
-              <option value="Political Parties">Political Parties</option>
-              <option value="Sports">Sports</option>
-              <option value="Textiles">Textiles</option>
-            </select>
+            <Select value={filters.parcel || 'All Parcels'} onValueChange={(v) => setFilters(f => ({ ...f, parcel: v === 'All Parcels' ? '' : v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs" data-active={Boolean(filters.parcel)} icon={<MapPin className="size-3.5" />}>
+                <SelectValue placeholder="All Parcels" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Parcels" className="text-xs">All Parcels</SelectItem>
+                <SelectItem value="Available" className="text-xs">Available</SelectItem>
+                <SelectItem value="Allotted" className="text-xs">Allotted</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filters.app || 'All Applications'} onValueChange={(v) => setFilters(f => ({ ...f, app: v === 'All Applications' ? '' : v }))}>
+              <SelectTrigger className="w-[155px] h-8 text-xs" data-active={Boolean(filters.app)} icon={<AppWindow className="size-3.5" />}>
+                <SelectValue placeholder="All Applications" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Applications" className="text-xs">All Applications</SelectItem>
+                <SelectItem value="Pending" className="text-xs">Pending</SelectItem>
+                <SelectItem value="Approved" className="text-xs">Approved</SelectItem>
+                <SelectItem value="Rejected" className="text-xs">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filters.stage || 'All Stages'} onValueChange={(v) => setFilters(f => ({ ...f, stage: v === 'All Stages' ? '' : v }))}>
+              <SelectTrigger className="w-[125px] h-8 text-xs" data-active={Boolean(filters.stage)} icon={<Layers className="size-3.5" />}>
+                <SelectValue placeholder="All Stages" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Stages" className="text-xs">All Stages</SelectItem>
+                <SelectItem value="Intake" className="text-xs">Intake</SelectItem>
+                <SelectItem value="DPR Review" className="text-xs">DPR Review</SelectItem>
+                <SelectItem value="Govt Approval" className="text-xs">Govt Approval</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filters.project || 'All Projects'} onValueChange={(v) => setFilters(f => ({ ...f, project: v === 'All Projects' ? '' : v }))}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={Boolean(filters.project)} icon={<FolderKanban className="size-3.5" />}>
+                <SelectValue placeholder="All Projects" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Projects" className="text-xs">All Projects</SelectItem>
+                <SelectItem value="Active" className="text-xs">Active</SelectItem>
+                <SelectItem value="Completed" className="text-xs">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filters.sector || 'All Sectors'} onValueChange={(v) => setFilters(f => ({ ...f, sector: v === 'All Sectors' ? '' : v }))}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={Boolean(filters.sector && filters.sector !== 'All Sectors')} icon={<LayoutGrid className="size-3.5" />}>
+                <SelectValue placeholder="All Sectors" />
+              </SelectTrigger>
+              <SelectContent>
+                {DASH_SECTOR_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-muted-foreground px-2 cursor-pointer" onClick={clearFilters}>
+                <X className="h-3.5 w-3.5" /> Clear
+              </Button>
+            )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Stat Cards Row */}
       <div className="grid gap-2 grid-cols-2 lg:grid-cols-6 shrink-0">
         <StatCard
           title="Total Applications"
-          value={stats?.applications.total ?? 0}
+          value={displayStats?.applications.total ?? 0}
           subtitle={
             <div className="flex justify-between items-center w-full gap-x-1 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />New: {stats ? Math.floor(stats.applications.total * 0.6) : 0}</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />LASC: {stats ? Math.floor(stats.applications.total * 0.25) : 0}</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-purple-500 shrink-0" />GOM: {stats ? Math.ceil(stats.applications.total * 0.15) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />New: {displayStats ? Math.floor(displayStats.applications.total * 0.6) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />LASC: {displayStats ? Math.floor(displayStats.applications.total * 0.25) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-purple-500 shrink-0" />GOM: {displayStats ? Math.ceil(displayStats.applications.total * 0.15) : 0}</span>
             </div>
           }
           icon={FileText}
@@ -1670,12 +1767,12 @@ export function DashboardView() {
         />
         <StatCard
           title="Deals"
-          value={stats?.deals?.total ?? 142}
+          value={displayStats?.deals?.total ?? 142}
           subtitle={
             <div className="flex justify-between items-center w-full gap-x-1 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Active: 82</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Pending: 40</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />Cancelled: 20</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Active: {displayStats ? Math.floor(displayStats.deals.total * 0.58) : 82}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Pending: {displayStats ? Math.floor(displayStats.deals.total * 0.28) : 40}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />Cancelled: {displayStats ? Math.ceil(displayStats.deals.total * 0.14) : 20}</span>
             </div>
           }
           icon={Handshake}
@@ -1683,11 +1780,11 @@ export function DashboardView() {
         />
         <StatCard
           title="Projects"
-          value={stats?.constructions?.total ?? ((stats?.constructions?.active ?? 0) + 12)}
+          value={displayStats?.constructions?.total ?? ((displayStats?.constructions?.active ?? 0) + 12)}
           subtitle={
             <div className="flex justify-start items-center w-full gap-x-4 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Active: {stats?.constructions?.active ?? 0}</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />In Process: {stats?.constructions?.inProcess ?? 12}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Active: {displayStats?.constructions?.active ?? 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />In Process: {displayStats?.constructions?.inProcess ?? 12}</span>
             </div>
           }
           icon={HardHat}
@@ -1695,24 +1792,24 @@ export function DashboardView() {
         />
         <StatCard
           title="Revenue"
-          value={formatCurrencyCr(stats?.payments?.totalRevenue ?? 0)}
+          value={formatCurrencyCr(displayStats?.payments?.totalRevenue ?? 0)}
           subtitle={
             <div className="flex justify-between items-center w-full gap-x-2 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Received: {formatCurrencyCr(stats ? stats.payments.totalRevenue * 0.8 : 0)}</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Pending: {formatCurrencyCr(stats ? stats.payments.totalRevenue * 0.2 : 0)}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Received: {formatCurrencyCr(displayStats ? displayStats.payments.totalRevenue * 0.8 : 0)}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Pending: {formatCurrencyCr(displayStats ? displayStats.payments.totalRevenue * 0.2 : 0)}</span>
             </div>
           }
           icon={IndianRupee}
           color="bg-gradient-to-br from-violet-500 to-purple-600"
-          trend={(stats?.payments?.overdueCount ?? 0) > 0 ? 'down' : 'up'}
+          trend={(displayStats?.payments?.overdueCount ?? 0) > 0 ? 'down' : 'up'}
         />
         <StatCard
           title="Jobs Generated"
-          value={stats?.jobs?.generated ? stats.jobs.generated.toLocaleString('en-IN') : '24,500'}
+          value={displayStats?.jobs?.generated ? displayStats.jobs.generated.toLocaleString('en-IN') : '24,500'}
           subtitle={
             <div className="flex justify-start items-center w-full gap-x-4 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />Direct: 15,000</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />Indirect: 9,500</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />Direct: {displayStats ? Math.round(displayStats.jobs.generated * 0.61).toLocaleString('en-IN') : '15,000'}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />Indirect: {displayStats ? Math.round(displayStats.jobs.generated * 0.39).toLocaleString('en-IN') : '9,500'}</span>
             </div>
           }
           icon={Users}
@@ -1720,12 +1817,12 @@ export function DashboardView() {
         />
         <StatCard
           title="Land Parcels"
-          value={stats?.landParcels.total ?? 0}
+          value={displayStats?.landParcels.total ?? 0}
           subtitle={
             <div className="flex justify-between items-center w-full gap-x-2 text-[9px] font-bold text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Available: {stats?.landParcels.available ?? 0}</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />Allotted: {stats ? Math.floor((stats.landParcels.total - stats.landParcels.available) * 0.7) : 0}</span>
-              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Alloc.: {stats ? Math.ceil((stats.landParcels.total - stats.landParcels.available) * 0.3) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />Available: {displayStats?.landParcels.available ?? 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />Allotted: {displayStats ? Math.floor((displayStats.landParcels.total - displayStats.landParcels.available) * 0.7) : 0}</span>
+              <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />Alloc.: {displayStats ? Math.ceil((displayStats.landParcels.total - displayStats.landParcels.available) * 0.3) : 0}</span>
             </div>
           }
           icon={LandPlot}
@@ -1933,10 +2030,28 @@ export function DashboardView() {
           </CardHeader>
           <CardContent className="px-3 py-0">
             <div className="space-y-1.5">
-              {recentApps.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-6">No applications yet</p>
-              ) : (
-                recentApps.map((app) => (
+              {(() => {
+                const filteredList = recentApps.filter((app) => {
+                  if (dateFilter.preset !== 'overall' && dateFilter.startDate) {
+                    const appDate = new Date(app.createdAt)
+                    if (!isNaN(appDate.getTime())) {
+                      const start = new Date(dateFilter.startDate.getFullYear(), dateFilter.startDate.getMonth(), dateFilter.startDate.getDate()).getTime()
+                      const end = dateFilter.endDate
+                        ? new Date(dateFilter.endDate.getFullYear(), dateFilter.endDate.getMonth(), dateFilter.endDate.getDate(), 23, 59, 59, 999).getTime()
+                        : new Date(dateFilter.startDate.getFullYear(), dateFilter.startDate.getMonth(), dateFilter.startDate.getDate(), 23, 59, 59, 999).getTime()
+                      const t = appDate.getTime()
+                      if (t < start || t > end) return false
+                    }
+                  }
+                  if (filters.app && app.status !== filters.app) return false
+                  return true
+                })
+
+                if (filteredList.length === 0) {
+                  return <p className="text-xs text-muted-foreground text-center py-6">No applications match selected date/filter</p>
+                }
+
+                return filteredList.map((app) => (
                   <div key={app.id} className="flex items-center justify-between gap-2 rounded-md border p-2 hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => navigateTo('application-detail', { id: app.id })}>
                     <div className="min-w-0 flex-1">
@@ -1951,13 +2066,13 @@ export function DashboardView() {
                     </div>
                   </div>
                 ))
-              )}
+              })()}
             </div>
           </CardContent>
         </Card>
       </div>
       {/* ── Applications Table ── */}
-      <DashboardApplicationsTable onNavigate={(id) => navigateTo('application-detail', { id })} />
+      <DashboardApplicationsTable onNavigate={(id) => navigateTo('application-detail', { id })} dateFilter={dateFilter} />
 
     </div>
   )

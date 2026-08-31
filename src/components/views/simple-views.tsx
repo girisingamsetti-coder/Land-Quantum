@@ -18,7 +18,8 @@ import {
   ScrollText, Users, Building2, Settings, Map, ClipboardList,
   AlertTriangle, AlertCircle, CheckCircle2, XCircle, Shield, BarChart3,
   Search, Filter, X, ChevronDown, ChevronUp, Clock, ArrowRight, FileWarning,
-  IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer, Plus
+  IndianRupee, Loader2, FileDown, FileSpreadsheet, Printer, Plus,
+  CircleDot, Layers, Zap, Box, User, Settings2, Tag, LayoutList
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppLayout } from '@/components/layout/app-layout'
@@ -27,25 +28,25 @@ import { RecordsTable } from '@/components/dashboard/dashboard-view'
 function formatINR(amount: number) { return `\u20B9${(amount / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` }
 
 function statusColor(s: string) {
-  if (['Approved', 'Completed', 'Paid', 'Compliant', 'Resolved', 'Issued', 'Executed', 'Registered'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-  if (['Under Review', 'In Progress', 'Pending', 'Open', 'Draft', 'Submitted', 'Notice Issued', 'Decision Made', 'Scheduled', 'Under Scrutiny'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200'
-  if (['Rejected', 'Failed', 'Non-Compliant', 'Overdue', 'Cancelled'].includes(s)) return 'bg-red-100 text-red-700 border-red-200'
-  if (['Deferred', 'On Hold', 'Delayed', 'At Risk', 'Partially Paid'].includes(s)) return 'bg-orange-100 text-orange-700 border-orange-200'
-  return 'bg-slate-100 text-slate-600 border-slate-200'
+  if (['Approved', 'Completed', 'Paid', 'Compliant', 'Resolved', 'Issued', 'Executed', 'Registered'].includes(s)) return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60'
+  if (['Under Review', 'In Progress', 'Pending', 'Open', 'Draft', 'Submitted', 'Notice Issued', 'Decision Made', 'Scheduled', 'Under Scrutiny'].includes(s)) return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+  if (['Rejected', 'Failed', 'Non-Compliant', 'Overdue', 'Cancelled'].includes(s)) return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+  if (['Deferred', 'On Hold', 'Delayed', 'At Risk', 'Partially Paid'].includes(s)) return 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800/60'
+  return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
 }
 
 function severityColor(s: string) {
-  if (s === 'Critical') return 'bg-red-100 text-red-700 border-red-200'
-  if (s === 'High') return 'bg-orange-100 text-orange-700 border-orange-200'
-  if (s === 'Medium') return 'bg-amber-100 text-amber-700 border-amber-200'
-  return 'bg-blue-100 text-blue-700 border-blue-200'
+  if (s === 'Critical') return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
+  if (s === 'High') return 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800/60'
+  if (s === 'Medium') return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60'
+  return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800/60'
 }
 
 function severityTileColor(s: string) {
-  if (s === 'Critical') return { bg: 'bg-gradient-to-r from-red-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-red-700', iconBg: 'bg-red-100', iconText: 'text-red-600' }
-  if (s === 'High') return { bg: 'bg-gradient-to-r from-orange-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-orange-700', iconBg: 'bg-orange-100', iconText: 'text-orange-600' }
-  if (s === 'Medium') return { bg: 'bg-gradient-to-r from-amber-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-amber-700', iconBg: 'bg-amber-100', iconText: 'text-amber-600' }
-  return { bg: 'bg-gradient-to-r from-blue-50 to-white/50', border: 'border-transparent hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-blue-700', iconBg: 'bg-blue-100', iconText: 'text-blue-600' }
+  if (s === 'Critical') return { bg: 'bg-gradient-to-r from-red-50 to-white/50 dark:from-red-950/30 dark:to-card/60', border: 'border-transparent dark:border-border/50 hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-red-700 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-950/60', iconText: 'text-red-600 dark:text-red-400' }
+  if (s === 'High') return { bg: 'bg-gradient-to-r from-orange-50 to-white/50 dark:from-orange-950/30 dark:to-card/60', border: 'border-transparent dark:border-border/50 hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-orange-700 dark:text-orange-400', iconBg: 'bg-orange-100 dark:bg-orange-950/60', iconText: 'text-orange-600 dark:text-orange-400' }
+  if (s === 'Medium') return { bg: 'bg-gradient-to-r from-amber-50 to-white/50 dark:from-amber-950/30 dark:to-card/60', border: 'border-transparent dark:border-border/50 hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-amber-700 dark:text-amber-400', iconBg: 'bg-amber-100 dark:bg-amber-950/60', iconText: 'text-amber-600 dark:text-amber-400' }
+  return { bg: 'bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60', border: 'border-transparent dark:border-border/50 hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px]', text: 'text-blue-700 dark:text-blue-400', iconBg: 'bg-blue-100 dark:bg-blue-950/60', iconText: 'text-blue-600 dark:text-blue-400' }
 }
 
 // Filter bar component
@@ -120,7 +121,7 @@ export function CancellationsView({ hideHeader, tabsControl }: { hideHeader?: bo
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search cases, applications, reasons..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -276,20 +277,20 @@ export function ReportsView() {
         <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
           <div className="flex items-center gap-2 flex-1 mr-auto flex-wrap">
             <span className="text-xs font-medium text-muted-foreground shrink-0">Dates:</span>
-            <Input type="date" className="h-8 text-xs w-36 bg-white" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
+            <Input type="date" className="h-8 text-xs w-36" value={filters.from} onChange={(e) => setFilters({ ...filters, from: e.target.value })} title="From Date" />
             <span className="text-xs text-muted-foreground">to</span>
-            <Input type="date" className="h-8 text-xs w-36 bg-white" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
+            <Input type="date" className="h-8 text-xs w-36" value={filters.to} onChange={(e) => setFilters({ ...filters, to: e.target.value })} title="To Date" />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={filters.phase} onValueChange={(v) => setFilters({ ...filters, phase: v })}>
-              <SelectTrigger className="h-8 text-xs w-[130px] bg-white" data-active={filters.phase !== 'ALL'}><SelectValue placeholder="Phase" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs w-[130px]" data-active={filters.phase !== 'ALL'} icon={<Layers className="size-3.5" />}><SelectValue placeholder="Phase" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All phases</SelectItem>
                 {meta?.phases?.map((p: any) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filters.status} onValueChange={(v) => setFilters({ ...filters, status: v })}>
-              <SelectTrigger className="h-8 text-xs w-[130px] bg-white" data-active={filters.status !== 'ALL'}><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs w-[130px]" data-active={filters.status !== 'ALL'} icon={<CircleDot className="size-3.5" />}><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Any status</SelectItem>
                 {meta?.caseStatuses?.map((s: any) => <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>)}
@@ -412,14 +413,14 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search user, role, action, module..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={action || 'All'} onValueChange={v => setAction(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={!!action && action !== 'All'}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!action && action !== 'All'} icon={<Zap className="size-3.5" />}>
                 <SelectValue placeholder="Action" />
               </SelectTrigger>
               <SelectContent>
@@ -428,7 +429,7 @@ export function AuditLogView({ hideHeader }: { hideHeader?: boolean } = {}) {
               </SelectContent>
             </Select>
             <Select value={module || 'All'} onValueChange={v => setModule(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-white" data-active={!!module && module !== 'All'}>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!module && module !== 'All'} icon={<Box className="size-3.5" />}>
                 <SelectValue placeholder="Module" />
               </SelectTrigger>
               <SelectContent>
@@ -499,14 +500,14 @@ export function UsersView({ hideHeader }: { hideHeader?: boolean } = {}) {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search user name, email, department..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={role || 'All'} onValueChange={v => setRole(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!role && role !== 'All'}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!role && role !== 'All'} icon={<User className="size-3.5" />}>
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
@@ -571,7 +572,7 @@ export function DepartmentsView({ hideHeader }: { hideHeader?: boolean } = {}) {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search departments and roles..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -691,14 +692,14 @@ export function SettingsView() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   placeholder="Search workflow stages, owner role..."
-                  className="pl-8 h-8 text-xs bg-white w-full"
+                  className="pl-8 h-8 text-xs w-full"
                   value={workflowSearch}
                   onChange={e => setWorkflowSearch(e.target.value)}
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
                 <Select value={workflowRole} onValueChange={setWorkflowRole}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={workflowRole !== 'All'}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={workflowRole !== 'All'} icon={<User className="size-3.5" />}>
                     <SelectValue placeholder="Role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -734,8 +735,8 @@ export function SettingsView() {
                       <TableCell className="text-sm font-medium">{s.stageName}</TableCell>
                       <TableCell className="text-xs">{s.ownerRole}</TableCell>
                       <TableCell className="text-xs tabular-nums">{s.slaDays}</TableCell>
-                      <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
-                      <TableCell>{s.isActive ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <XCircle className="h-3.5 w-3.5 text-red-500" />}</TableCell>
+                      <TableCell>{s.isOptional ? <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60">Yes</Badge> : <span className="text-xs text-muted-foreground">No</span>}</TableCell>
+                      <TableCell>{s.isActive ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> : <XCircle className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -752,7 +753,7 @@ export function SettingsView() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   placeholder="Search SLA configuration by stage name..."
-                  className="pl-8 h-8 text-xs bg-white w-full"
+                  className="pl-8 h-8 text-xs w-full"
                   value={slaSearch}
                   onChange={e => setSlaSearch(e.target.value)}
                 />
@@ -796,14 +797,14 @@ export function SettingsView() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   placeholder="Search settings key, label, value..."
-                  className="pl-8 h-8 text-xs bg-white w-full"
+                  className="pl-8 h-8 text-xs w-full"
                   value={systemSearch}
                   onChange={e => setSystemSearch(e.target.value)}
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
                 <Select value={systemCategory} onValueChange={setSystemCategory}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={systemCategory !== 'All'}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs" data-active={systemCategory !== 'All'} icon={<Settings2 className="size-3.5" />}>
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -979,9 +980,9 @@ export function MyWorkQueue({ hideHeader, tabsControl }: { hideHeader?: boolean,
       {!hideHeader && <div><h1 className="text-2xl font-bold tracking-tight">Work Queue</h1><p className="text-sm text-muted-foreground">Pending tasks, approvals, and queries assigned to you</p></div>}
       {tabsControl && <div className="mb-4">{tabsControl}</div>}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 p-2"><FileWarning className="h-3.5 w-3.5 text-blue-600" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.assignedApps?.length || 0}</p></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 p-2"><Clock className="h-3.5 w-3.5 text-amber-600" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.assignedStages?.length || 0}</p></CardContent></Card>
-        <Card className="border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 p-2"><AlertTriangle className="h-3.5 w-3.5 text-rose-600" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.grievances?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Assigned Applications</p><div className="rounded-lg bg-blue-100 dark:bg-blue-950/60 p-2"><FileWarning className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.assignedApps?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-amber-50 to-white/50 dark:from-amber-950/30 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pending Stages</p><div className="rounded-lg bg-amber-100 dark:bg-amber-950/60 p-2"><Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.assignedStages?.length || 0}</p></CardContent></Card>
+        <Card className="border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer bg-gradient-to-r from-rose-50 to-white/50 dark:from-rose-950/30 dark:to-card/60"><CardContent className="px-3 py-0"><div className="flex items-start justify-between"><p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Open Grievances</p><div className="rounded-lg bg-rose-100 dark:bg-rose-950/60 p-2"><AlertTriangle className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" /></div></div><p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">{data?.grievances?.length || 0}</p></CardContent></Card>
       </div>
       <Card><CardHeader className="pb-3"><CardTitle className="text-sm font-semibold">Pending Stage Actions</CardTitle></CardHeader><CardContent className="px-3 py-0">
         {loading ? <div className="p-4"><Skeleton className="h-12 w-full" /></div> :
@@ -1116,14 +1117,14 @@ export function RiskAlertsView() {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search alerts, description, application..."
-              className="pl-8 h-8 text-xs bg-white w-full"
+              className="pl-8 h-8 text-xs w-full"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={severityFilter || 'All'} onValueChange={v => setSeverityFilter(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[120px] h-8 text-xs bg-white" data-active={!!severityFilter && severityFilter !== 'All'}>
+              <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!severityFilter && severityFilter !== 'All'} icon={<AlertTriangle className="size-3.5" />}>
                 <SelectValue placeholder="Severity" />
               </SelectTrigger>
               <SelectContent>
@@ -1133,7 +1134,7 @@ export function RiskAlertsView() {
               </SelectContent>
             </Select>
             <Select value={typeFilter || 'All'} onValueChange={v => setTypeFilter(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-white" data-active={!!typeFilter && typeFilter !== 'All'}>
+              <SelectTrigger className="w-[140px] h-8 text-xs" data-active={!!typeFilter && typeFilter !== 'All'} icon={<Tag className="size-3.5" />}>
                 <SelectValue placeholder="Alert Type" />
               </SelectTrigger>
               <SelectContent>

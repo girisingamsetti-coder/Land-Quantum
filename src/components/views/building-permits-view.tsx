@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Filter, Search, FileText, CheckCircle2, Clock, XCircle, Building2, MapPin, Calendar, History, FileCheck, Landmark, UploadCloud, X } from 'lucide-react'
+import { Filter, Search, FileText, CheckCircle2, Clock, XCircle, Building2, MapPin, Calendar, History, FileCheck, Landmark, UploadCloud, X, CircleDot, Tag, Layers } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
@@ -175,53 +175,53 @@ export function BuildingPermitsView() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="bg-gradient-to-r from-blue-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+        <Card className="bg-gradient-to-r from-blue-50 to-white/50 dark:from-blue-950/30 dark:to-card/60 border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Total Permits</p>
                 <p className="text-lg font-bold tabular-nums leading-tight mt-1 truncate">1,248</p>
               </div>
-              <div className="rounded-lg p-2 bg-blue-100/50 text-blue-600 shrink-0">
+              <div className="rounded-lg p-2 bg-blue-100/50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
                 <FileText className="h-3.5 w-3.5" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-emerald-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+        <Card className="bg-gradient-to-r from-emerald-50 to-white/50 dark:from-emerald-950/30 dark:to-card/60 border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Approved</p>
-                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 truncate">842</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-emerald-700 dark:text-emerald-400 truncate">842</p>
               </div>
-              <div className="rounded-lg p-2 bg-emerald-100/50 text-emerald-600 shrink-0">
+              <div className="rounded-lg p-2 bg-emerald-100/50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
                 <CheckCircle2 className="h-3.5 w-3.5" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-amber-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+        <Card className="bg-gradient-to-r from-amber-50 to-white/50 dark:from-amber-950/30 dark:to-card/60 border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Under Review</p>
-                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 truncate">315</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-amber-700 dark:text-amber-400 truncate">315</p>
               </div>
-              <div className="rounded-lg p-2 bg-amber-100/50 text-amber-600 shrink-0">
+              <div className="rounded-lg p-2 bg-amber-100/50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shrink-0">
                 <Clock className="h-3.5 w-3.5" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-r from-red-50 to-white/50 border-transparent shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
+        <Card className="bg-gradient-to-r from-red-50 to-white/50 dark:from-red-950/30 dark:to-card/60 border-transparent dark:border-border/50 shadow-sm hover:shadow-md hover:outline hover:outline-1 hover:outline-primary/50 hover:outline-offset-[-1px] transition-all cursor-pointer">
           <CardContent className="px-3 py-0">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">Rejected</p>
-                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-red-700 truncate">91</p>
+                <p className="text-lg font-bold tabular-nums leading-tight mt-1 text-red-700 dark:text-red-400 truncate">91</p>
               </div>
-              <div className="rounded-lg p-2 bg-red-100/50 text-red-600 shrink-0">
+              <div className="rounded-lg p-2 bg-red-100/50 dark:bg-red-950/60 text-red-600 dark:text-red-400 shrink-0">
                 <XCircle className="h-3.5 w-3.5" />
               </div>
             </div>
@@ -238,35 +238,35 @@ export function BuildingPermitsView() {
           </div>
           <div className="flex flex-wrap items-center gap-2 justify-end shrink-0">
             <Select value={status || 'All'} onValueChange={v => setStatus(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'}><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger className="w-[120px] h-8 text-xs" data-active={!!status && status !== 'All'} icon={<CircleDot className="size-3.5" />}><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">Status: All</SelectItem>
                 {['Approved', 'Under Review', 'Rejected'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={type || 'All'} onValueChange={v => setType(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[110px] h-8 text-xs" data-active={!!type && type !== 'All'}><SelectValue placeholder="Type" /></SelectTrigger>
+              <SelectTrigger className="w-[110px] h-8 text-xs" data-active={!!type && type !== 'All'} icon={<Tag className="size-3.5" />}><SelectValue placeholder="Type" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">Type: All</SelectItem>
                 {['Commercial', 'Residential', 'Industrial', 'Mixed Use'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={zone || 'All'} onValueChange={v => setZone(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!zone && zone !== 'All'}><SelectValue placeholder="Zone" /></SelectTrigger>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!zone && zone !== 'All'} icon={<MapPin className="size-3.5" />}><SelectValue placeholder="Zone" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">Zone: All</SelectItem>
                 {['Zone A — Core', 'Zone B — Growth', 'Zone C — Industrial', 'Zone D — Residential'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={stage || 'All'} onValueChange={v => setStage(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!stage && stage !== 'All'}><SelectValue placeholder="Stage" /></SelectTrigger>
+              <SelectTrigger className="w-[130px] h-8 text-xs" data-active={!!stage && stage !== 'All'} icon={<Layers className="size-3.5" />}><SelectValue placeholder="Stage" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">Stage: All</SelectItem>
                 {['Submitted', 'Initial Review', 'NOC Verification', 'Final Review', 'Approved'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={year || 'All'} onValueChange={v => setYear(v === 'All' ? '' : v)}>
-              <SelectTrigger className="w-[95px] h-8 text-xs" data-active={!!year && year !== 'All'}><SelectValue placeholder="Year" /></SelectTrigger>
+              <SelectTrigger className="w-[95px] h-8 text-xs" data-active={!!year && year !== 'All'} icon={<Calendar className="size-3.5" />}><SelectValue placeholder="Year" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">Year: All</SelectItem>
                 {['2024', '2023'].map(s => <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>)}
@@ -294,9 +294,9 @@ export function BuildingPermitsView() {
               <CardHeader className="p-3 sm:p-4 pb-2">
                 <div className="flex justify-between items-start mb-2">
                   <Badge variant="outline" className={cn('text-[10px] font-semibold border', 
-                    p.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
-                    p.status === 'Under Review' ? 'bg-amber-50 text-amber-700 border-amber-200' : 
-                    'bg-red-50 text-red-700 border-red-200'
+                    p.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60' : 
+                    p.status === 'Under Review' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60' : 
+                    'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
                   )}>
                     {p.status}
                   </Badge>
@@ -353,9 +353,9 @@ export function BuildingPermitsView() {
                     <TableCell className="text-xs text-muted-foreground">{p.date}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={cn('text-[10px] font-semibold border', 
-                        p.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
-                        p.status === 'Under Review' ? 'bg-amber-50 text-amber-700 border-amber-200' : 
-                        'bg-red-50 text-red-700 border-red-200'
+                        p.status === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60' : 
+                        p.status === 'Under Review' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60' : 
+                        'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-800/60'
                       )}>
                         {p.status}
                       </Badge>
